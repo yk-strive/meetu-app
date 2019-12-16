@@ -1,0 +1,23 @@
+{
+  "pages": [
+    "pages/initial/wxoauth",
+    "pages/initial/personaldata",
+    "pages/home/index",
+    "pages/send/text",
+    "pages/send/voice",
+    "pages/search/search",
+    "pages/user/index",
+    "pages/chat/list"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Meet U",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#DADADA",
+    "navigationStyle": "custom"
+  },
+  "usingComponents": {
+    "custom-nav": "/components/custom-nav"
+  }
+}

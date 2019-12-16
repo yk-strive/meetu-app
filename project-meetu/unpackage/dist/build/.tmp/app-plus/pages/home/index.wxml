@@ -1,0 +1,1 @@
+<view class="bg_page_1" id="homePage"><custom-nav vue-id="1" isBack="{{false}}" bind:__l="__l"></custom-nav><view class="AppName text-white text-lg">{{appName}}</view><view class="avatar round"><image class="wh-100" src="../../static/logo.png"></image></view></view>

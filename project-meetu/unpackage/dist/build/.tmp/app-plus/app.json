@@ -1,0 +1,25 @@
+{
+  "pages": [
+    "pages/initial/wxoauth",
+    "pages/initial/personaldata",
+    "pages/home/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "Meet U",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#DADADA",
+    "navigationStyle": "custom"
+  },
+  "nvueCompiler": "uni-app",
+  "renderer": "auto",
+  "splashscreen": {
+    "alwaysShowBeforeRender": true,
+    "autoclose": false
+  },
+  "appname": "project-meetu",
+  "compilerVersion": "2.4.6",
+  "usingComponents": {
+    "custom-nav": "/components/custom-nav"
+  }
+}
