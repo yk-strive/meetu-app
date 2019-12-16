@@ -95,4 +95,9 @@
 		width: 100%;
 		height: 100%;
 	}
+	
+	.bg-color-main {
+		background: linear-gradient(to right, #D04795,#616DEC);
+		color: #FFFFFF;
+	}
 </style>

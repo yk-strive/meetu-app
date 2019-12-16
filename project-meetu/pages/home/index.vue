@@ -37,7 +37,7 @@
 						<view class="send_type text-letter-df text-df text-center">
 							<text>发布文字信号</text>
 						</view>
-						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center">
+						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center padding-bottom-xs">
 							<text>文字黑洞</text>
 						</view>
 						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center">
@@ -51,7 +51,7 @@
 						<view class="send_type text-letter-df text-df text-center">
 							<text>发布语音信号</text>
 						</view>
-						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center">
+						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center padding-bottom-xs">
 							<text>星球传呼机</text>
 						</view>
 						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center">
@@ -244,7 +244,7 @@
 					}
 				}
 				.send_type {
-					padding: 8upx 0 16upx;
+					padding: 10upx 0 20upx;
 				}
 			}
 		}

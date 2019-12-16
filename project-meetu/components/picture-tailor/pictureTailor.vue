@@ -38,8 +38,11 @@
 				img_scaling: 1, //图片初始化缩放比例
 				scale: 1, // 拖动缩放完成后的图片缩放比例
 				scaleMin: 0.5, // 最小缩放值
-				isShow: false
+				isShow: false,
 			};
+		},
+		onReady() {
+			
 		},
 		watch: {
 			pictureSrc() {
@@ -57,7 +60,9 @@
 			},
 			// 初始化图片
 			getImgInfo() {
-				this.isShow = true;
+				if (this.pictureSrc) {
+					this.isShow = true;
+				}
 				uni.getImageInfo({
 					src: this.pictureSrc,
 					success: (res) => {
@@ -105,15 +110,15 @@
 			// 截取图片
 			createImg() {
 				let _this = this;
-				let ctx = uni.createCanvasContext("pictureCanvas");
+				let ctx = uni.createCanvasContext("pictureCanvas", this);
 
 				ctx.drawImage(this.pictureSrc, newOffsetX, newOffsetY, this.img_width /
 					this.img_scaling * this.scale,
 					this.img_height / this.img_scaling * this.scale);
 				console.log('ctx1')
 
-				ctx.draw(false, setTimeout(function() {
-					console.log('ctx2')
+				ctx.draw(false, setTimeout(()=> {
+					console.log(this)
 					uni.canvasToTempFilePath({
 						// 截取图片尺寸
 						x: 0,

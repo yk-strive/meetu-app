@@ -7,7 +7,7 @@
 			<view class="avatar_box">
 				<image class="abs-center avatar_bg" src="../../static/meetu-img/face.png" mode="aspectFill"></image>
 				<view class="avatar abs-center round">
-					<image class="wh-100" v-bind:src="avatarTempPath ? avatarTempPath : 'https://ossweb-img.qq.com/images/lol/web201310/skin/big25002.jpg'" v-on:click="chooseImage"></image>
+					<image class="wh-100" v-bind:src="avatarCropPath ? avatarCropPath : 'https://ossweb-img.qq.com/images/lol/web201310/skin/big25002.jpg'" v-on:click="chooseImage"></image>
 				</view>
 			</view>
 			<form action="" v-on:submit="submitInfo">
@@ -52,12 +52,12 @@
 
 <script>
 	import wPicker from "@/components/w-picker/w-picker.vue";
-	// import pictureTailor from "@/components/picture-tailor/pictureTailor.vue";
+	import pictureTailor from "@/components/picture-tailor/pictureTailor.vue";
 	export default {
 		name: 'personaldata',
 		components: {
 			wPicker,
-			// pictureTailor
+			pictureTailor
 		},
 		data() {
 			return {

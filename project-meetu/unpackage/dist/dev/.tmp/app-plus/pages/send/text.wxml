@@ -1,1 +1,1 @@
-<view id="sendTextPage"></view>
+<view class="bg_page_1" id="sendTextPage"><custom-nav vue-id="1" isBack="{{true}}" textTitle="发布文字信号" bind:__l="__l"></custom-nav><form data-event-opts="{{[['submit',[['submitSendText',['$event']]]]]}}" bindsubmit="__e"><view class="padding"><textarea class="text-white" name="sendtext" maxlength="300" placeholder="请输入想说的话"></textarea></view><button class="bg-color-main cu-btn round text-letter-df btn_send" form-type="submit">确认发送</button></form></view>
