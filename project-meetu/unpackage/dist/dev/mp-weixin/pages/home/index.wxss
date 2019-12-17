@@ -128,6 +128,6 @@
         height: 50rpx;
 }
 #homePage .modal_info .modal_info_item .send_type {
-      padding: 8rpx 0 16rpx;
+      padding: 10rpx 0 20rpx;
 }
 

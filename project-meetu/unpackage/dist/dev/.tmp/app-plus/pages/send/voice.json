@@ -1,6 +1,5 @@
 {
   "usingComponents": {
-    "custom-nav": "/components/custom-nav",
-    "jsfun-record": "/components/jsfun-record/jsfun-record"
+    "custom-nav": "/components/custom-nav"
   }
 }

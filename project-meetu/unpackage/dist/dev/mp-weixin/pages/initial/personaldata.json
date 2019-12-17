@@ -1,5 +1,6 @@
 {
   "usingComponents": {
-    "w-picker": "/components/w-picker/w-picker"
+    "w-picker": "/components/w-picker/w-picker",
+    "picture-tailor": "/components/picture-tailor/pictureTailor"
   }
 }

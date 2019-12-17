@@ -6,7 +6,8 @@
 			<view class="voice_time text-white text-center">
 				<text>{{intIntervalTime}}</text>
 			</view>
-			<view v-if="!isRecordEnd" class="voice_init round text-xl text-center" @touchstart="voiceStartHandle" @touchend="voiceEndHandle">
+			<view v-if="!isRecordEnd" class="voice_init round text-xl text-center" @touchstart="touchStartHandle"
+			 @touchcancel="touchCancelHandle" @touchend="touchEndHandle">
 				<text>按住</text>
 			</view>
 			<view v-if="isRecordEnd" class="voice_handle">
@@ -25,34 +26,27 @@
 </template>
 
 <script>
-	import permision from "@/js_sdk/wa-permission/permission.js"
-	import jsfunRecord from '@/components/jsfun-record/jsfun-record.vue'
+	import permision from "@/common/wa-permission/permission.js"
 	const recorderManager = uni.getRecorderManager();
 	const innerAudioContext = uni.createInnerAudioContext();
 	innerAudioContext.autoplay = true;
 	export default {
 		name: 'sendVoice',
-		components: {
-			jsfunRecord
-		},
+		components: {},
 		data() {
 			return {
-				// recorderManager: null,
+				voiceCancel: false, // 询问录音权限未开启时, app弹窗询问时, touchcancel事件触发, 更改值为true; 为true时, 录音将会停止(解决弹窗询问时允许之后,录音依旧开始记录的问题);
 				timer: null,
 				intervalTime: 0,
 				isRecord: false, //记录状态, 录音中/未开始
-				isRecordEnd: false,
-				voiceTempPath: '',
+				isRecordEnd: false, // 录音结束, 更新ui
+				voiceTempPath: '', // 录音临时文件
 				audioPlay: false,
 			}
 		},
 		onLoad() {
 			let self = this;
-			// recorderManager.onStop(function(res) {
-			// 	console.log("录音停止" + JSON.stringify(res))
-			// 	self.voiceTempPath = res.tempFilePath;
-			// });
-			innerAudioContext.onEnded(()=>{
+			innerAudioContext.onEnded(() => {
 				console.log('播放结束')
 				self.audioPlay = false;
 			})
@@ -63,31 +57,69 @@
 			}
 		},
 		methods: {
-			voiceStartHandle() {
-				// let ua = uni.
+			async touchStartHandle() { // 长按--查询录音权限是否开启
+				let self = this;
+				// #ifdef APP-PLUS
 				if (uni.getSystemInfoSync().platform == "android") {
-					if (permision.requestAndroidPermission('android.permission.RECORD_AUDIO')) {
-						this.timer = setInterval(()=> {
-							this.intervalTime += 0.5;
-							if (this.intervalTime >= 0.5 && !this.isRecord) {
-								console.log('录音开始');
-								this.intervalTime = 0;
-								this.isRecord = true;
-								recorderManager.start({
-									format: "mp3"
-								})
-							}
-						}, 500)
+					let result = await permision.requestAndroidPermission('android.permission.RECORD_AUDIO');
+					if (result == 1) {
+						this.recordVoiceHandle();
+						this.voiceCancel = false;
+					} else {
+						console.log('未给录音权限');
+						this.voiceCancel = true;
 					}
 				}
 				if (uni.getSystemInfoSync().platform == "ios") {
-					
+					if (permision.judgeIosPermission('record')) {
+						this.recordVoiceHandle();
+						this.voiceCancel = false;
+					} else {
+						this.voiceCancel = true;
+					}
 				}
+				// #endif
+				
+				// #ifdef MP-WEIXIN
+				uni.authorize({
+					scope: 'scope.record',
+					success:()=> {
+						console.log('ok')
+						self.recordVoiceHandle();
+						self.voiceCancel = false;
+					},
+					fail: () => {
+						console.log('fail');
+					}
+				})
+				// #endif
 			},
-			voiceEndHandle() {
+			recordVoiceHandle() {
 				let self = this;
-				if(this.intervalTime <= 0.5) {
+				if (self.voiceCancel) {
+					return false;
+				}
+				self.timer = setInterval(() => {
+					self.intervalTime += 0.5;
+					if (self.intervalTime >= 0.5 && !self.isRecord) {
+						console.log('录音开始');
+						self.intervalTime = 0;
+						self.isRecord = true;
+						recorderManager.start({
+							format: "mp3"
+						})
+					}
+				}, 500)
+			},
+			touchCancelHandle() {
+				console.log('touchCancel')
+				this.voiceCancel = true;
+			},
+			touchEndHandle() {
+				let self = this;
+				if (this.intervalTime <= 0.5) {
 					console.log('录音太短了');
+					this.voiceCancel = true;
 				}
 				clearInterval(this.timer);
 				if (this.isRecord) {
@@ -113,7 +145,7 @@
 			},
 			playVoiceHandle() {
 				//播放录制的音频
-				let _this = this;
+				let self = this;
 				if (this.audioPlay) {
 					innerAudioContext.pause();
 					this.audioPlay = false;
@@ -122,6 +154,7 @@
 						innerAudioContext.src = this.voiceTempPath;
 						innerAudioContext.play();
 						this.audioPlay = true;
+						console.log(innerAudioContext.paused);
 					}
 				}
 			},
@@ -129,6 +162,9 @@
 				// 发送录制的音频
 			}
 		},
+		onHide() {
+			console.log('onHide')
+		}
 	}
 </script>
 
@@ -139,6 +175,7 @@
 			bottom: 100upx;
 			left: 0;
 			width: 100%;
+
 			.voice_init {
 				width: 180upx;
 				height: 180upx;
@@ -147,24 +184,29 @@
 				color: #333333;
 				margin: 20upx auto;
 			}
+
 			.voice_handle {
 				margin-top: 20upx;
 				display: flex;
 				align-items: center;
 				justify-content: space-around;
-				
-				.voice_reset, .voice_send {
+
+				.voice_reset,
+				.voice_send {
 					width: 120upx;
 					height: 120upx;
 					line-height: 120upx;
 					color: #FFFFFF;
 				}
+
 				.voice_reset {
 					background: linear-gradient(to right, #DA61EC, #D04795);
 				}
+
 				.voice_send {
 					background: linear-gradient(to right, #16BDBB, #2464CE);
 				}
+
 				.voice_play {
 					width: 180upx;
 					height: 180upx;

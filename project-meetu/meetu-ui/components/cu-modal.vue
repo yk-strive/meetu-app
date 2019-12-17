@@ -2,9 +2,7 @@
 	<view class="custom-modal">
 		<view class="cu-modal" :class="modalName=='Modal'?'show':''" @tap.stop="hideModal">
 			<view class="cu-dialog">
-				<view class="padding-xl">
-					<slot name="Modal"></slot>
-				</view>
+				<slot name="modal"></slot>
 			</view>
 		</view>
 		<view class="cu-modal bottom-modal" :class="modalName =='bottomModal' ?'show':''" @tap.stop="hideModal">

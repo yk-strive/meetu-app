@@ -19,5 +19,6 @@
   },
   "usingComponents": {
     "custom-nav": "/components/custom-nav"
-  }
+  },
+  "sitemapLocation": "sitemap2.json"
 }
