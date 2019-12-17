@@ -401,8 +401,24 @@
 }
 #searchPage .open_star .action_one .star_info {
       height: 170rpx;
-      padding: 0 6rpx;
+      padding: 4rpx 6rpx;
       overflow-y: scroll;
+}
+#searchPage .open_star .action_one .star_info image {
+        margin: 6rpx 0;
+}
+#searchPage .open_star .action_one .star_info .voice {
+        width: 60%;
+        height: 80rpx;
+        margin: 40rpx auto 0;
+        border-radius: 100rpx;
+        background-color: #DDDDDD;
+        text-align: center;
+}
+#searchPage .open_star .action_one .star_info .voice image {
+          width: 70rpx;
+          height: 26rpx;
+          margin-top: 26rpx;
 }
 #searchPage .open_star .action_one .btn button {
       width: 190rpx;

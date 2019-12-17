@@ -5,9 +5,8 @@
 		<image class="img_change" @tap.stop="searchChange" src="../../static/meetu-img/huan.png"></image>
 		<view class="search_view">
 			<view v-if="isSearch" class="text-center text-white padding-top-lg">信号搜寻中, 请期待~~</view>
-			<view class="search_item animation-slide-bottom" v-if="searchValue.length>0" v-for="item,index in searchValue" :key="index"
-			 :style="[{left: tempLeftNum[index] + 'px'}, {top:tempTopNum[index] + 'px'}, {animationDelay: (index + 1)*0.1 + 's'}]"
-			 @click="openStarHandle(item)">
+			<view class="search_item animation-slide-bottom" v-show="item" v-for="item,index in searchValue" :key="index" :style="[{left: tempLeftNum[index] + 'px'}, {top:tempTopNum[index] + 'px'}, {animationDelay: (index + 1)*0.1 + 's'}]"
+			 @click="openStarHandle(item, index)">
 				<image class="img_star" src="../../static/meetu-img/star.png"></image>
 				<image class="img_avatar round abs-center" :src="item.avatar"></image>
 			</view>
@@ -16,6 +15,7 @@
 		<cu-modal :modalName="modalName" @hideModal="hideModal">
 			<block slot="modal">
 				<view class="open_star">
+					<!-- 信息展示 -->
 					<view class="action_one wh-100 padding-lg">
 						<view class="user_info">
 							<view class="avatar">
@@ -32,17 +32,21 @@
 							</view>
 						</view>
 						<view class="star_info text-sm text-letter-df text-left">
-							<text>从 未知星球 发来信号|从 未知星球 发来信号|从 未知星球 发来信号|从 未知星球 发来信号</text>
-							<text>从 未知星球 发来信号|从 未知星球 发来信号|从 未知星球 发来信号|从 未知星球 发来信号</text>
+							<text v-if="openItem.contenttype == 'text'">{{openItem.content}}</text>
+							<image class="wh-100" v-if="openItem.contenttype == 'img'" :src="openItem.content" mode="aspectFill"></image>
+							<view class="voice" v-if="openItem.contenttype == 'voice'" @click="playVoiceHandle(openItem.content)">
+								<image :src="voicePlay ? '../../static/meetu-img/xh.gif' : '../../static/meetu-img/xh.png'" mode="aspectFill"></image>
+							</view>
 						</view>
 						<view class="btn">
 							<button class="cu-btn text-sm" @click="hideModal('hide')">忽略</button>
 							<button class="cu-btn text-sm" @click="actionTwoToggle('open')">回应</button>
 						</view>
 					</view>
+					<!-- 回应信息 -->
 					<view class="action_two wh-100" :class="[showActionTwo?'animation-right-in':'', !showActionTwo?'animation-right-out':'']">
 						<form @submit="submitSendHandle">
-							<textarea name="sendtext" placeholder="请跟ta打个招呼吧～" />
+							<textarea v-model="textareaValue" name="sendtext" placeholder="请跟ta打个招呼吧～" />
 							<view class="btn">
 								<image class="back fl" src="../../static/meetu-img/back.png" @click="actionTwoToggle('close')"></image>
 								<button class="cu-btn fr submit" form-type="submit">发送</button>
@@ -57,6 +61,8 @@
 
 <script>
 	import cuModal from "@/meetu-ui/components/cu-modal.vue";
+	const innerAudioContext = uni.createInnerAudioContext();
+	innerAudioContext.autoplay = true;
 	export default {
 		name: 'serach',
 		components: {
@@ -75,9 +81,19 @@
 				modalName: '',
 				isSearch: true,
 				searchValue: [],
-				openItem: null,
+				openItem: null, // 打开某一星星的内容
+				openNum: 0,  // 打开星星的次数
 				showActionTwo: false,
+				textareaValue: '',
+				voicePlay: false, 
 			}
+		},
+		onLoad() {
+			let self = this;
+			innerAudioContext.onEnded(() => {
+				console.log('播放结束')
+				self.voicePlay = false;
+			})
 		},
 		onReady() {
 			let self = this;
@@ -124,38 +140,47 @@
 			},
 
 			searchChange() { // 点击--换一换(请求接口)
-				this.$nextTick(function() {
-					this.tempLeftNum = [];
-					this.tempTopNum = [];
-					this.searchValue = [];
-					this.isSearch = true;
-				})
+				this.tempLeftNum = [];
+				this.tempTopNum = [];
+				this.searchValue = [];
+				this.isSearch = true;
+				this.openNum = 0;
 				setTimeout(() => {
 					this.isSearch = false;
 					this.searchValue = [{
-							'name': '测试1',
+							name: '测试1',
 							avatar: '../../static/logo.png',
-							sex: 1 
+							sex: 1 ,
+							contenttype: 'text',
+							content: '命运！不配做我的对手！ |  将这混乱的时代拉回正轨！ | 虽然身为坦克，但是依然不缺少一代王者的霸气！'
 						},
 						{
-							'name': '测试2',
+							name: '测试2',
 							avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg',
-							sex: 1
+							sex: 1,
+							contenttype: 'text',
+							content: '不是你记忆中的荆轲，但致命的程度，没两样！ | 不知道你的名字，但清楚你的死期！命运！不配做我的对手！ |  将这混乱的时代拉回正轨！ | 虽然身为坦克，但是依然不缺少一代王者的霸气'
 						},
 						{
-							'name': '测试3',
+							name: '测试3',
 							avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81005.jpg',
-							sex: 1
+							sex: 1,
+							contenttype: 'img',
+							content: 'https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=1239991101,3265901600&fm=173&app=25&f=JPEG?w=640&h=360&s=E8D0618C427785C61AD9A18903003082'
 						},
 						{
-							'name': '测试4',
+							name: '测试4',
 							avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big25002.jpg',
-							sex: 1
+							sex: 1,
+							contenttype: 'voice',
+							content: '../../static/temp.mp3'
 						},
 						{
 							'name': '测试5',
 							avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg',
-							sex: 0
+							sex: 0,
+							contenttype: 'voice',
+							content: '../../static/temp.mp3'
 						},
 					]
 					for (var i = 0; i < this.searchValue.length; i++) {
@@ -167,33 +192,61 @@
 				}, 2000);
 			},
 
-			openStarHandle(item) { // 打开信号
+			openStarHandle(item,index) { // 打开信号
 				this.modalName = 'Modal';
 				this.openItem = item;
+				this.openNum += 1;
+				this.searchValue.splice(index, 1, null);
+				
+				if (this.openNum >= 5) {
+					this.searchChange();
+				}
 			},
 
 			hideModal(type) { // 隐藏cu-modal
 				if (type) {
 					this.modalName = '';
 					setTimeout(()=> {
+						if (openItem.contenttype == 'voice') { // 声音信号隐藏弹窗时的处理
+							if (!innerAudioContext.paused) {
+								innerAudioContext.stop();
+							}
+							innerAudioContext.src = '';
+							this.voicePlay = false;
+						}
 						this.openItem = null;
 					}, 300);
 				}
 			},
 		
-			actionTwoToggle(type) { // 展示回应消息UI
-				
-					if (type == 'open') {
-						this.showActionTwo = true;
-					} else {
-						this.showActionTwo = false;
+			playVoiceHandle(voiceContent) { // 播放星星信号--语音
+				if (this.voicePlay) {
+					innerAudioContext.pause();
+					this.voicePlay = false;
+				} else {
+					if (voiceContent) {
+						innerAudioContext.src = voiceContent;
+						innerAudioContext.play();
+						this.voicePlay = true;
 					}
-				
-				console.log(this.showActionTwo)
+				}
+			},
+			
+			actionTwoToggle(type) { // 展示回应消息UI
+				if (type == 'open') {
+					this.showActionTwo = true;
+				} else {
+					this.showActionTwo = false;
+				}
 			},
 			
 			submitSendHandle(e) { // 提交回应消息
+				// console.log(e);
 				
+				// 提交消息完成,textarea值置空, 隐藏弹窗, 回应消息UI状态重置
+				this.textareaValue = '';
+				this.hideModal('hide');
+				this.showActionTwo = false;
 			}
 		},
 	}
@@ -278,8 +331,24 @@
 				
 				.star_info {
 					height: 170rpx;
-					padding: 0 6rpx;
+					padding: 4rpx 6rpx;
 					overflow-y: scroll;
+					image {
+						margin: 6rpx 0;
+					}
+					.voice {
+						width: 60%;
+						height: 80rpx;
+						margin: 40rpx auto 0;
+						border-radius: 100rpx;
+						background-color: #DDDDDD; 
+						text-align: center;
+						image {
+							width: 70rpx;
+							height: 26rpx;
+							margin-top: 26rpx;
+						}
+					}
 				}
 				
 				.btn {
