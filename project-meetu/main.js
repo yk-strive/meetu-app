@@ -6,6 +6,7 @@ Vue.config.productionTip = false
 import customNav from './components/custom-nav.vue'
 Vue.component('custom-nav',customNav)
 
+
 App.mpType = 'app'
 
 const app = new Vue({

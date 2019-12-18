@@ -39,8 +39,8 @@
 							</view>
 						</view>
 						<view class="btn">
-							<button class="cu-btn text-sm" @click="hideModal('hide')">忽略</button>
-							<button class="cu-btn text-sm" @click="actionTwoToggle('open')">回应</button>
+							<button class="cu-btn text-sm" @tap.stop="hideModal('hide')">忽略</button>
+							<button class="cu-btn text-sm" @tap.stop="actionTwoToggle('open')">回应</button>
 						</view>
 					</view>
 					<!-- 回应信息 -->
@@ -93,13 +93,13 @@
 			innerAudioContext.onEnded(() => {
 				console.log('播放结束')
 				self.voicePlay = false;
-			})
+			});
 		},
 		onReady() {
 			let self = this;
 			const query = uni.createSelectorQuery();
 			query.select('.search_view').boundingClientRect(data => {
-				console.log(data);
+				// console.log(data);
 				self.maxWNum = data.width / self.searchItemW;
 				self.maxHNum = data.height / self.searchItemW;
 			}).exec();
@@ -120,6 +120,7 @@
 				}
 
 			},
+			
 			randomLocationTop() { // 获取随机top的位置
 				let top_random = this.getRandomIntInclusive(1, this.maxHNum - 1) * this.searchItemH;
 				if (this.tempTopNum.length === 0) {
@@ -187,8 +188,8 @@
 						this.randomLocationLeft();
 						this.randomLocationTop();
 					}
-					console.log(this.tempLeftNum);
-					console.log(this.tempTopNum);
+					// console.log(this.tempLeftNum);
+					// console.log(this.tempTopNum);
 				}, 2000);
 			},
 
@@ -207,7 +208,7 @@
 				if (type) {
 					this.modalName = '';
 					setTimeout(()=> {
-						if (openItem.contenttype == 'voice') { // 声音信号隐藏弹窗时的处理
+						if (this.openItem.contenttype == 'voice') { // 声音信号隐藏弹窗时的处理
 							if (!innerAudioContext.paused) {
 								innerAudioContext.stop();
 							}

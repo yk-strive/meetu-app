@@ -35,3 +35,7 @@
 .cuIcon-pullleft:before {
 	content: "\e71f";
 }
+
+.cuIcon-infofill:before {
+	content: "\e6e4";
+}

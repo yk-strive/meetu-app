@@ -1,0 +1,1 @@
+<view class="bg_page_3" id="chatPage"><custom-nav vue-id="1" isBack="{{true}}" textTitle="{{'与'+oppositeinfo.name+'的对话'}}" bind:__l="__l"></custom-nav><scroll-view scroll-y="true"><view></view></scroll-view></view>

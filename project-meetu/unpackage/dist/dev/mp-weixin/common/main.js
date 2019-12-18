@@ -16,6 +16,7 @@ _vue.default.config.productionTip = false;var customNav = function customNav() {
 
 _vue.default.component('custom-nav', customNav);
 
+
 _App.default.mpType = 'app';
 
 var app = new _vue.default(_objectSpread({},
