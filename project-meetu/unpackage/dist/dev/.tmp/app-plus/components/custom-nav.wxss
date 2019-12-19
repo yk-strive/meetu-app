@@ -26,6 +26,7 @@
 /* 文章场景相关 */
 .custom-nav {
   position: relative;
+  padding-top: 30rpx;
 }
 .custom-nav .custom-nav-bar {
     position: fixed;
@@ -98,6 +99,6 @@
         -webkit-box-flex: 1;
         -webkit-flex: 1;
                 flex: 1;
-        padding-right: 14rpx;
+        padding-right: 30rpx;
 }
 

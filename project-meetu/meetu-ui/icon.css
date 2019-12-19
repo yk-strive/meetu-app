@@ -39,3 +39,7 @@
 .cuIcon-infofill:before {
 	content: "\e6e4";
 }
+
+.cuIcon-picfill:before {
+	content: "\e72c";
+}

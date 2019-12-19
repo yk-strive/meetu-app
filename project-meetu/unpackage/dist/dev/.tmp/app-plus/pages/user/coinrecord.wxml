@@ -1,0 +1,1 @@
+<view class="bg_page_3" id="coinrecordPage"><custom-nav vue-id="1" isBack="{{true}}" bind:__l="__l"></custom-nav></view>

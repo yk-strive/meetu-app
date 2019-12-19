@@ -72,7 +72,7 @@
 		created(){
 			uni.getSystemInfo({
 				success: function(e) {
-					console.log(e);
+					// console.log(e);
 					platform = e.platform;
 					windowHeight = e.windowHeight;
 				}

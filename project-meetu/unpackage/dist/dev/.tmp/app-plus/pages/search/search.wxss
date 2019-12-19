@@ -351,6 +351,8 @@
 #searchPage .search_view .search_item {
     width: 74rpx;
     height: 74rpx;
+    border-radius: 50%;
+    box-shadow: 0 0 4rpx 4rpx #904ADB;
     position: absolute;
 }
 #searchPage .search_view .search_item .img_star {

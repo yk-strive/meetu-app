@@ -222,10 +222,6 @@
 			}
 		}
 		
-		.cu-dialog {
-			border-top-left-radius: 14upx;
-			border-top-right-radius: 14upx;
-		}
 		.modal_info {
 			display: flex;
 			justify-content: space-around;

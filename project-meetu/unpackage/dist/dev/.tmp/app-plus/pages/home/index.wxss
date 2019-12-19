@@ -98,10 +98,6 @@
 #homePage .home_bottom_act .action_num {
     margin-top: 20rpx;
 }
-#homePage .cu-dialog {
-  border-top-left-radius: 14rpx;
-  border-top-right-radius: 14rpx;
-}
 #homePage .modal_info {
   display: -webkit-box;
   display: -webkit-flex;

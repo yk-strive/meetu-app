@@ -6,8 +6,8 @@
 			<view class="voice_time text-white text-center">
 				<text>{{intIntervalTime}}</text>
 			</view>
-			<view v-if="!isRecordEnd" class="voice_init round text-xl text-center" @touchstart="touchStartHandle"
-			 @touchcancel="touchCancelHandle" @touchend="touchEndHandle">
+			<view v-if="!isRecordEnd" class="voice_init round text-xl text-center" @touchstart="touchStartHandle" @touchcancel="touchCancelHandle"
+			 @touchend="touchEndHandle">
 				<text>按住</text>
 			</view>
 			<view v-if="isRecordEnd" class="voice_handle">
@@ -79,11 +79,11 @@
 					}
 				}
 				// #endif
-				
+
 				// #ifdef MP-WEIXIN
 				uni.authorize({
 					scope: 'scope.record',
-					success:()=> {
+					success: () => {
 						console.log('ok')
 						self.recordVoiceHandle();
 						self.voiceCancel = false;

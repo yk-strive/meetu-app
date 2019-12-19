@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "cu-modal": "/meetu-ui/components/cu-modal"
+  }
+}

@@ -25,10 +25,6 @@
 			"style": {}
 		},
 		{
-			"path": "pages/user/index",
-			"style": {}
-		},
-		{
 			"path": "pages/chat/list",
 			"style": {
 				"app-plus": {
@@ -43,6 +39,22 @@
 					"bounce": "none"
 				}
 			}
+		},
+		{
+			"path": "pages/user/index",
+			"style": {}
+		},
+		{
+			"path": "pages/user/signal",
+			"style": {}
+		},
+		{
+			"path": "pages/user/coin",
+			"style": {}
+		},
+		{
+			"path": "pages/user/coinrecord",
+			"style": {}
 		}
 	],
 	"globalStyle": {
@@ -57,7 +69,7 @@
 		"current": 0, //当前激活的模式(list 的索引项)
 		"list": [{
 			"name": "单页面测试", //模式名称
-			"path": "pages/initial/personaldata", //启动页面
+			"path": "pages/user/coin", //启动页面
 			"query": "" //启动参数
 		}]
 	}

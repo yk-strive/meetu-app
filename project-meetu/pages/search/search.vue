@@ -280,8 +280,9 @@
 			.search_item {
 				width: 74upx;
 				height: 74upx;
+				border-radius: 50%;
+				box-shadow: 0 0 4rpx 4rpx #904ADB;
 				position: absolute;
-
 				.img_star {
 					width: 74upx;
 					height: 72upx;

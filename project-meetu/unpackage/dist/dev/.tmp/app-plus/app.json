@@ -6,9 +6,12 @@
     "pages/send/text",
     "pages/send/voice",
     "pages/search/search",
-    "pages/user/index",
     "pages/chat/list",
-    "pages/chat/chat"
+    "pages/chat/chat",
+    "pages/user/index",
+    "pages/user/signal",
+    "pages/user/coin",
+    "pages/user/coinrecord"
   ],
   "window": {
     "navigationBarTextStyle": "black",

@@ -30,7 +30,7 @@
           "name": "单页面测试",
           "query": "",
           "id": 0,
-          "pathName": "pages/initial/personaldata"
+          "pathName": "pages/user/coin"
         }
       ]
     }

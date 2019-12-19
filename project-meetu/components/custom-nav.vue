@@ -65,7 +65,7 @@
 			},
 			tabsList: {
 				type: Array,
-				default: []
+				default: null
 			}
 			// bgImage: {
 			// 	type: String,
@@ -95,7 +95,9 @@
 <style lang="scss">
 	.custom-nav {
 		position: relative;
-
+		/* #ifdef APP-PLUS */
+		padding-top: 30rpx;
+		/* #endif */
 		.custom-nav-bar {
 			position: fixed;
 			width: 100%;
@@ -166,7 +168,7 @@
 				.right {
 					flex: 1;
 					/* #ifdef APP-PLUS*/
-					padding-right: 14upx;
+					padding-right: 30upx;
 					/* #endif */
 				}
 			}

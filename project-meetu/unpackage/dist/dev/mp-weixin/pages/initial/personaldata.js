@@ -122,7 +122,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var wPicker = function wPicker() {return Promise.all(/*! import() | components/w-picker/w-picker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/w-picker/w-picker")]).then(__webpack_require__.bind(null, /*! @/components/w-picker/w-picker.vue */ 86));};var pictureTailor = function pictureTailor() {return __webpack_require__.e(/*! import() | components/picture-tailor/pictureTailor */ "components/picture-tailor/pictureTailor").then(__webpack_require__.bind(null, /*! @/components/picture-tailor/pictureTailor.vue */ 97));};var _default =
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var wPicker = function wPicker() {return Promise.all(/*! import() | components/w-picker/w-picker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/w-picker/w-picker")]).then(__webpack_require__.bind(null, /*! @/components/w-picker/w-picker.vue */ 123));};var pictureTailor = function pictureTailor() {return __webpack_require__.e(/*! import() | components/picture-tailor/pictureTailor */ "components/picture-tailor/pictureTailor").then(__webpack_require__.bind(null, /*! @/components/picture-tailor/pictureTailor.vue */ 134));};var _default =
 
 
 
