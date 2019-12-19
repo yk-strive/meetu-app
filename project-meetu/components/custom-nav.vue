@@ -8,7 +8,7 @@
 				<text class="title text-lg text-cut" v-if="textTitle">{{textTitle ? textTitle : ''}}</text>
 				<scroll-view scroll-x="true" class="scroll-tabs" v-if="tabsList">
 					<view class="scroll-tabs-list">
-						<view class="scroll-tabs-item" v-for="(item,index) in tabsList" :key="index" @tap="tabSelect" :data-item="item">
+						<view class="scroll-tabs-item" v-for="(item,index) in tabsList" :key="index" @tap="tabSelect(item)">
 							<text :class="item.id==TabCur?'cur':''">{{item.name}}</text>
 						</view>
 					</view>
@@ -85,8 +85,8 @@
 				}
 				this.$emit('right');
 			},
-			tabSelect(e) {
-				this.TabCur = e.currentTarget.dataset.item.id;
+			tabSelect(item) {
+				this.TabCur = item.id;
 			}
 		}
 	}

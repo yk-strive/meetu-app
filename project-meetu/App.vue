@@ -62,7 +62,7 @@
 		border-top-left-radius: 20rpx;
 		border-top-right-radius: 20rpx;
 	}
-	.cu-dialog::before {
+	.cu-modal.bottom-modal .cu-dialog::before {
 		content: '';
 		position: absolute;
 		top: 20rpx; 
@@ -123,5 +123,8 @@
 	.bg-color-main {
 		background: linear-gradient(to right, #D04795,#616DEC);
 		color: #FFFFFF;
+	}
+	.coin-color { /*星豆数字颜色*/
+		color: #C82AD2;
 	}
 </style>

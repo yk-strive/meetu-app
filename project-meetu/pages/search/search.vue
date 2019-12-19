@@ -278,14 +278,20 @@
 			position: relative;
 
 			.search_item {
-				width: 74upx;
-				height: 74upx;
-				border-radius: 50%;
-				box-shadow: 0 0 4rpx 4rpx #904ADB;
 				position: absolute;
+				// width: 74upx;
+				// height: 74upx;
+				width: 50rpx;
+				height: 50rpx;
+				border-radius: 50%;
+				box-shadow: 0 0 10rpx 8rpx #904ADB;
 				.img_star {
 					width: 74upx;
 					height: 72upx;
+					position:absolute;
+					top:44%;
+					left:49%;
+					transform:translate(-50%, -50%);
 				}
 
 				.img_avatar {

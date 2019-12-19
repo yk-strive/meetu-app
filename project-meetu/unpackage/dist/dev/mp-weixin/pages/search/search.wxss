@@ -349,15 +349,20 @@
   position: relative;
 }
 #searchPage .search_view .search_item {
-    width: 74rpx;
-    height: 74rpx;
-    border-radius: 50%;
-    box-shadow: 0 0 4rpx 4rpx #904ADB;
     position: absolute;
+    width: 50rpx;
+    height: 50rpx;
+    border-radius: 50%;
+    box-shadow: 0 0 10rpx 8rpx #904ADB;
 }
 #searchPage .search_view .search_item .img_star {
       width: 74rpx;
       height: 72rpx;
+      position: absolute;
+      top: 44%;
+      left: 49%;
+      -webkit-transform: translate(-50%, -50%);
+              transform: translate(-50%, -50%);
 }
 #searchPage .search_view .search_item .img_avatar {
       width: 40rpx;

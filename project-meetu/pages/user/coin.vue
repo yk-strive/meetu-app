@@ -3,7 +3,7 @@
 		<custom-nav :isBack="true" textTitle="我的星豆" textRight="星豆记录" @right="navRightHandle"></custom-nav>
 		<view class="coin-wrap">
 			<view class="coin_info">
-				<view class="num text-center num-color">
+				<view class="num text-center coin-color">
 					<text>600</text>
 					<text class="padding-left-sm padding-right-xs">x</text>
 					<image class="coin-img" src="../../static/meetu-img/dou.png" mode="aspectFill"></image>
@@ -22,7 +22,7 @@
 						<view class="text-white">{{item.title}}</view>
 						<view class="text-xs padding-top-xs desc">{{item.desc}}</view>
 					</view>
-					<view class="add_num num-color">
+					<view class="add_num coin-color">
 						<text>+<text class="text-xxl">{{item.grade}}</text></text>
 					</view>
 				</view>
@@ -141,10 +141,6 @@
 </script>
 
 <style lang="scss">
-	$num-color: #C82AD2;
-	.num-color {
-		color: $num-color;
-	}
 	.coin-discount-color {
 		color: #FF3C00;
 	}

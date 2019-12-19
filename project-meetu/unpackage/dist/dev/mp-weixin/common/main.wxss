@@ -1277,7 +1277,7 @@ view[class*='bg_page'] {
 	border-top-left-radius: 20rpx;
 	border-top-right-radius: 20rpx;
 }
-.cu-dialog::before {
+.cu-modal.bottom-modal .cu-dialog::before {
 	content: '';
 	position: absolute;
 	top: 20rpx; 
@@ -1337,5 +1337,8 @@ view[class*='bg_page'] {
 	background: -webkit-linear-gradient(left, #D04795,#616DEC);
 	background: linear-gradient(to right, #D04795,#616DEC);
 	color: #FFFFFF;
+}
+.coin-color { /*星豆数字颜色*/
+	color: #C82AD2;
 }
 

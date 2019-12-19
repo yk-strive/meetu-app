@@ -24,9 +24,6 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.num-color {
-  color: #C82AD2;
-}
 .coin-discount-color {
   color: #FF3C00;
 }
