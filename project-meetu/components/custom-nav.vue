@@ -1,6 +1,6 @@
 <template>
 	<view class="custom-nav" :style="[{height:CustomBar + 'px'}]">
-		<view class="custom-nav-bar cf" :style="style" v-bind:class="">
+		<view class="custom-nav-bar cf" :style="style">
 			<view class="back fl" v-if="isBack">
 				<text class="cuIcon-pullleft text-white" @tap="BackPage"></text>
 			</view>
@@ -30,7 +30,7 @@
 			return {
 				StatusBar: this.StatusBar,
 				CustomBar: this.CustomBar,
-				TabCur: 0
+				TabCur: '1',
 			};
 		},
 		name: 'custom-nav',
@@ -38,19 +38,11 @@
 			style() {
 				var StatusBar = this.StatusBar;
 				var CustomBar = this.CustomBar;
-				var bgImage = this.bgImage;
 				var style = `height:${CustomBar}px;padding-top:${StatusBar}px;`;
-				// if (this.bgImage) {
-				// 	style = `${style}background-image:url(${bgImage});`;
-				// }
 				return style
 			}
 		},
 		props: {
-			bgColor: {
-				type: String,
-				default: ''
-			},
 			isBack: {
 				type: [Boolean, String],
 				default: true
@@ -67,10 +59,6 @@
 				type: Array,
 				default: null
 			}
-			// bgImage: {
-			// 	type: String,
-			// 	default: ''
-			// },
 		},
 		methods: {
 			BackPage() {

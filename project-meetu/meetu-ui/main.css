@@ -836,6 +836,122 @@ image {
 	color: transparent;
 }
 
+/* ==================
+         时间轴, 时间轴这里,每一项,后面是自己添加,不然满足不了项目
+ ==================== */
+
+.cu-timeline {
+	display: block;
+	background-color: #ffffff;
+}
+
+.cu-timeline.bg-transparent {   /*自己添加*/
+	background-color: transparent;
+}
+
+.cu-timeline .cu-time, .cu-timeline view>.cu-time {
+	width: 120upx;
+	text-align: center;
+	padding: 20upx 0;
+	font-size: 26upx;
+	display: block;
+}
+	/*859--867 自己进行修改, 对时间的色值,排列*/
+.cu-timeline>.cu-time:not([class*="text-"]), .cu-timeline view>.cu-time:not([class*="text-"])  {
+	color: #888;
+}
+
+.cu-timeline .cu-time[class*="flex"], .cu-timeline view>.cu-time[class*="flex"] {
+	display: flex;
+	flex-direction: column;
+}
+
+.cu-timeline>.cu-item, .cu-timeline view>.cu-item {
+	padding: 30upx 30upx 30upx 120upx;
+	position: relative;
+	display: block;
+	z-index: 0;
+}
+
+.cu-timeline>.cu-item:not([class*="text-"]), .cu-timeline view>.cu-item:not([class*="text-"]) {
+	color: #ccc;
+}
+
+.cu-timeline>.cu-item::after, .cu-timeline view>.cu-item::after {
+	content: "";
+	display: block;
+	position: absolute;
+	width: 4rpx;
+	/* background-color: #ddd; */
+	background-color: #523B8B;
+	left: 60upx;
+	height: 100%;
+	top: 0;
+	z-index: 8;
+}
+
+.cu-timeline>.cu-item::before, .cu-timeline view>.cu-item::before {
+	font-family: "cuIcon";
+	display: block;
+	position: absolute;
+	top: 36upx;
+	z-index: 9;
+	background-color: #ffffff;
+	width: 50upx;
+	height: 50upx;
+	text-align: center;
+	border: none;
+	line-height: 50upx;
+	left: 36upx;
+}
+
+.cu-timeline>.cu-item:not([class*="cuIcon-"])::before, .cu-timeline view>.cu-item:not([class*="cuIcon-"])::before {
+	content: "\e763";
+}
+
+.cu-timeline view>.cu-item.not-icon::before { /*自己重新定义,不用Icon*/
+	content: '';
+	display: block;
+	position: absolute;
+	top: 36upx;
+	left: 42upx;
+	z-index: 9;
+	width: 30upx;
+	height: 30upx;
+	text-align: center;
+	/*下面四行实现内嵌圆的主要*/
+	border-radius: 50%;
+	background-color: #523B8B;
+	border: 4rpx solid #523B8B;
+	box-shadow: 0 0 0 6rpx #21173B inset;
+}
+
+.cu-timeline>.cu-item[class*="cuIcon-"]::before, .cu-timeline view>.cu-item[class*="cuIcon-"]::before {
+	background-color: #ffffff;
+	width: 50upx;
+	height: 50upx;
+	text-align: center;
+	border: none;
+	line-height: 50upx;
+	left: 36upx;
+}
+
+.cu-timeline>.cu-item>.content, .cu-timeline view>.cu-item>.content {
+	padding: 30upx;
+	border-radius: 6upx;
+	display: block;
+	line-height: 1.6;
+}
+
+.cu-timeline>.cu-item>.content:not([class*="bg-"]), .cu-timeline view>.cu-item>.content:not([class*="bg-"]){
+	background-color: #f1f1f1;
+	color: #333333;
+}
+
+.cu-timeline>.cu-item>.content+.content, .cu-timeline view>.cu-item>.content+.content {
+	margin-top: 20upx;
+}
+
 /*  -- 内外边距 -- */
 .margin-0 {
 	margin: 0;

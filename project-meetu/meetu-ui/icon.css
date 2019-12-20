@@ -36,6 +36,22 @@
 	content: "\e71f";
 }
 
+.cuIcon-delete:before {
+	content: "\e6b4";
+}
+
+.cuIcon-share:before {
+	content: "\e6f3";
+}
+
+.cuIcon-settings:before {
+	content: "\e68a";
+}
+
+.cuIcon-settingsfill:before {
+	content: "\e6ab";
+}
+
 .cuIcon-infofill:before {
 	content: "\e6e4";
 }

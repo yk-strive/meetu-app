@@ -11,7 +11,8 @@
     "pages/user/index",
     "pages/user/signal",
     "pages/user/coin",
-    "pages/user/coinrecord"
+    "pages/user/coinrecord",
+    "pages/user/settings"
   ],
   "window": {
     "navigationBarTextStyle": "black",
@@ -29,6 +30,7 @@
   "appname": "project-meetu",
   "compilerVersion": "2.4.6",
   "usingComponents": {
-    "custom-nav": "/components/custom-nav"
+    "custom-nav": "/components/custom-nav",
+    "custom-nav2": "/components/custom-nav2"
   }
 }

@@ -5,7 +5,7 @@
 			console.log('App Launch')
 			uni.getSystemInfo({
 				success: function(e) {
-					// console.log(e)
+					console.log(e)
 					// #ifndef MP
 					Vue.prototype.StatusBar = e.statusBarHeight;
 					if (e.platform == 'android') {
@@ -26,6 +26,13 @@
 					Vue.prototype.StatusBar = e.statusBarHeight;
 					Vue.prototype.CustomBar = e.statusBarHeight + e.titleBarHeight;
 					// #endif
+					Vue.prototype.SystemInfo = {
+						platform: e.platform,
+						windowWidth: e.windowWidth,
+						windowHeight: e.windowHeight,
+						screenWidth: e.screenWidth,
+						screenHeight: e.screenHeight
+					}
 				}
 			})
 		},

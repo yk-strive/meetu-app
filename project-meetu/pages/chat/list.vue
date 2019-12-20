@@ -1,33 +1,35 @@
 <template>
 	<view id="chatListPage" class="bg_page_3">
 		<custom-nav :isBack="true" textTitle="消息"></custom-nav>
-		<mix-pulldown-refresh ref="mixPulldownRefresh" class="panel-content" :top="CustomBar" @refresh="onPulldownReresh"
-		 @setEnableScroll="setEnableScroll">
-			<scroll-view class="panel-scroll-box" :scroll-y="enableScroll" @scrolltolower="loadMore">
-				<view class="cu-list menu-avatar">
-					<view class="cu-item" v-for="item,index in chatList" :key="index" @tap.stop="linkChat(item)">
-						<view class="cu-avatar round">
-							<image class="round" :src="item.avatarurl" mode="aspectFill"></image>
-						</view>
-						<view class="content">
-							<view class="text-white text-xl">{{item.name + index}}</view>
-							<view class="text-time_news-color text-sm flex padding-top-xs">
-								<view class="text-cut">
-									<!-- <text class="cuIcon-infofill text-red  margin-right-xs"></text> -->
-									{{item.contenttype == 0 ? item.content : item.contenttype == 1?'[图片]' : item.contenttype == 2?'[语音]' : ''}}
+		<view class="chatlist-wrap">
+			<mix-pulldown-refresh ref="mixPulldownRefresh" class="panel-content" :top="CustomBar" @refresh="onPulldownReresh"
+			 @setEnableScroll="setEnableScroll">
+				<scroll-view class="panel-scroll-box" :scroll-y="enableScroll" @scrolltolower="loadMore">
+					<view class="cu-list menu-avatar">
+						<view class="cu-item" v-for="item,index in chatList" :key="index" @tap.stop="linkChat(item)">
+							<view class="cu-avatar round">
+								<image class="round" :src="item.avatarurl" mode="aspectFill"></image>
+							</view>
+							<view class="content">
+								<view class="text-white text-xl">{{item.name + index}}</view>
+								<view class="text-time_news-color text-sm flex padding-top-xs">
+									<view class="text-cut">
+										<!-- <text class="cuIcon-infofill text-red  margin-right-xs"></text> -->
+										{{item.contenttype == 0 ? item.content : item.contenttype == 1?'[图片]' : item.contenttype == 2?'[语音]' : ''}}
+									</view>
 								</view>
 							</view>
-						</view>
-						<view class="action">
-							<view class="text-time_news-color text-sm time">{{item.time}}</view>
-							<view class="cu-tag round bg-news sm text-white padding-top-xs" v-show="item.unread !=0">{{item.unread !=0 ? item.unread : ''}}</view>
+							<view class="action">
+								<view class="text-time_news-color text-sm time">{{item.time}}</view>
+								<view class="cu-tag round bg-news sm text-white padding-top-xs" v-show="item.unread !=0">{{item.unread !=0 ? item.unread : ''}}</view>
+							</view>
 						</view>
 					</view>
-				</view>
-				<!-- 上滑加载更多组件 -->
-				<mix-load-more :status="loadMoreStatus" :show="showLoadMore"></mix-load-more>
-			</scroll-view>
-		</mix-pulldown-refresh>
+					<!-- 上滑加载更多组件 -->
+					<mix-load-more :status="loadMoreStatus" :show="showLoadMore"></mix-load-more>
+				</scroll-view>
+			</mix-pulldown-refresh>
+		</view>
 	</view>
 </template>
 
@@ -149,13 +151,16 @@
 				]
 			}
 		},
+		onLoad() {
+
+		},
 		methods: {
 			getRandomIntInclusive(min, max) {
 				min = Math.ceil(min);
 				max = Math.floor(max);
 				return Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值 
 			},
-			
+
 			linkChat(item) {
 				uni.navigateTo({
 					url: './chat?oppositeinfo=' + JSON.stringify(item),
@@ -163,7 +168,7 @@
 					animationType: 'slide-in-bottom'
 				})
 			},
-			
+
 			loadChatList(type) {
 				//type add 加载更多 refresh下拉刷新
 				if (type === 'add') {
@@ -181,12 +186,13 @@
 				//setTimeout模拟异步请求数据
 				setTimeout(() => {
 					if (type === 'refresh') {
-						let tempList = this.chatList.length <= 12 ? this.chatList.reverse() : this.chatList.splice(this.getRandomIntInclusive(0, 12), 12);
+						let tempList = this.chatList.length <= 12 ? this.chatList.reverse() : this.chatList.splice(this.getRandomIntInclusive(
+							0, 12), 12);
 						//刷新前清空数组
 						this.chatList = [];
 						this.chatList = tempList;
 					}
-					
+
 					//下拉刷新 关闭刷新动画
 					if (type === 'refresh') {
 						this.$refs.mixPulldownRefresh && this.$refs.mixPulldownRefresh.endPulldownRefresh();
@@ -238,9 +244,15 @@
 </script>
 
 <style lang="scss">
+	.chatlist-wrap {  
+		overflow: hidden;
+	}
 	.panel-scroll-box {
 		height: 100%;
-		padding-top: 30rpx;
+		padding-top: 50rpx;
+	}
+	.cu-list {
+		padding-top: 50rpx;
 	}
 
 	// 消息列表样式改动, 符合设计图的样式

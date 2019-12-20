@@ -70,13 +70,16 @@
 			}
 		},
 		created(){
-			uni.getSystemInfo({
-				success: function(e) {
-					// console.log(e);
-					platform = e.platform;
-					windowHeight = e.windowHeight;
-				}
-			})
+			platform = this.SystemInfo.platform;
+			windowHeight = this.SystemInfo.windowHeight;
+			windowHeight = e.windowHeight;
+			// uni.getSystemInfo({
+			// 	success: function(e) {
+			// 		// console.log(e);
+			// 		platform = e.platform;
+			// 		windowHeight = e.windowHeight;
+			// 	}
+			// })
 		},
 		methods: {
 			pageTouchstart(e){
@@ -158,8 +161,6 @@
 		justify-content: center;
 		align-items: center;
 		width: 100%;
-		
-		
 	}
 	
 	.mix-loading-icon{

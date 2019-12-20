@@ -1,3 +1,7 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "custom-nav": "/components/custom-nav",
+    "mix-pulldown-refresh": "/components/mix-pulldown-refresh/mix-pulldown-refresh",
+    "mix-load-more": "/components/mix-load-more/mix-load-more"
+  }
 }

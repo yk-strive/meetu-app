@@ -7,7 +7,7 @@
 					<view class="avatar_bg">
 						<image class="wh-100" src="../../static/meetu-img/tx.png" mode="aspectFill"></image>
 					</view>
-					<view class="cu-avatar round">
+					<view class="cu-avatar round" @click="actionTapHandle('./settings')">
 						<image class="round" src="../../static/logo.png" mode="aspectFill"></image>
 					</view>
 				</view>
@@ -18,7 +18,7 @@
 				<view class="singleid flex-df text-xxs text-white text-letter-df margin-top-sm">
 					<text>星球ID：</text>
 					<text>mt58662</text>
-					<text class="padding-left-sm" @click="copyID">复制</text>
+					<text class="padding-left-sm" @click="actionTapHandle('copyId')">复制</text>
 				</view>
 			</view>
 			<view class="action">
@@ -67,6 +67,11 @@
 		methods: {
 			actionTapHandle(navUrl) {
 				if (navUrl == 'VIP') {
+					//TODO
+					
+					return;
+				}
+				if (navUrl == 'copyId') {
 					//TODO
 					
 					return;

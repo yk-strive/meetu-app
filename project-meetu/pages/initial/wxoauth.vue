@@ -11,14 +11,14 @@
 		</view>
 		<view class="oauth_btn">
 			<!-- #ifdef APP-PLUS -->
-			<button class="cu-btn block round" v-on:click="getUserInfo">
-				<text class="cuIcon-weixin"></text> 
+			<button class="cu-btn block round" v-on:click="appLogin">
+				<text class="cuIcon-weixin"></text>
 				<text class="text-lg">微信账号登录</text>
 			</button>
 			<!-- #endif -->
 			<!-- #ifdef MP-WEIXIN | MP-QQ | MP-BAIDU -->
 			<button class="cu-btn block round" open-type="getUserInfo" v-on:getuserinfo="getUserInfo">
-				<text class="cuIcon-weixin"></text> 
+				<text class="cuIcon-weixin"></text>
 				<text class="text-lg">微信账号登录</text>
 			</button>
 			<!-- #endif -->
@@ -36,19 +36,46 @@
 		},
 		methods: {
 			getUserInfo(e) {
-				// #ifdef APP-PLUS
-					// 需要做登录处理
-				// #endif
-				
+				// console.log(e)
+
 				// #ifdef MP-WEIXIN | MP-QQ | MP-BAIDU 
-					// 
-				// #endif
-				
-				//slide-in-right | slide-in-left | slide-in-top | slide-in-bottom | pop-in | fade-in | zoom-out | zoom-fade-out | none
 				uni.navigateTo({
 					url: './personaldata',
 					animationDuration: 300,
 					animationType: 'slide-in-right'
+				}) 
+				// #endif
+
+				//slide-in-right | slide-in-left | slide-in-top | slide-in-bottom | pop-in | fade-in | zoom-out | zoom-fade-out | none
+				
+			},
+			appLogin() {
+				uni.navigateTo({
+					url: './personaldata',
+					animationDuration: 300,
+					animationType: 'slide-in-right'
+				})
+				uni.login({
+					provider: 'weixin',
+					success: (res) => {
+						console.log('login', res);
+						if (res.errMsg == 'login:ok') {
+							uni.request({
+								url: 'https://meetu.letwx.com' + '/v1' + '/wxa/login',
+								data: {
+									code: res.assess_token
+								},
+								method: 'POST',
+								sslVerify: true,
+								success: (loginres) => {
+									console.log('loginres', loginres);
+								},
+								fail:(error)=> {
+									console.log(error);
+								}
+							})
+						}
+					}
 				})
 			}
 		},
@@ -59,11 +86,13 @@
 	#wxoauth_page {
 		.app_info {
 			padding-top: 400upx;
+
 			image {
 				width: 190upx;
 				height: 190upx;
 			}
 		}
+
 		.oauth_btn {
 			position: absolute;
 			z-index: 2;
@@ -72,16 +101,19 @@
 			transform: translateX(-50%);
 			width: 430upx;
 			height: 110upx;
+
 			button {
 				height: 100%;
 				line-height: 1;
 				background-color: #00BB31;
 				color: #FFFFFF;
+
 				text:nth-child(1) {
 					font-size: 90upx;
 					padding-right: 16upx;
 					padding-bottom: 14upx;
 				}
+
 				text:nth-child(2) {
 					letter-spacing: 4upx;
 				}

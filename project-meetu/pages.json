@@ -55,6 +55,10 @@
 		{
 			"path": "pages/user/coinrecord",
 			"style": {}
+		},
+		{
+			"path": "pages/user/settings",
+			"style": {}
 		}
 	],
 	"globalStyle": {

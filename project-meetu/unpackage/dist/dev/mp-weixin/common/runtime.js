@@ -108,7 +108,7 @@
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 			promises.push(installedCssChunks[chunkId] = new Promise(function(resolve, reject) {
-/******/ 				var href = "" + ({"components/custom-nav":"components/custom-nav","components/w-picker/w-picker":"components/w-picker/w-picker","components/picture-tailor/pictureTailor":"components/picture-tailor/pictureTailor","meetu-ui/components/cu-modal":"meetu-ui/components/cu-modal","components/mix-load-more/mix-load-more":"components/mix-load-more/mix-load-more","components/mix-pulldown-refresh/mix-pulldown-refresh":"components/mix-pulldown-refresh/mix-pulldown-refresh"}[chunkId]||chunkId) + ".wxss";
+/******/ 				var href = "" + ({"components/custom-nav":"components/custom-nav","components/custom-nav2":"components/custom-nav2","components/w-picker/w-picker":"components/w-picker/w-picker","components/picture-tailor/pictureTailor":"components/picture-tailor/pictureTailor","meetu-ui/components/cu-modal":"meetu-ui/components/cu-modal","components/mix-load-more/mix-load-more":"components/mix-load-more/mix-load-more","components/mix-pulldown-refresh/mix-pulldown-refresh":"components/mix-pulldown-refresh/mix-pulldown-refresh"}[chunkId]||chunkId) + ".wxss";
 /******/ 				var fullhref = __webpack_require__.p + href;
 /******/ 				var existingLinkTags = document.getElementsByTagName("link");
 /******/ 				for(var i = 0; i < existingLinkTags.length; i++) {
