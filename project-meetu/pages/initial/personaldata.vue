@@ -7,7 +7,8 @@
 			<view class="avatar_box">
 				<image class="abs-center avatar_bg" src="../../static/meetu-img/face.png" mode="aspectFill"></image>
 				<view class="avatar abs-center round">
-					<image class="wh-100" v-bind:src="avatarCropPath ? avatarCropPath : 'https://ossweb-img.qq.com/images/lol/web201310/skin/big25002.jpg'" v-on:click="chooseImage"></image>
+					<image class="wh-100" v-bind:src="avatarCropPath ? avatarCropPath : 'https://ossweb-img.qq.com/images/lol/web201310/skin/big25002.jpg'"
+					 v-on:click="chooseImage"></image>
 				</view>
 			</view>
 			<form action="" v-on:submit="submitInfo">
@@ -46,13 +47,14 @@
 				</view>
 			</form>
 		</scroll-view>
-		
+
 	</view>
 </template>
 
 <script>
 	import wPicker from "@/components/w-picker/w-picker.vue";
 	import pictureTailor from "@/components/picture-tailor/pictureTailor.vue";
+	import { mapGetters } from 'vuex'
 	export default {
 		name: 'personaldata',
 		components: {
@@ -76,6 +78,14 @@
 				date: '选择生日', //生日
 				region: '选择地区'
 			}
+		},
+		computed: {
+			...mapGetters([
+				'token'
+			])
+		},
+		onLoad() {
+			console.log('完善信息', this.token);
 		},
 		methods: {
 			chooseImage() {
@@ -139,10 +149,12 @@
 			position: relative;
 			width: 100%;
 			height: 346upx;
+
 			image.avatar_bg {
 				width: 326upx;
 				height: 100%;
 			}
+
 			.avatar {
 				width: 180upx;
 				height: 180upx;
