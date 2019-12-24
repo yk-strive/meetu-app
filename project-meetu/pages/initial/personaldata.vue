@@ -53,7 +53,6 @@
 <script>
 	import wPicker from "@/components/w-picker/w-picker.vue";
 	import pictureTailor from "@/components/picture-tailor/pictureTailor.vue";
-	import { mapGetters } from 'vuex'
 	export default {
 		name: 'personaldata',
 		components: {
@@ -79,11 +78,6 @@
 				regionArr: null
 			}
 		},
-		computed: {
-			...mapGetters([
-				'token'
-			])
-		},
 		onLoad(options) {
 			this.isEditInfo = options.type && options.type == 'edit' ? true : false;
 			console.log('完善信息', this.token);
@@ -108,26 +102,27 @@
 					sourceType: ['album'],
 					success: (res) => {
 						let tempFilePath = res.tempFilePaths[0];
-						uni.uploadFile({
-							url: 'https://api.meetu.letwx.com/v2/sys/upload-img?token=JxClHrhVHJu_xJKneujyGCJrK6ZLXUKK', //仅为示例，非真实的接口地址
-							filePath: tempFilePath,
-							name: 'imgfile',
-							success: (uploadFileRes) => {
-								console.log(uploadFileRes);
-							},
-							fail:(err) => {
-								console.log('err',err);
-							}
-						});
-						// this.$http1.upload('sys/upload-img', {
+						// k-ErgSRFk9OJXGKsk7NnmX9wD2LZSkyO
+						// uni.uploadFile({
+						// 	url: 'https://api.meetu.letwx.com/v2/sys/upload-img?token=JxClHrhVHJu_xJKneujyGCJrK6ZLXUKK', //仅为示例，非真实的接口地址
 						// 	filePath: tempFilePath,
 						// 	name: 'imgfile',
-						// 	custom: {istoken: true, v2: true}
-						// }).then(upRes=>{
-						// 	console.log('upRes', upRes);
-						// }).catch(upErr=>{
-						// 	console.log('upErr',upErr);
-						// })
+						// 	success: (uploadFileRes) => {
+						// 		console.log(uploadFileRes);
+						// 	},
+						// 	fail:(err) => {
+						// 		console.log('err',err);
+						// 	}
+						// });
+						this.$http1.upload('sys/upload-img', {
+							filePath: tempFilePath,
+							name: 'imgfile',
+							custom: {istoken: true, v2: true}
+						}).then(upRes=>{
+							console.log('upRes', upRes);
+						}).catch(upErr=>{
+							console.log('upErr',upErr);
+						})
 					}
 				})
 			},
@@ -140,6 +135,9 @@
 				this.avatarTempPath = '';
 			},
 			togglePicker(mode) {
+				if (mode == 'selector' && this.userInfo.isedit == 1) { //isedit==1说明已经修改过性别,则不允许再修改
+					return;
+				}
 				this.mode = mode;
 				this.$refs[mode].show();
 			},
@@ -171,7 +169,7 @@
 				if (this.sex != (this.userInfo.sex ==1?'男':'女')) {
 					tempInfo.sex = this.sex == '男' ? 1 : 2;
 				}
-				if (this.date != this.userInfo.birthday) {
+				if (this.date != this.userInfo.birthday && this.userInfo.birthday!=null) {
 					tempInfo.birthday = this.date;
 				}
 				if (this.regionArr[0] != this.userInfo.province) {
@@ -181,16 +179,21 @@
 					tempInfo.city = this.regionArr[1]; 
 				}
 				console.log(tempInfo);
-				// uni.navigateTo({
-				// 	url: '../home/index',
-				// 	animationDuration: 300,
-				// 	animationType: 'fade-in'
-				// })
-				this.$http1.post('user/edit', tempInfo).then(res=>{
-					console.log('完善资料', res);
-				}).catch(err=>{
+				if (this.isEditInfo) {
+					uni.navigateBack({
+						detail: 1
+					})
+				} else {
+					uni.reLaunch({
+						url: '../home/index',
+					})
+				}
+				
+				// this.$http1.post('user/edit', tempInfo).then(res=>{
+				// 	console.log('完善资料', res);
+				// }).catch(err=>{
 					
-				})
+				// })
 			}
 		}
 	}

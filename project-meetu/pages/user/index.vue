@@ -1,23 +1,23 @@
 <template>
 	<view id="userIndexPage" class="bg_page_3">
-		<custom-nav :isBack="true"></custom-nav>
+		<custom-nav :isBack="true" textRight="cuIcon-settings" @right="actionTapHandle('./settings')"></custom-nav>
 		<view class="user-wrap">
 			<view class="userinfo">
 				<view class="avatar flex-df">
 					<view class="avatar_bg">
 						<image class="wh-100" src="../../static/meetu-img/tx.png" mode="aspectFill"></image>
 					</view>
-					<view class="cu-avatar round" @click="actionTapHandle('./settings')">
-						<image class="round" src="../../static/logo.png" mode="aspectFill"></image>
+					<view class="cu-avatar round">
+						<image class="round" :src="userInfo.headimgurl" mode="aspectFill"></image>
 					</view>
 				</view>
 				<view class="nickname flex-df text-white text-lg">
-					<text>故事的小黄花</text>
-					<image src="../../static/meetu-img/female.png" mode="aspectFill"></image>
+					<text>{{userInfo.nickname}}</text>
+					<image :src="userInfo.sex==1?'../../static/meetu-img/male.png':'../../static/meetu-img/female.png'" mode="aspectFill"></image>
 				</view>
 				<view class="singleid flex-df text-xxs text-white text-letter-df margin-top-sm">
 					<text>星球ID：</text>
-					<text>mt58662</text>
+					<text>{{userInfo.planetId}}</text>
 					<text class="padding-left-sm" @click="actionTapHandle('copyId')">复制</text>
 				</view>
 			</view>
@@ -37,8 +37,9 @@
 </template>
 
 <script>
+	import { mapGetters } from "vuex";
 	export default {
-		name: '',
+		name: 'userIndex',
 		data() {
 			return {
 				actionList: [{
@@ -63,6 +64,9 @@
 					}
 				]
 			}
+		},
+		computed: {
+			...mapGetters(['userInfo'])
 		},
 		methods: {
 			actionTapHandle(navUrl) {

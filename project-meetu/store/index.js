@@ -20,9 +20,11 @@ let store = new Vuex.Store({
 	//state-仓库-存放定义好的值
 	state: {
 		token: '',
+		userInfo: null,
 	},
 	getters: { // 获取仓库中存放的值,供页面使用
-		token(state) { return state.token}
+		token(state) { return state.token},
+		userInfo(state) { return state.userInfo}
 	},
 	// mutations-改变仓库中变量的值, 只能进行同步操作. 触发条件--store.commit('changeVal')
 	mutations: {
@@ -34,7 +36,28 @@ let store = new Vuex.Store({
 					data: options.newValue
 				});
 			}
+			if (options.stateKey == 'userInfo') {
+				// console.log('s-user', options.newValue)
+				uni.setStorage({
+					key: 'userInfo',
+					data: JSON.stringify(options.newValue)
+				});
+			}
 		},
+		outApp(state) {
+			uni.removeStorage({
+				key: 'token',
+				success() {
+					state.token = null;
+				}
+			})
+			uni.removeStorage({
+				key: 'userInfo',
+				success() {
+					state.userInfo = null;
+				}
+			})
+		}
 	},
 	actions: {
 		changeVal({commit}, options={stateKey, newValue}) {

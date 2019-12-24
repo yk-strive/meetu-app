@@ -13,7 +13,10 @@
 						</view>
 					</view>
 				</scroll-view>
-				<text class="right text-sm text-cut text-right" v-if="textRight" v-on:click="rightHandle">{{textRight ? textRight : ''}}</text>
+				<text class="right text-sm text-cut text-right" v-if="textRight" v-on:click="rightHandle">
+					<text v-if="textRight.indexOf('cuIcon')!=-1" class="text-lg" :class="textRight"></text>
+					<text v-else>{{textRight ? textRight : ''}}</text>
+				</text>
 			</view>
 		</view>
 	</view>

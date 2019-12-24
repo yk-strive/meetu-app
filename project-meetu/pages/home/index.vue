@@ -3,7 +3,7 @@
 		<custom-nav :isBack="false"></custom-nav>
 		<view class="AppName text-white text-lg">{{appName}}</view>
 		<view class="avatar round" @tap.stop="linkUser">
-			<image class="wh-100" v-bind:src="userInfo.avatar"></image>
+			<image class="wh-100" v-bind:src="userInfo.headimgurl"></image>
 		</view>
 		
 		<view class="home_bottom_act">
@@ -19,11 +19,11 @@
 				</view>
 				<view class="action_item" v-on:click="linkAction('chatList')">
 					<image src="../../static/meetu-img/home_action3.png" mode="aspectFill"></image>
-					<view class="cu-tag badge">9</view>
+					<view v-if="notreadNum>0" class="cu-tag badge">{{notreadNum}}</view>
 				</view>
 			</view>
 			<view class="action_num text-center text-white text-xxs">
-				今日剩余次数：{{userInfo.usenum}}/{{userInfo.total}} 
+				今日剩余次数：<text v-if="userNumber">{{userNumber.signal_config-userNumber.signal_number}}/{{userNumber.signal_config}}</text> 
 			</view>
 		</view>
 		
@@ -66,6 +66,7 @@
 
 <script>
 	import cuModal from "@/meetu-ui/components/cu-modal.vue";
+	import { mapGetters } from 'vuex';
 	export default {
 		name: 'homeIndex',
 		components: {
@@ -73,19 +74,19 @@
 		},
 		data() {
 			return {
-				modalName: '',
+				modalName: '', // 弹窗类型-modal/bottomModal
 				appName: 'Meet U',
-				userInfo: {
-					avatar: '../../static/logo.png',
-					usenum: 4,
-					total: 6
-				},
 				showSendToast: false,
+				userNumber: null,
+				notreadNum: 0
 			}
 		},
+		computed: {
+			...mapGetters(['userInfo'])
+		},
 		onLoad() {
-
-			
+			this.api_UserInfo();
+			this.api_UserNumber();
 		},
 		onReady() {
 			if(uni.getStorageSync('homeSendToast')) {
@@ -95,6 +96,22 @@
 			}
 		},
 		methods: {
+			api_UserInfo(){
+				this.$http1.post('user/info').then(res=>{
+					// this.userinfo = res.data;
+					this.$store.dispatch('changeVal', {stateKey: 'userInfo', newValue: res.data})
+				}).catch(err=>{
+					console.log('userinfo-err', err);
+				})
+			},
+			api_UserNumber() {//操作剩余次数
+				this.$http1.post('user/number').then(res=>{
+					console.log('userNumber', res.data);
+					this.userNumber = res.data;
+				}).catch(err=>{
+					
+				})
+			},
 			linkUser() {
 				uni.navigateTo({
 					url: '../user/index',

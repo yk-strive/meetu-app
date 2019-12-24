@@ -12,13 +12,14 @@
 				</view>
 			</view>
 			<view class="out-app flex-df">
-				<button class="cu-btn bg-color-main round text-letter-df">退出登录</button>
+				<button class="cu-btn bg-color-main round text-letter-df" @click="actionTapHandle('outApp')">退出登录</button>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import { mapMutations } from "vuex"
 	export default {
 		name: '',
 		data() {
@@ -44,8 +45,27 @@
 			}
 		},
 		methods: {
+			...mapMutations(['outApp']),
 			actionTapHandle(navUrl) {
-				
+				switch(navUrl) {
+					case 'edit':
+						uni.navigateTo({
+							url: '../initial/personaldata?type=edit',
+						});
+						break;
+					case 'content':
+						break;
+					case 'opinion':
+						break;
+					case 'about':
+						break;
+					case 'outApp':
+						this.outApp();
+						uni.reLaunch({
+							url: '../initial/wxoauth'
+						});
+						break;
+				}
 			}
 		},
 	}
