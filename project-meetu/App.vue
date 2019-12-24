@@ -1,11 +1,12 @@
 <script>
-	import Vue from 'vue'
+	import Vue from 'vue';
+	import { mapMutations } from "vuex"
 	export default {
 		onLaunch: function() {
-			console.log('App Launch')
+			console.log('App Launch');
 			uni.getSystemInfo({
 				success: function(e) {
-					console.log(e)
+					// console.log(e)
 					// #ifndef MP
 					Vue.prototype.StatusBar = e.statusBarHeight;
 					if (e.platform == 'android') {
@@ -35,12 +36,40 @@
 					}
 				}
 			})
+			
+			// 判断app接下来的入口
+			let storageInfo = uni.getStorageInfoSync();
+			if (storageInfo.keys.indexOf('token') != -1) {
+				uni.getStorage({
+					key: 'token',
+					success:(res)=>{
+						this.changeVal({stateKey: 'token', newValue: res.data});
+						if (storageInfo.keys.indexOf('firstPerfectInfo') != -1 && uni.getStorageSync('firstPerfectInfo')) {
+							// 一般直接进入首页-home/index;
+							uni.reLaunch({
+								url: 'pages/home/index',
+							})
+						} else {
+							uni.reLaunch({
+								url: 'pages/initial/personaldata',
+							})
+						}
+					}
+				})
+			} else {
+				uni.reLaunch({
+					url: 'pages/initial/wxoauth',
+				})
+			}
 		},
 		onShow: function() {
 			
 		},
 		onHide: function() {
 			
+		},
+		methods: {
+			...mapMutations(['changeVal']),
 		}
 	}
 </script>

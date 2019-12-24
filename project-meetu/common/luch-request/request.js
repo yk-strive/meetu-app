@@ -9,7 +9,7 @@
  */
 export default class Request {
     config = {
-      baseUrl: 'https://meetu.letwx.com',
+      baseUrl: 'https://api.meetu.letwx.com',
       header: {
         'content-type': 'application/json;charset=UTF-8'
       },
@@ -18,7 +18,7 @@ export default class Request {
       // #ifndef MP-ALIPAY || APP-PLUS
       responseType: 'text',
       // #endif
-      custom: {},
+      custom: {istoken: true},
       // #ifdef MP-ALIPAY
       timeout: 30000,
       // #endif
@@ -260,7 +260,7 @@ export default class Request {
       name,
       header,
       formData,
-      custom
+      custom,
     }) {
       return new Promise((resolve, reject) => {
         let next = true

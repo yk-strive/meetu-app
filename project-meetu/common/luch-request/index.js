@@ -1,5 +1,5 @@
 import Request from './request.js';
-
+import store from '../../store/index.js';
 /*
 	项目接口文档: https://www.showdoc.cc/610093945021818?page_id=3584803530486858
 	第一版v1(第一版接口放在v1下)
@@ -7,11 +7,11 @@ import Request from './request.js';
 const http_v1 = new Request();
 
 http_v1.setConfig((config) => { /*设置全局配置*/
-	config.baseUrl += '/v1/',
+	config.baseUrl += '/v1/';
 	config.header = {
 		...config.hearder,
 		test: 'yk'
-	},
+	};
 	// #ifdef APP-PLUS
 	config.sslVerify = false
 	// #endif
@@ -19,8 +19,21 @@ http_v1.setConfig((config) => { /*设置全局配置*/
 })
 
 http_v1.interceptor.request((config, cancel) => { /*请求之前拦截器*/
+	if (config.custom.v2 == true) {
+		config.baseUrl = config.baseUrl.replace('/v1', '/v2');
+	}
+	if (config.custom.istoken == true) {
+		if (!store.state.token) {
+			cancel('身份认证失败,重新登录', config);
+		} else {
+			console.log(store.state.token)
+			config.params = {
+				...config.params,
+				token: store.state.token
+			}
+		}
+	}
 	console.log('拦截', config);
-	
 	//调用cancel 会取消本次请求，但是该函数的catch() 仍会执行
 	return config;
 })
@@ -35,10 +48,10 @@ http_v1.validateStatus = (statusCode) => {
 }
 
 http_v1.interceptor.response((response) => { /* 请求之后拦截器 */
-	if (response.data.code !== 200) {
+	if (response.data.code !== 0) {
 		return Promise.reject(response)
 	}
-	return response
+	return response.data
 }, (response) => { // 请求错误的处理
 	return response; 
 })

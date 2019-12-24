@@ -18,7 +18,6 @@
         /* 模块配置 */
         "modules" : {
             "OAuth" : {},
-            "Payment" : {},
             "Push" : {},
             "Share" : {}
         },
@@ -39,6 +38,7 @@
                     "<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
                     "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
+                    "<uses-permission android:name=\"android.permission.INTERNET\"/>",
                     "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\"/>",
                     "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
                     "<uses-permission android:name=\"android.permission.READ_CONTACTS\"/>",
@@ -48,8 +48,10 @@
                     "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
                     "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_CONTACTS\"/>",
+                    "<uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
-                ]
+                ],
+                "abiFilters" : [ "armeabi-v7a", "arm64-v8a" ]
             },
             /* ios打包配置 */
             "ios" : {},
@@ -59,6 +61,21 @@
                     "weixin" : {
                         "appid" : "wx04a9745d1e461dcd",
                         "appsecret" : "d9261edd8c21b43f4be30a2aef1df2e0",
+                        "UniversalLinks" : ""
+                    }
+                },
+                "push" : {
+                    "unipush" : {}
+                },
+                "payment" : {
+                    "weixin" : {
+                        "appid" : "wx04a9745d1e461dcd",
+                        "UniversalLinks" : ""
+                    }
+                },
+                "share" : {
+                    "weixin" : {
+                        "appid" : "wx04a9745d1e461dcd",
                         "UniversalLinks" : ""
                     }
                 }
@@ -83,5 +100,10 @@
     },
     "mp-toutiao" : {
         "usingComponents" : true
+    },
+    "h5" : {
+        "devServer" : {
+            "https" : false
+        }
     }
 }

@@ -84,18 +84,8 @@
 			}
 		},
 		onLoad() {
-			uni.request({
-				url: 'https://meetu.letwx.com/v1/user/info' + '?token=9yD2k7LoihFP9FCt5iH3iIfyumQf7NnF',
-				data: {},
-				method: 'POST',
-				sslVerify: false,
-				success: (userres) => {
-					console.log('userres', userres);
-				},
-				fail:(error)=> {
-					console.log(error); 
-				}
-			})
+
+			
 		},
 		onReady() {
 			if(uni.getStorageSync('homeSendToast')) {

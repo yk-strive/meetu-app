@@ -28,8 +28,13 @@ let store = new Vuex.Store({
 	mutations: {
 		changeVal(state, options={stateKey, newValue}) { // 更新仓库中的某变量的值
 			state[options.stateKey] = options.newValue;
-			console.log('m-'+options.stateKey, options.newValue)
-		}
+			if (options.stateKey == 'token') {
+				uni.setStorage({
+					key: 'token',
+					data: options.newValue
+				});
+			}
+		},
 	},
 	actions: {
 		changeVal({commit}, options={stateKey, newValue}) {

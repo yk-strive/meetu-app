@@ -36,61 +36,37 @@
 		},
 		methods: {
 			getUserInfo(e) {
-				// console.log(e)
+				console.log(e)
 
 				// #ifdef MP-WEIXIN | MP-QQ | MP-BAIDU 
-				uni.navigateTo({
-					url: './personaldata',
-					animationDuration: 300,
-					animationType: 'slide-in-right'
-				}) 
+				
 				// #endif
 
 				//slide-in-right | slide-in-left | slide-in-top | slide-in-bottom | pop-in | fade-in | zoom-out | zoom-fade-out | none
-				
 			},
 			appLogin() {
-				// uni.navigateTo({
-				// 	url: './personaldata',
-				// 	animationDuration: 300,
-				// 	animationType: 'slide-in-right'
-				// })
+				let self = this;
 				uni.login({
 					provider: 'weixin',
 					success: (res) => {
-						console.log('login', res);
+						// console.log('login', res.authResult);
 						if (res.errMsg == 'login:ok') {
-							this.$store.dispatch('changeVal', {stateKey: 'token', newValue: '微白'});
-							uni.navigateTo({
-								url: './personaldata',
-								animationDuration: 300,
-								animationType: 'slide-in-right'
+							this.$http1.post('wxa/login', {
+								access_token: res.authResult.access_token,
+								openid: res.authResult.openid,
+								expires_in: res.authResult.expires_in
+							}, {
+								custom: {istoken: false, v2: true}
+							}).then(res=>{
+								self.$store.dispatch('changeVal', {stateKey: 'token', newValue: res.data.token});
+								uni.navigateTo({
+									url: './personaldata',
+									animationDuration: 300,
+									animationType: 'slide-in-right'
+								})
+							}).catch(err=>{
+								console.log('app-err', err);
 							})
-							// uni.request({
-							// 	url: 'https://meetu.letwx.com' + '/v2' + '/wxa/login',
-							// 	data: {
-							// 		assess_token: res.authResult.assess_token,
-							// 		openid: res.authResult.openid,
-							// 		expires_in: res.authResult.expires_in
-							// 	},
-							// 	method: 'POST',
-							// 	sslVerify: false,
-							// 	success: (loginres) => {
-							// 		console.log('loginres', loginres);
-							// 	},
-							// 	fail:(error)=> {
-							// 		console.log(error);
-							// 	}
-							// })
-							// this.$http1.post('wxa/login', {
-							// 	access_token: res.authResult.assess_token,
-							// 	openid: res.authResult.openid,
-							// 	expires_in: res.authResult.expires_in
-							// }, {}).then(res=>{
-							// 	console.log('api-login', res);
-							// }).catch(err=>{
-							// 	console.log('app-err', err);
-							// })
 						}
 					}
 				})
