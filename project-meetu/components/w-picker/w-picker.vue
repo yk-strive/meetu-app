@@ -383,6 +383,7 @@
 						} else {
 							dVal = _this.getRegionVal(_this.defaultVal);
 						}
+						
 						if (_this.hideArea) {
 							data = {
 								provinces: provinces,

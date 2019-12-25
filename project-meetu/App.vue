@@ -46,18 +46,18 @@
 						this.changeVal({stateKey: 'token', newValue: res.data});
 						if (storageInfo.keys.indexOf('firstPerfectInfo') != -1 && uni.getStorageSync('firstPerfectInfo')) {
 							// 一般直接进入首页-home/index;
-							uni.reLaunch({
+							uni.redirectTo({
 								url: 'pages/home/index',
 							})
 						} else {
-							uni.reLaunch({
+							uni.redirectTo({
 								url: 'pages/initial/personaldata',
 							})
 						}
 					}
 				})
 			} else {
-				uni.reLaunch({
+				uni.redirectTo({
 					url: 'pages/initial/wxoauth',
 				})
 			}
@@ -70,6 +70,9 @@
 		},
 		methods: {
 			...mapMutations(['changeVal']),
+		},
+		globalData: {
+			sendSignal: false
 		}
 	}
 </script>

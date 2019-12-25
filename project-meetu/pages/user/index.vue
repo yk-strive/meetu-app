@@ -70,6 +70,7 @@
 		},
 		methods: {
 			actionTapHandle(navUrl) {
+				let self = this;
 				if (navUrl == 'VIP') {
 					//TODO
 					
@@ -77,13 +78,18 @@
 				}
 				if (navUrl == 'copyId') {
 					//TODO
-					
+					uni.setClipboardData({
+					    data: self.userInfo.planetId,
+					    success: function () {
+					        // uni.hideToast()
+					    }
+					});
 					return;
 				}
 				uni.navigateTo({
 					url: navUrl,
 					animationDuration: 300,
-					animationType: 'slide-in-right'
+					animationType: 'fade-in'
 				})
 			}
 		},

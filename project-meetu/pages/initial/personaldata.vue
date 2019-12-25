@@ -6,8 +6,7 @@
 			<view class="avatar_box">
 				<image class="abs-center avatar_bg" src="../../static/meetu-img/face.png" mode="aspectFill"></image>
 				<view class="avatar abs-center round">
-					<image class="wh-100" v-bind:src="userInfo ? userInfo.headimgurl : ''"
-					 v-on:click="chooseImage"></image>
+					<image class="wh-100" v-bind:src="userInfo ? userInfo.headimgurl : ''" v-on:click="chooseImage" mode="aspectFill"></image>
 				</view>
 			</view>
 			<form action="" v-on:submit="submitInfo">
@@ -24,22 +23,22 @@
 					</view>
 					<view class="cu-form-group">
 						<view class="title">生日</view>
-						<view class="right text-right text-white text-lg" @tap="togglePicker('date')">{{date}}</view>
-						<w-picker mode="date" startYear="1959" endYear="2030" :defaultVal="['1995','08','18']" :current="false" @confirm="onConfirm"
+						<view class="right text-right text-white text-lg" @tap="togglePicker('date')">{{pickerBirthdayInfo.result}}</view>
+						<w-picker mode="date" startYear="1959" endYear="2030" :defaultVal="pickerBirthdayInfo.checkArr" :current="false" @confirm="onConfirm"
 						 :disabledAfter="true" ref="date" themeColor="#f00"></w-picker>
 					</view>
 					<view class="cu-form-group">
 						<view class="title">地区</view>
-						<view class="right text-right text-white text-lg" @tap="togglePicker('region')">{{region}}</view>
-						<w-picker mode="region" :defaultVal="['北京市','市辖区']" :areaCode="['11','1101']" :hideArea="true" @confirm="onConfirm"
+						<view class="right text-right text-white text-lg" @tap="togglePicker('region')">{{pickerRegionInfo.result}}</view>
+						<w-picker mode="region" :defaultVal="pickerRegionInfo.checkArr" :areaCode="pickerRegionInfo.checkValue" :hideArea="true" @confirm="onConfirm"
 						 ref="region" :timeout="true"></w-picker>
+						 <!--  :defaultVal="pickerRegionInfo.checkArr"  -->
 					</view>
 					<view class="cu-form-group">
 						<view class="title">邀请码<text class="text-sm">（选填）</text></view>
 						<input class="text-right" value="" name="invitecode"></input>
 					</view>
 				</view>
-
 				<view class="submit_box">
 					<image class="abs-h-center" src="../../static/meetu-img/sure.png" mode="widthFix"></image>
 					<button class="submit round abs-h-center" form-type="submit"></button>
@@ -53,6 +52,10 @@
 <script>
 	import wPicker from "@/components/w-picker/w-picker.vue";
 	import pictureTailor from "@/components/picture-tailor/pictureTailor.vue";
+	// 以下路径需根据项目实际情况填写
+	import {
+		mapGetters,mapMutations
+	} from 'vuex'
 	export default {
 		name: 'personaldata',
 		components: {
@@ -63,6 +66,7 @@
 			return {
 				isEditInfo: false,
 				userInfo: null,
+				ischangeHeadimg: false,
 				selectList: [{
 					label: "男",
 					value: 0
@@ -73,66 +77,95 @@
 				mode: 'date',
 				defaultVal: [0, 0, 0, 0, 0, 0, 0],
 				sex: '',
-				date: '选择生日', //生日birthday
-				region: '选择地区',
-				regionArr: null
+				// date: '选择生日', //生日birthday
+				// region: '选择地区',
+				// regionArr: null,
+				
+				/*picker 插件选择之后传递过来的值, 
+					chenkArr-选择的每一项的值, 
+					defaultVal-选择对应的索引, 
+					result-选择每一项拼接起来的值
+					checkValue-选择每一项对应的地区code--在地区选择中出现. 
+						这里chackValue自己进行本地存储(key--regionValueCode), 页面进入先获取,有的话picker弹起会在当前位置*/
+				pickerBirthdayInfo: { 
+					checkArr: ['1990', '01', '01'],
+					defaultVal: [],
+					result: '选择生日'
+				},
+				pickerRegionInfo: {
+					checkArr: ["北京市", "市辖区"],
+					checkValue: ["11", "1101"], //"14", "1408"
+					defaultVal: [],
+					result: '选择地区'
+				},
 			}
+		},
+		computed: {
+			...mapGetters(['token'])
 		},
 		onLoad(options) {
 			this.isEditInfo = options.type && options.type == 'edit' ? true : false;
-			console.log('完善信息', this.token);
 			this.api_UserInfo();
 		},
+		onReady() {
+			
+		},
 		methods: {
+			...mapMutations(['changeVal']),
 			api_UserInfo() {
-				this.$http1.post('user/info').then(res=>{
+				this.$http1.post('user/info').then(res => {
+					// console.log('------userinfo-----', res);
 					this.userInfo = res.data;
 					this.sex = res.data.sex == 1 ? '男' : '女';
-					this.date = res.data.birthday ? res.data.birthday : this.date;
-					this.region = res.data.province + '' + res.data.city;
-					this.regionArr = [res.data.province,res.data.city];
-				}).catch(err=>{
+					this.pickerBirthdayInfo.result = res.data.birthday ? res.data.birthday : this.pickerBirthdayInfo.result;
+					this.pickerRegionInfo.result = res.data.province + '' + res.data.city;
+				}).catch(err => {
 					console.log('userinfo-err', err);
 				})
 			},
+			getUid(tempFilePath) {
+				return tempFilePath.substring(tempFilePath.indexOf('/')+1, tempFilePath.lastIndexOf('.'));
+			},
 			chooseImage() {
+				let self = this;
 				uni.chooseImage({
 					count: 1,
 					sizeType: ['original', 'compressed'],
 					sourceType: ['album'],
 					success: (res) => {
 						let tempFilePath = res.tempFilePaths[0];
-						// k-ErgSRFk9OJXGKsk7NnmX9wD2LZSkyO
-						// uni.uploadFile({
-						// 	url: 'https://api.meetu.letwx.com/v2/sys/upload-img?token=JxClHrhVHJu_xJKneujyGCJrK6ZLXUKK', //仅为示例，非真实的接口地址
-						// 	filePath: tempFilePath,
-						// 	name: 'imgfile',
-						// 	success: (uploadFileRes) => {
-						// 		console.log(uploadFileRes);
-						// 	},
-						// 	fail:(err) => {
-						// 		console.log('err',err);
-						// 	}
-						// });
-						this.$http1.upload('sys/upload-img', {
-							filePath: tempFilePath,
-							name: 'imgfile',
-							custom: {istoken: true, v2: true}
-						}).then(upRes=>{
-							console.log('upRes', upRes);
-						}).catch(upErr=>{
-							console.log('upErr',upErr);
-						})
+						plus.zip.compressImage({
+								src: tempFilePath,
+								dst: "_doc/" + self.getUid(tempFilePath) +".jpg",
+								overwrite: true,
+								quality: 20
+							},
+							function(event) {
+								uni.uploadFile({
+									url: 'https://api.meetu.letwx.com/v2/sys/upload-img?token='+self.token,
+									filePath: event.target,
+									name: 'imgfile',
+									formData: {
+										'name': 'imgfile',
+										'formData': JSON.stringify({
+											'sort': 0
+										})
+									},
+									success: (uploadFileRes) => {
+										// console.log('upok',JSON.parse(uploadFileRes.data));
+										self.userInfo.headimgurl = JSON.parse(uploadFileRes.data).data.imgUrl;
+										self.ischangeHeadimg = true;
+									},
+									fail: (err) => {
+										console.log('err', err);
+									}
+								});
+							},
+							function(error) {
+								console.log('plus-error', error)
+							});
 					}
 				})
-			},
-			cropComplete(val) {
-				// console.log(val);
-				this.avatarTempPath = '';
-				this.avatarCropPath = val;
-			},
-			cropCancel() {
-				this.avatarTempPath = '';
 			},
 			togglePicker(mode) {
 				if (mode == 'selector' && this.userInfo.isedit == 1) { //isedit==1说明已经修改过性别,则不允许再修改
@@ -142,58 +175,62 @@
 				this.$refs[mode].show();
 			},
 			onConfirm(val) {
-				console.log(val);
 				//如果页面需要调用多个mode类型，可以根据mode处理结果渲染到哪里;
+				console.log(val);
 				switch (this.mode) {
 					case "date":
-						this.date = val.result;
+						this.pickerBirthdayInfo = val;
 						break;
 					case "selector":
 						this.sex = val.result;
 						break;
 					case "region":
-						this.region = val.result;
-						this.regionArr = val.checkArr
+						this.pickerRegionInfo = val;
+						// this.regionArr = val.checkArr
 						break;
 				}
 			},
 			submitInfo(e) {
-				console.log(e);
+				let self = this;
 				let tempInfo = {};
-				if (e.detail.value.nickname != this.userInfo.nickname) {
+				if (e.detail.value.nickname != this.userInfo.nickname && e.detail.value.nickname!='') {
 					tempInfo.nickname = e.detail.value.nickname;
 				}
 				if (e.detail.value.invitecode) {
 					tempInfo.code = e.detail.value.invitecode;
 				}
-				if (this.sex != (this.userInfo.sex ==1?'男':'女')) {
+				if (this.sex != (this.userInfo.sex == 1 ? '男' : '女')) {
 					tempInfo.sex = this.sex == '男' ? 1 : 2;
 				}
-				if (this.date != this.userInfo.birthday && this.userInfo.birthday!=null) {
-					tempInfo.birthday = this.date;
+				if (this.pickerBirthdayInfo.result != this.userInfo.birthday && this.userInfo.birthday == null) {
+					tempInfo.birthday = this.pickerBirthdayInfo.result;
 				}
-				if (this.regionArr[0] != this.userInfo.province) {
-					tempInfo.province = this.regionArr[0]; 
+				if (this.pickerRegionInfo.checkArr[0] != this.userInfo.province) {
+					tempInfo.province = this.pickerRegionInfo.checkArr[0];
 				}
-				if (this.regionArr[1] != this.userInfo.city) {
-					tempInfo.city = this.regionArr[1]; 
+				if (this.pickerRegionInfo.checkArr[1] != this.userInfo.city) {
+					tempInfo.city = this.pickerRegionInfo.checkArr[1];
+				}
+				if (this.ischangeHeadimg) {
+					tempInfo.headimgurl = this.userInfo.headimgurl;
 				}
 				console.log(tempInfo);
-				if (this.isEditInfo) {
-					uni.navigateBack({
-						detail: 1
-					})
-				} else {
-					uni.reLaunch({
-						url: '../home/index',
-					})
-				}
-				
-				// this.$http1.post('user/edit', tempInfo).then(res=>{
-				// 	console.log('完善资料', res);
-				// }).catch(err=>{
-					
-				// })
+
+				this.$http1.post('user/edit', tempInfo).then(res=>{
+					uni.setStorageSync('firstPerfectInfo', true);
+					if (this.isEditInfo) {
+						for (let key in tempInfo) {
+							this.userInfo[key] = tempInfo[key];
+						}
+						this.$store.dispatch('changeVal', {stateKey: 'userInfo', newValue: self.userInfo})
+					} else {
+						uni.redirectTo({
+							url: '../home/index',
+						})
+					}
+				}).catch(err=>{
+					console.log('edit-err', err);
+				})
 			}
 		}
 	}

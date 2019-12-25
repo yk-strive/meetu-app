@@ -10,7 +10,6 @@ http_v1.setConfig((config) => { /*设置全局配置*/
 	config.baseUrl += '/v1/';
 	config.header = {
 		...config.hearder,
-		test: 'yk'
 	};
 	// #ifdef APP-PLUS
 	config.sslVerify = false

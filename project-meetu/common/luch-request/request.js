@@ -277,13 +277,14 @@ export default class Request {
           fileType,
           // #endif
           filePath,
-          method: 'UPLOAD',
+          // method: 'UPLOAD',
           name,
           header: header || globalHeader,
           formData,
           custom: { ...this.config.custom, ...(custom || {}) },
           complete: (response) => {
             response.config = handleRe
+			console.log('------response----', response)
             if (response.statusCode === 200) { // 成功
               response = this.requestComFun(response)
               resolve(response)
@@ -307,6 +308,7 @@ export default class Request {
         if (!next) return
         delete _config.custom
         _config.url = Request.posUrl(_config.url) ? _config.url : (_config.baseUrl + _config.url)
+		console.log('-----_config-----', _config);
         uni.uploadFile(_config)
       })
     }

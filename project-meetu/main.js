@@ -10,8 +10,8 @@ Vue.prototype.$http1 = http_v1;
 import customNav from './components/custom-nav.vue'
 Vue.component('custom-nav',customNav)
 
-import customNav2 from './components/custom-nav2.vue';
-Vue.component('custom-nav2',customNav2)
+import cuModal from "./meetu-ui/components/cu-modal.vue";
+Vue.component('cu-modal',cuModal)
 
 App.mpType = 'app'
 

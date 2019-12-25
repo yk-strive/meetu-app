@@ -30,7 +30,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _personaldata_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./personaldata.vue?vue&type=script&lang=js& */ 34);
 /* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _personaldata_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _personaldata_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 /* harmony import */ var _personaldata_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./personaldata.vue?vue&type=style&index=0&lang=scss& */ 36);
-/* harmony import */ var _G_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/lib/runtime/componentNormalizer.js */ 14);
+/* harmony import */ var _G_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/lib/runtime/componentNormalizer.js */ 15);
 
 
 
@@ -122,7 +122,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var wPicker = function wPicker() {return Promise.all(/*! import() | components/w-picker/w-picker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/w-picker/w-picker")]).then(__webpack_require__.bind(null, /*! @/components/w-picker/w-picker.vue */ 139));};var pictureTailor = function pictureTailor() {return __webpack_require__.e(/*! import() | components/picture-tailor/pictureTailor */ "components/picture-tailor/pictureTailor").then(__webpack_require__.bind(null, /*! @/components/picture-tailor/pictureTailor.vue */ 150));};var _default =
 
 
 
@@ -177,8 +177,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-var _vuex = __webpack_require__(/*! vuex */ 16);function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};var ownKeys = Object.keys(source);if (typeof Object.getOwnPropertySymbols === 'function') {ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {return Object.getOwnPropertyDescriptor(source, sym).enumerable;}));}ownKeys.forEach(function (key) {_defineProperty(target, key, source[key]);});}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}var wPicker = function wPicker() {return Promise.all(/*! import() | components/w-picker/w-picker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/w-picker/w-picker")]).then(__webpack_require__.bind(null, /*! @/components/w-picker/w-picker.vue */ 139));};var pictureTailor = function pictureTailor() {return __webpack_require__.e(/*! import() | components/picture-tailor/pictureTailor */ "components/picture-tailor/pictureTailor").then(__webpack_require__.bind(null, /*! @/components/picture-tailor/pictureTailor.vue */ 150));};var _default =
 {
   name: 'personaldata',
   components: {
@@ -187,8 +185,8 @@ var _vuex = __webpack_require__(/*! vuex */ 16);function _objectSpread(target) {
 
   data: function data() {
     return {
-      avatarTempPath: '',
-      avatarCropPath: '',
+      isEditInfo: false,
+      userInfo: null,
       selectList: [{
         label: "男",
         value: 0 },
@@ -198,27 +196,56 @@ var _vuex = __webpack_require__(/*! vuex */ 16);function _objectSpread(target) {
 
       mode: 'date',
       defaultVal: [0, 0, 0, 0, 0, 0, 0],
-      sex: '女',
-      date: '选择生日', //生日
-      region: '选择地区' };
+      sex: '',
+      date: '选择生日', //生日birthday
+      region: '选择地区',
+      regionArr: null };
 
   },
-  computed: _objectSpread({},
-  (0, _vuex.mapGetters)([
-  'token'])),
-
-
-  onLoad: function onLoad() {
-    console.log('完善信息', this.token);
+  onLoad: function onLoad(options) {
+    this.isEditInfo = options.type && options.type == 'edit' ? true : false;
+    this.api_UserInfo();
   },
   methods: {
-    chooseImage: function chooseImage() {var _this = this;
+    api_UserInfo: function api_UserInfo() {var _this = this;
+      this.$http1.post('user/info').then(function (res) {
+        _this.userInfo = res.data;
+        _this.sex = res.data.sex == 1 ? '男' : '女';
+        _this.date = res.data.birthday ? res.data.birthday : _this.date;
+        _this.region = res.data.province + '' + res.data.city;
+        _this.regionArr = [res.data.province, res.data.city];
+      }).catch(function (err) {
+        console.log('userinfo-err', err);
+      });
+    },
+    chooseImage: function chooseImage() {var _this2 = this;
       uni.chooseImage({
         count: 1,
         sizeType: ['original', 'compressed'],
         sourceType: ['album'],
         success: function success(res) {
-          _this.avatarTempPath = res.tempFilePaths.shift();
+          var tempFilePath = res.tempFilePaths[0];
+          // k-ErgSRFk9OJXGKsk7NnmX9wD2LZSkyO
+          // uni.uploadFile({
+          // 	url: 'https://api.meetu.letwx.com/v2/sys/upload-img?token=JxClHrhVHJu_xJKneujyGCJrK6ZLXUKK', //仅为示例，非真实的接口地址
+          // 	filePath: tempFilePath,
+          // 	name: 'imgfile',
+          // 	success: (uploadFileRes) => {
+          // 		console.log(uploadFileRes);
+          // 	},
+          // 	fail:(err) => {
+          // 		console.log('err',err);
+          // 	}
+          // });
+          _this2.$http1.upload('sys/upload-img', {
+            filePath: tempFilePath,
+            name: 'imgfile',
+            custom: { istoken: true, v2: true } }).
+          then(function (upRes) {
+            console.log('upRes', upRes);
+          }).catch(function (upErr) {
+            console.log('upErr', upErr);
+          });
         } });
 
     },
@@ -231,11 +258,14 @@ var _vuex = __webpack_require__(/*! vuex */ 16);function _objectSpread(target) {
       this.avatarTempPath = '';
     },
     togglePicker: function togglePicker(mode) {
+      if (mode == 'selector' && this.userInfo.isedit == 1) {//isedit==1说明已经修改过性别,则不允许再修改
+        return;
+      }
       this.mode = mode;
       this.$refs[mode].show();
     },
     onConfirm: function onConfirm(val) {
-      // console.log(val);
+      console.log(val);
       //如果页面需要调用多个mode类型，可以根据mode处理结果渲染到哪里;
       switch (this.mode) {
         case "date":
@@ -246,16 +276,47 @@ var _vuex = __webpack_require__(/*! vuex */ 16);function _objectSpread(target) {
           break;
         case "region":
           this.region = val.result;
+          this.regionArr = val.checkArr;
           break;}
 
     },
     submitInfo: function submitInfo(e) {
-      // console.log(e);
-      uni.navigateTo({
-        url: '../home/index',
-        animationDuration: 300,
-        animationType: 'fade-in' });
+      console.log(e);
+      var tempInfo = {};
+      if (e.detail.value.nickname != this.userInfo.nickname) {
+        tempInfo.nickname = e.detail.value.nickname;
+      }
+      if (e.detail.value.invitecode) {
+        tempInfo.code = e.detail.value.invitecode;
+      }
+      if (this.sex != (this.userInfo.sex == 1 ? '男' : '女')) {
+        tempInfo.sex = this.sex == '男' ? 1 : 2;
+      }
+      if (this.date != this.userInfo.birthday && this.userInfo.birthday != null) {
+        tempInfo.birthday = this.date;
+      }
+      if (this.regionArr[0] != this.userInfo.province) {
+        tempInfo.province = this.regionArr[0];
+      }
+      if (this.regionArr[1] != this.userInfo.city) {
+        tempInfo.city = this.regionArr[1];
+      }
+      console.log(tempInfo);
+      if (this.isEditInfo) {
+        uni.navigateBack({
+          detail: 1 });
 
+      } else {
+        uni.reLaunch({
+          url: '../home/index' });
+
+      }
+
+      // this.$http1.post('user/edit', tempInfo).then(res=>{
+      // 	console.log('完善资料', res);
+      // }).catch(err=>{
+
+      // })
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 

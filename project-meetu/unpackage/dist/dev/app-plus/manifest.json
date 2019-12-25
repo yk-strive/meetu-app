@@ -21,6 +21,7 @@
     "OAuth": {},
     "Push": {},
     "Share": {},
+    "Payment": {},
     "UniNView": {
       "description": "UniNView原生渲染"
     }

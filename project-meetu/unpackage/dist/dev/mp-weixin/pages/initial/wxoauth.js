@@ -30,7 +30,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wxoauth_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./wxoauth.vue?vue&type=script&lang=js& */ 26);
 /* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _wxoauth_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _wxoauth_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 /* harmony import */ var _wxoauth_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./wxoauth.vue?vue&type=style&index=0&lang=scss& */ 28);
-/* harmony import */ var _G_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/lib/runtime/componentNormalizer.js */ 14);
+/* harmony import */ var _G_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/lib/runtime/componentNormalizer.js */ 15);
 
 
 
@@ -163,66 +163,34 @@ var _default =
       console.log(e);
 
 
-      uni.login({
-        provider: 'weixin',
-        success: function success(res) {
-          console.log('login', res);
-        } });
 
-      // uni.navigateTo({
-      // 	url: './personaldata',
-      // 	animationDuration: 300,
-      // 	animationType: 'slide-in-right'
-      // }) 
 
 
       //slide-in-right | slide-in-left | slide-in-top | slide-in-bottom | pop-in | fade-in | zoom-out | zoom-fade-out | none
-
     },
     appLogin: function appLogin() {var _this = this;
-      // uni.navigateTo({
-      // 	url: './personaldata',
-      // 	animationDuration: 300,
-      // 	animationType: 'slide-in-right'
-      // })
+      var self = this;
       uni.login({
         provider: 'weixin',
         success: function success(res) {
-          console.log('login', res.authResult);
+          // console.log('login', res.authResult);
           if (res.errMsg == 'login:ok') {
-            _this.$store.dispatch('changeVal', { stateKey: 'token', newValue: '微白' });
-            // uni.navigateTo({
-            // 	url: './personaldata',
-            // 	animationDuration: 300,
-            // 	animationType: 'slide-in-right'
-            // })
-            var params = {
+            _this.$http1.post('wxa/login', {
               access_token: res.authResult.access_token,
               openid: res.authResult.openid,
-              expires_in: res.authResult.expires_in };
+              expires_in: res.authResult.expires_in },
+            {
+              custom: { istoken: false, v2: true } }).
+            then(function (res) {
+              self.$store.dispatch('changeVal', { stateKey: 'token', newValue: res.data.token });
+              uni.navigateTo({
+                url: './personaldata',
+                animationDuration: 300,
+                animationType: 'slide-in-right' });
 
-            console.log(params);
-            uni.request({
-              url: 'https://api.meetu.letwx.com' + '/v2' + '/wxa/login',
-              data: params,
-              method: 'POST',
-              sslVerify: false,
-              success: function success(loginres) {
-                console.log('loginres', loginres);
-              },
-              fail: function fail(error) {
-                console.log(error);
-              } });
-
-            // this.$http1.post('wxa/login', {
-            // 	access_token: res.authResult.assess_token,
-            // 	openid: res.authResult.openid,
-            // 	expires_in: res.authResult.expires_in
-            // }, {}).then(res=>{
-            // 	console.log('api-login', res);
-            // }).catch(err=>{
-            // 	console.log('app-err', err);
-            // })
+            }).catch(function (err) {
+              console.log('app-err', err);
+            });
           }
         } });
 

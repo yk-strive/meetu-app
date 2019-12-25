@@ -12,6 +12,14 @@
 				</view>
 			</view>
 		</view>
+		<view class="cu-modal toast-modal" :class="modalName =='toastModal' ?'show':''">
+			<view class="cu-dialog">
+				<view class="padding-xl">
+					<!-- <slot name="bottomModal"></slot> -->
+					<text>{{toastText}}</text>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -19,6 +27,10 @@
 	export default {
 		props: {
 			modalName: {
+				type: String,
+				default: ''
+			},
+			toastText: {
 				type: String,
 				default: ''
 			}

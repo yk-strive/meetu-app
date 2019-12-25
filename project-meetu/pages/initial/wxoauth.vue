@@ -59,7 +59,7 @@
 								custom: {istoken: false, v2: true}
 							}).then(res=>{
 								self.$store.dispatch('changeVal', {stateKey: 'token', newValue: res.data.token});
-								uni.navigateTo({
+								uni.redirectTo({
 									url: './personaldata',
 									animationDuration: 300,
 									animationType: 'slide-in-right'

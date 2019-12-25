@@ -75,6 +75,9 @@
 
 
 
+
+
+
 /*每个页面公共css */
 @-webkit-keyframes cuIcon-spin {
 0% {
@@ -347,6 +350,12 @@ image {
 	background-color: #f8f8f8;
 	border-radius: 10rpx;
 	overflow: hidden;
+}
+.cu-modal.toast-modal {
+	background: rgba(0, 0, 0, 0.1);
+}
+.cu-modal.toast-modal .cu-dialog{
+	width: 50%;
 }
 .cu-modal.bottom-modal::before {
 	vertical-align: bottom;

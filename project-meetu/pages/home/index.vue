@@ -3,13 +3,14 @@
 		<custom-nav :isBack="false"></custom-nav>
 		<view class="AppName text-white text-lg">{{appName}}</view>
 		<view class="avatar round" @tap.stop="linkUser">
-			<image class="wh-100" v-bind:src="userInfo.headimgurl"></image>
+			<image class="wh-100" v-bind:src="userInfo.headimgurl" mode="aspectFill"></image>
 		</view>
 		
 		<view class="home_bottom_act">
 			<view v-if="showSendToast" class="toast abs-center text-white text-xxs">
 				<text>给茫茫宇宙发射一个信号寻找远方的回应</text>
 			</view>
+			<view class="signal-ani abs-center" :class="isSendSignal ? 'signal-animation' : ''"></view>
 			<view class="home_action">
 				<view class="action_item" v-on:click="linkAction('search')">
 					<image src="../../static/meetu-img/home_action1.png" mode="aspectFill"></image>
@@ -27,7 +28,7 @@
 			</view>
 		</view>
 		
-		<cu-modal :modalName="modalName" @hideModal="hideModal">
+		<cu-modal :modalName="modalName" :toastText="toastText" @hideModal="hideModal">
 			<block slot="bottomModal">
 				<view class="modal_info">
 					<view class="modal_info_item" @tap.stop="linkAction('sendText')">
@@ -65,16 +66,16 @@
 </template>
 
 <script>
-	import cuModal from "@/meetu-ui/components/cu-modal.vue";
 	import { mapGetters } from 'vuex';
 	export default {
 		name: 'homeIndex',
 		components: {
-			cuModal
 		},
 		data() {
 			return {
 				modalName: '', // 弹窗类型-modal/bottomModal
+				toastText: '',
+				isSendSignal: false,
 				appName: 'Meet U',
 				showSendToast: false,
 				userNumber: null,
@@ -83,6 +84,9 @@
 		},
 		computed: {
 			...mapGetters(['userInfo'])
+		},
+		watch: {
+			
 		},
 		onLoad() {
 			this.api_UserInfo();
@@ -93,6 +97,15 @@
 				this.showSendToast = false;
 			} else {
 				this.showSendToast = true;
+			}
+		},
+		onShow() {
+			if (getApp().globalData.sendSignal) {
+				this.isSendSignal = true;
+				setTimeout(()=> {
+					getApp().globalData.sendSignal = false;
+					this.isSendSignal = false;
+				}, 4000);
 			}
 		},
 		methods: {
@@ -106,7 +119,7 @@
 			},
 			api_UserNumber() {//操作剩余次数
 				this.$http1.post('user/number').then(res=>{
-					console.log('userNumber', res.data);
+					// console.log('userNumber', res.data);
 					this.userNumber = res.data;
 				}).catch(err=>{
 					
@@ -116,7 +129,7 @@
 				uni.navigateTo({
 					url: '../user/index',
 					animationDuration: 300,
-					animationType: 'slide-in-bottom'
+					animationType: 'fade-in'
 				})
 			},
 			linkAction(type) {
@@ -125,7 +138,7 @@
 						uni.navigateTo({
 							url: '../search/search',
 							animationDuration: 300,
-							animationType: 'slide-in-bottom'
+							animationType: 'fade-in'
 						})
 						break;
 					case 'send':
@@ -139,7 +152,7 @@
 						uni.navigateTo({
 							url: '../chat/list',
 							animationDuration: 300,
-							animationType: 'slide-in-bottom'
+							animationType: 'fade-in'
 						})
 						break;
 					case 'sendText':
@@ -147,7 +160,7 @@
 						uni.navigateTo({
 							url: '../send/text',
 							animationDuration: 300,
-							animationType: 'slide-in-bottom'
+							animationType: 'fade-in'
 						})
 						break;
 					case 'sendVoice':
@@ -205,6 +218,44 @@
 					border-left: 60upx solid transparent;
 					border-right: 60upx solid transparent;
 					border-top: 60upx solid #453C5B;
+				}
+			}
+			.signal-ani {
+				opacity: 0;
+				width: 20rpx;
+				height: 20rpx;
+				border-radius: 50%;
+				background-color: rgba(255, 255, 255, .5);
+				box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .3);
+			}
+			.signal-animation {
+				animation: signal-animation 2s 2s linear both;
+			}
+			@keyframes signal-animation {
+				0%{
+					opacity: 1;
+				}
+				20%{
+					opacity: 1;
+					top: -40rpx;
+				}
+				40%{
+					opacity: .4;
+					top: -100rpx;
+					background-color: rgba(255, 255, 255, .2);
+					box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .5);
+				}
+				80%{
+					opacity: 1;
+					top: -300rpx;
+					background-color: rgba(255, 255, 255, .5);
+					box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .3);
+				}
+				100%{
+					opacity: 0;
+					top: -600rpx;
+					background-color: rgba(255, 255, 255, .3);
+					box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .5);
 				}
 			}
 			.home_action {

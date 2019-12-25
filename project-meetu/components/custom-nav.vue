@@ -70,7 +70,6 @@
 				});
 			},
 			rightHandle() {
-				console.log(this.textRight)
 				if (!this.textRight) {
 					return false;
 				}

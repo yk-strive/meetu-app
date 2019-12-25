@@ -19,7 +19,8 @@
         "modules" : {
             "OAuth" : {},
             "Push" : {},
-            "Share" : {}
+            "Share" : {},
+            "Payment" : {}
         },
         /* 应用发布信息 */
         "distribute" : {

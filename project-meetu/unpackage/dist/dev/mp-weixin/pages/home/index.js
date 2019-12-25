@@ -30,7 +30,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _index_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.vue?vue&type=script&lang=js& */ 42);
 /* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _index_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _index_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 /* harmony import */ var _index_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.vue?vue&type=style&index=0&lang=scss& */ 44);
-/* harmony import */ var _G_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/lib/runtime/componentNormalizer.js */ 14);
+/* harmony import */ var _G_HBuilderX_HBuilderX_plugins_uniapp_cli_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./node_modules/vue-loader/lib/runtime/componentNormalizer.js */ 15);
 
 
 
@@ -122,7 +122,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var cuModal = function cuModal() {return __webpack_require__.e(/*! import() | meetu-ui/components/cu-modal */ "meetu-ui/components/cu-modal").then(__webpack_require__.bind(null, /*! @/meetu-ui/components/cu-modal.vue */ 157));};var _default =
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
 
 
 
@@ -190,6 +190,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+var _vuex = __webpack_require__(/*! vuex */ 12);function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};var ownKeys = Object.keys(source);if (typeof Object.getOwnPropertySymbols === 'function') {ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {return Object.getOwnPropertyDescriptor(source, sym).enumerable;}));}ownKeys.forEach(function (key) {_defineProperty(target, key, source[key]);});}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}var cuModal = function cuModal() {return __webpack_require__.e(/*! import() | meetu-ui/components/cu-modal */ "meetu-ui/components/cu-modal").then(__webpack_require__.bind(null, /*! @/meetu-ui/components/cu-modal.vue */ 157));};var _default =
 {
   name: 'homeIndex',
   components: {
@@ -197,38 +198,19 @@ __webpack_require__.r(__webpack_exports__);
 
   data: function data() {
     return {
-      modalName: '',
+      modalName: '', // 弹窗类型-modal/bottomModal
       appName: 'Meet U',
-      userInfo: {
-        avatar: '../../static/logo.png',
-        usenum: 4,
-        total: 6 },
-
-      showSendToast: false };
+      showSendToast: false,
+      userNumber: null,
+      notreadNum: 0 };
 
   },
-  onLoad: function onLoad() {
-    // uni.request({
-    // 	url: 'https://api.meetu.letwx.com/v1/user/info' + '?token=hzPGaRoNhVlaIGsuhJmPbMv5vCccRPns',
-    // 	data: {},
-    // 	method: 'POST',
-    // 	sslVerify: false,
-    // 	success: (userres) => {
-    // 		console.log('userres', userres);
-    // 	},
-    // 	fail:(error)=> {
-    // 		console.log(error); 
-    // 	}
-    // })
-    this.$http1.post('user/info', {}, {
-      params: {
-        token: 'hzPGaRoNhVlaIGsuhJmPbMv5vCccRPns' } }).
+  computed: _objectSpread({},
+  (0, _vuex.mapGetters)(['userInfo'])),
 
-    then(function (res) {
-      console.log('userinfo-ok', res);
-    }).catch(function (err) {
-      console.log('userinfo-err', err);
-    });
+  onLoad: function onLoad() {
+    this.api_UserInfo();
+    this.api_UserNumber();
   },
   onReady: function onReady() {
     if (uni.getStorageSync('homeSendToast')) {
@@ -238,6 +220,22 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    api_UserInfo: function api_UserInfo() {var _this = this;
+      this.$http1.post('user/info').then(function (res) {
+        // this.userinfo = res.data;
+        _this.$store.dispatch('changeVal', { stateKey: 'userInfo', newValue: res.data });
+      }).catch(function (err) {
+        console.log('userinfo-err', err);
+      });
+    },
+    api_UserNumber: function api_UserNumber() {var _this2 = this; //操作剩余次数
+      this.$http1.post('user/number').then(function (res) {
+        console.log('userNumber', res.data);
+        _this2.userNumber = res.data;
+      }).catch(function (err) {
+
+      });
+    },
     linkUser: function linkUser() {
       uni.navigateTo({
         url: '../user/index',

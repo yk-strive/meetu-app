@@ -31,6 +31,6 @@
   "compilerVersion": "2.4.6",
   "usingComponents": {
     "custom-nav": "/components/custom-nav",
-    "custom-nav2": "/components/custom-nav2"
+    "cu-modal": "/meetu-ui/components/cu-modal"
   }
 }

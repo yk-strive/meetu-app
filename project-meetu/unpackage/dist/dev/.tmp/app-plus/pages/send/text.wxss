@@ -27,10 +27,11 @@
 .btn_send {
   position: fixed;
   bottom: 100rpx;
-  left: 50%;
-  -webkit-transform: translateX(-50%);
-          transform: translateX(-50%);
-  width: 356rpx;
+  width: 100%;
   height: 100rpx;
+}
+.btn_send button {
+    width: 356rpx;
+    height: 100rpx;
 }
 

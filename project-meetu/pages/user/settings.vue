@@ -51,6 +51,8 @@
 					case 'edit':
 						uni.navigateTo({
 							url: '../initial/personaldata?type=edit',
+							animationDuration: 300,
+							animationType: 'fade-in'
 						});
 						break;
 					case 'content':

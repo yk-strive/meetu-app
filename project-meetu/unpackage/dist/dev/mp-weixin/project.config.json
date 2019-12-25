@@ -30,9 +30,9 @@
 			"list": [
 				{
 					"name": "单页面测试",
+					"path": "",
 					"query": "",
-					"id": 0,
-					"pathName": "pages/home/index"
+					"id": 0
 				}
 			]
 		}
