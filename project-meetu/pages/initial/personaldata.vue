@@ -45,7 +45,7 @@
 				</view>
 			</form>
 		</scroll-view>
-
+		<cu-modal :modalName="modalName" :toastText="toastText"></cu-modal>
 	</view>
 </template>
 
@@ -64,7 +64,9 @@
 		},
 		data() {
 			return {
-				isEditInfo: false,
+				isEditInfo: false, // true-从编辑信息页面进入,显示返回按钮和title
+				modalName: '', // 弹窗显示类型
+				toastText: '', // toast弹窗的提示语
 				userInfo: null,
 				ischangeHeadimg: false,
 				selectList: [{
@@ -102,6 +104,15 @@
 		},
 		computed: {
 			...mapGetters(['token'])
+		},
+		watch: {
+			modalName() {
+				if (this.modalName === 'toastModal') {
+					setTimeout(()=>{
+						this.modalName = '';
+					}, 1500)
+				}
+			}
 		},
 		onLoad(options) {
 			this.isEditInfo = options.type && options.type == 'edit' ? true : false;
@@ -169,7 +180,9 @@
 			},
 			togglePicker(mode) {
 				if (mode == 'selector' && this.userInfo.isedit == 1) { //isedit==1说明已经修改过性别,则不允许再修改
-					return;
+					this.modalName = 'toastModal';
+					this.toastText = '性别只能修改一次, 你已修改过';
+					return false;
 				}
 				this.mode = mode;
 				this.$refs[mode].show();
@@ -193,6 +206,21 @@
 			submitInfo(e) {
 				let self = this;
 				let tempInfo = {};
+				if (e.detail.value.nickname == '') {
+					this.modalName = 'toastModal';
+					this.toastText = '昵称不能为空';
+					return false;
+				}
+				if (this.pickerBirthdayInfo.result === '选择生日') {
+					this.modalName = 'toastModal';
+					this.toastText = '请选择你的出生日期';
+					return false;
+				}
+				if (this.pickerRegionInfo.result.match(/\w/)!=null) {
+					this.modalName = 'toastModal';
+					this.toastText = '请选择地区(中文)';
+					return false;
+				}
 				if (e.detail.value.nickname != this.userInfo.nickname && e.detail.value.nickname!='') {
 					tempInfo.nickname = e.detail.value.nickname;
 				}
@@ -215,13 +243,17 @@
 					tempInfo.headimgurl = this.userInfo.headimgurl;
 				}
 				console.log(tempInfo);
-
+				if (JSON.stringify(tempInfo) == '{}') { // es6 Array.keys(tempInfo).length==0
+					return false;
+				}
 				this.$http1.post('user/edit', tempInfo).then(res=>{
 					uni.setStorageSync('firstPerfectInfo', true);
 					if (this.isEditInfo) {
 						for (let key in tempInfo) {
 							this.userInfo[key] = tempInfo[key];
 						}
+						this.modalName='toastModal';
+						this.toastText="信息修改成功";
 						this.$store.dispatch('changeVal', {stateKey: 'userInfo', newValue: self.userInfo})
 					} else {
 						uni.redirectTo({

@@ -102,6 +102,7 @@
 		onShow() {
 			if (getApp().globalData.sendSignal) {
 				this.isSendSignal = true;
+				this.api_UserNumber();
 				setTimeout(()=> {
 					getApp().globalData.sendSignal = false;
 					this.isSendSignal = false;

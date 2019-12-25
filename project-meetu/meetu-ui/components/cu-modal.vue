@@ -35,6 +35,7 @@
 				default: ''
 			}
 		},
+		
 		methods: {
 			hideModal() {
 				this.$emit('hideModal');
