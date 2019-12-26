@@ -4,7 +4,7 @@
 		<view class="coin-wrap">
 			<view class="coin_info">
 				<view class="num text-center coin-color">
-					<text>600</text>
+					<text>{{userInfo.totalpoints}}</text>
 					<text class="padding-left-sm padding-right-xs">x</text>
 					<image class="coin-img" src="../../static/meetu-img/dou.png" mode="aspectFill"></image>
 				</view>
@@ -14,16 +14,16 @@
 			</view>
 			<view class="coin_action">
 				<view class="text-white">免费获得星豆</view>
-				<view class="action_item flex-df radius" v-for="item,index in actionList" :key="index">
+				<view class="action_item flex-df radius" v-for="item,index in pointsList" :key="index" @tap.stop="pointsTapHandle(item)">
 					<view class="icon_box round flex-df">
 						<image :src="item.icon"></image>
 					</view>
 					<view class="content">
-						<view class="text-white">{{item.title}}</view>
-						<view class="text-xs padding-top-xs desc">{{item.desc}}</view>
+						<view class="text-white">{{item.name}}</view>
+						<view class="text-xs padding-top-xs desc">{{item.describe}}</view>
 					</view>
 					<view class="add_num coin-color">
-						<text>+<text class="text-xxl">{{item.grade}}</text></text>
+						<text>+<text class="text-xxl">{{item.value}}</text></text>
 					</view>
 				</view>
 			</view>
@@ -35,19 +35,19 @@
 					<view class="title text-center text-lg">
 						<text>星币充值</text>
 					</view>
-					<view class="action_item flex-df" v-for="item,index in rechargePrice" :key="index" @click.stop="rechargeHandle(item)">
+					<view class="action_item flex-df" v-for="item,index in pointsPropery" :key="index" @tap.stop="properyHandle(item)">
 						<view class="coin">
 							<image class="coin-img" src="../../static/meetu-img/dou.png"></image>
-							<text class="padding-left-xs text-xxl">{{item.coin}}</text>
+							<text class="padding-left-xs text-xxl">{{item.value}}</text>
 						</view>
-						<view class="discount" v-if="item.isDiscount == 1">
+						<view class="discount" v-if="item.giving>0">
 							<text class="text-black-m">限时赠送</text>
-							<text class="coin-discount-color">+<text class="text-xxl">{{item.discountCoin}}</text></text>
+							<text class="coin-discount-color">+<text class="text-xxl">{{item.giving}}</text></text>
 						</view>
 						<view class="price text-xl">
-							<text class="text-price">{{item.price}}</text>
+							<text class="text-price">{{item.money}}</text>
 						</view>
-						<view class="discount_tip" v-if="item.isDiscount == 1">
+						<view class="discount_tip" v-if="item.giving>0">
 							<text>限时特惠</text>
 						</view>
 					</view>
@@ -59,67 +59,47 @@
 
 <script>
 	import cuModal from "@/meetu-ui/components/cu-modal.vue";
+	import mixinInit from "../../mixins/init.js";
+	import { mapGetters} from "vuex";
 	export default {
 		name: 'coin', // 虚拟币-星豆
 		components: {
 			cuModal
 		},
+		mixins: [mixinInit],
+		computed: {
+			...mapGetters(['userInfo'])
+		},
 		data() {
 			return {
 				modalName: '',
-				actionList: [
-					{
-						icon: '../../static/meetu-img/i7.png',
-						title: '每日登录',
-						desc: '每天进入app页面',
-						grade: '5'
-					},
-					{
-						icon: '../../static/meetu-img/i8.png',
-						title: '看视频广告',
-						desc: '每天最多8次',
-						grade: '5'
-					},
-					{
-						icon: '../../static/meetu-img/i9.png',
-						title: '邀请好友',
-						desc: '每邀请一位好友获得',
-						grade: '10'
-					}
-				],
-				rechargePrice: [
-					{
-						isDiscount: 0, // 是否优惠 0-不
-						price: '12',
-						coin: '60'
-					},
-					{
-						isDiscount: 0, // 是否优惠 0-不
-						price: '28',
-						coin: '150'
-					},
-					{
-						isDiscount: 1, // 是否优惠 0-不
-						discountCoin: '30', // 优惠-赠送星豆
-						price: '98',
-						coin: '480'
-					},
-					{
-						isDiscount: 1, // 是否优惠 0-不
-						discountCoin: '100', // 优惠-赠送星豆
-						price: '198',
-						coin: '980'
-					},
-					{
-						isDiscount: 1, // 是否优惠 0-不
-						discountCoin: '510', // 优惠-赠送星豆
-						price: '388',
-						coin: '1980'
-					}
-				]
+				pointsList: [],
+				pointsPropery: [],
 			}
 		},
+		onLoad() {
+			this.api_PointsList();
+			this.api_PointsProperty()
+		},
 		methods: {
+			api_PointsList() {
+				let self = this;
+				this.$http1.post('points/list', {
+					page: self.page
+				}).then(res=>{
+					// self.clog('星豆任务列表', res);
+					self.pointsList = res.data;
+				})
+			},
+			api_PointsProperty() {
+				let self = this;
+				this.$http1.post('points/property', {}, {
+					custom: {istoken: false}
+				}).then(res=>{
+					// self.clog('星豆规格', res);
+					self.pointsPropery = res.data;
+				})
+			},
 			navRightHandle() {
 				uni.navigateTo({
 					url: './coinrecord',
@@ -133,8 +113,11 @@
 			hideModal() {
 				this.modalName = '';
 			},
-			rechargeHandle(item) {
+			properyHandle(item) { // 星豆充值规格点击
 				console.log(item);
+			},
+			pointsTapHandle(item) { // 免费得星豆点击
+				
 			}
 		},
 	}

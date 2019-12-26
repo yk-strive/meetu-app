@@ -25,7 +25,7 @@ http_v1.interceptor.request((config, cancel) => { /*请求之前拦截器*/
 		if (!store.state.token) {
 			cancel('身份认证失败,重新登录', config);
 		} else {
-			console.log(store.state.token)
+			// console.log(store.state.token)
 			config.params = {
 				...config.params,
 				token: store.state.token

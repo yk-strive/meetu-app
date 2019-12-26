@@ -34,7 +34,6 @@
   width: 120rpx;
   height: 120rpx;
   overflow: hidden;
-  box-shadow: 0 0  12rpx 12rpx #69417C;
 }
 #homePage .home_bottom_act {
   position: fixed;
@@ -66,69 +65,7 @@
 }
 #homePage .home_bottom_act .signal-ani {
     opacity: 0;
-    width: 20rpx;
-    height: 20rpx;
     border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.3);
-}
-#homePage .home_bottom_act .signal-animation {
-    -webkit-animation: signal-animation 2s 2s linear both;
-            animation: signal-animation 2s 2s linear both;
-}
-@-webkit-keyframes signal-animation {
-0% {
-    opacity: 1;
-}
-20% {
-    opacity: 1;
-    top: -40rpx;
-}
-40% {
-    opacity: .4;
-    top: -100rpx;
-    background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.5);
-}
-80% {
-    opacity: 1;
-    top: -300rpx;
-    background-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.3);
-}
-100% {
-    opacity: 0;
-    top: -600rpx;
-    background-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.5);
-}
-}
-@keyframes signal-animation {
-0% {
-    opacity: 1;
-}
-20% {
-    opacity: 1;
-    top: -40rpx;
-}
-40% {
-    opacity: .4;
-    top: -100rpx;
-    background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.5);
-}
-80% {
-    opacity: 1;
-    top: -300rpx;
-    background-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.3);
-}
-100% {
-    opacity: 0;
-    top: -600rpx;
-    background-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.5);
-}
 }
 #homePage .home_bottom_act .home_action {
     display: -webkit-box;
@@ -191,5 +128,85 @@
 }
 #homePage .modal_info .modal_info_item .send_type {
       padding: 10rpx 0 20rpx;
+}
+#homePage .avatar-animation {
+  -webkit-animation: avatar-animation 2s linear both infinite;
+          animation: avatar-animation 2s linear both infinite;
+}
+@-webkit-keyframes avatar-animation {
+0% {
+    box-shadow: 0 0 12rpx 12rpx rgba(105, 65, 124, 0.8);
+}
+50% {
+    box-shadow: 0 0 12rpx 12rpx rgba(105, 65, 124, 0.4);
+}
+100% {
+    box-shadow: 0 0 12rpx 12rpx rgba(105, 65, 124, 0.8);
+}
+}
+@keyframes avatar-animation {
+0% {
+    box-shadow: 0 0 12rpx 12rpx rgba(105, 65, 124, 0.8);
+}
+50% {
+    box-shadow: 0 0 12rpx 12rpx rgba(105, 65, 124, 0.4);
+}
+100% {
+    box-shadow: 0 0 12rpx 12rpx rgba(105, 65, 124, 0.8);
+}
+}
+#homePage .signal-animation {
+  -webkit-animation: signal-animation 2s 2s linear both;
+          animation: signal-animation 2s 2s linear both;
+}
+@-webkit-keyframes signal-animation {
+0% {
+    width: 20rpx;
+    height: 20rpx;
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.3);
+}
+40% {
+    width: 12rpx;
+    height: 12rpx;
+    opacity: 1;
+    top: -200px;
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.5);
+}
+100% {
+    width: 8rpx;
+    height: 8rpx;
+    opacity: 0;
+    top: -600rpx;
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.2);
+}
+}
+@keyframes signal-animation {
+0% {
+    width: 20rpx;
+    height: 20rpx;
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.3);
+}
+40% {
+    width: 12rpx;
+    height: 12rpx;
+    opacity: 1;
+    top: -200px;
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.5);
+}
+100% {
+    width: 8rpx;
+    height: 8rpx;
+    opacity: 0;
+    top: -600rpx;
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, 0.2);
+}
 }
 

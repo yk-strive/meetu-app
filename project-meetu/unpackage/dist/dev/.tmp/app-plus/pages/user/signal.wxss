@@ -24,12 +24,16 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
+#signalPage {
+  overflow-y: scroll;
+}
 .signal-wrap {
-  overflow: hidden;
+  margin-top: 100rpx;
+  height: calc(100% - 150rpx);
 }
 .signal-wrap .panel-scroll-box {
+    width: 100%;
     height: 100%;
-    padding-top: 50rpx;
 }
 .signal-wrap .cu-timeline {
     padding-top: 110rpx;
@@ -62,7 +66,7 @@
         left: 136rpx;
 }
 .signal-wrap view.signal_item > .cu-item .content.voice {
-        padding: 10rpx 40rpx;
+        padding: 20rpx 40rpx;
         display: -webkit-box;
         display: -webkit-flex;
         display: flex;
@@ -91,7 +95,8 @@
           -webkit-flex: 1;
                   flex: 1;
 }
-.signal-wrap view.signal_item > .cu-item .action .action_delete, .signal-wrap view.signal_item > .cu-item .action .action_share {
+.signal-wrap view.signal_item > .cu-item .action .action_delete,
+        .signal-wrap view.signal_item > .cu-item .action .action_share {
           color: #DAB96B;
 }
 

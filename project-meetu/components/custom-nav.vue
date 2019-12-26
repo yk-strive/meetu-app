@@ -6,10 +6,10 @@
 			</view>
 			<view class="content text-white">
 				<text class="title text-lg text-cut" v-if="textTitle">{{textTitle ? textTitle : ''}}</text>
-				<scroll-view scroll-x="true" class="scroll-tabs" v-if="tabsList">
+				<scroll-view scroll-x="true" class="scroll-tabs" v-if="tabsInfo">
 					<view class="scroll-tabs-list">
-						<view class="scroll-tabs-item" v-for="(item,index) in tabsList" :key="index" @tap="tabSelect(item)">
-							<text :class="item.id==TabCur?'cur':''">{{item.name}}</text>
+						<view class="scroll-tabs-item" v-for="(item,index) in tabsInfo.tabsList" :key="index" @tap="tabSelect(item)">
+							<text :class="item.id==tabsInfo.tabCur?'cur':''">{{item.name}}</text>
 						</view>
 					</view>
 				</scroll-view>
@@ -33,7 +33,6 @@
 			return {
 				StatusBar: this.StatusBar,
 				CustomBar: this.CustomBar,
-				TabCur: '1',
 			};
 		},
 		name: 'custom-nav',
@@ -58,8 +57,8 @@
 				type: String,
 				default: '',
 			},
-			tabsList: {
-				type: Array,
+			tabsInfo: {
+				type: Object,
 				default: null
 			}
 		},
@@ -76,7 +75,7 @@
 				this.$emit('right');
 			},
 			tabSelect(item) {
-				this.TabCur = item.id;
+				this.$emit('tabChange', item);
 			}
 		}
 	}

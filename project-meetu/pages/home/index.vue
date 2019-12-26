@@ -2,10 +2,10 @@
 	<view id="homePage" class="bg_page_1">
 		<custom-nav :isBack="false"></custom-nav>
 		<view class="AppName text-white text-lg">{{appName}}</view>
-		<view class="avatar round" @tap.stop="linkUser">
+		<view class="avatar round avatar-animation" @tap.stop="linkUser">
 			<image class="wh-100" v-bind:src="userInfo.headimgurl" mode="aspectFill"></image>
 		</view>
-		
+
 		<view class="home_bottom_act">
 			<view v-if="showSendToast" class="toast abs-center text-white text-xxs">
 				<text>给茫茫宇宙发射一个信号寻找远方的回应</text>
@@ -24,10 +24,10 @@
 				</view>
 			</view>
 			<view class="action_num text-center text-white text-xxs">
-				今日剩余次数：<text v-if="userNumber">{{userNumber.signal_config-userNumber.signal_number}}/{{userNumber.signal_config}}</text> 
+				今日剩余次数：<text v-if="userNumber">{{userNumber.signal_config-userNumber.signal_number}}/{{userNumber.signal_config}}</text>
 			</view>
 		</view>
-		
+
 		<cu-modal :modalName="modalName" :toastText="toastText" @hideModal="hideModal">
 			<block slot="bottomModal">
 				<view class="modal_info">
@@ -45,7 +45,7 @@
 							<text>有什么话想对ta说</text>
 						</view>
 					</view>
-					<view class="modal_info_item"  @tap.stop="linkAction('sendVoice')">
+					<view class="modal_info_item" @tap.stop="linkAction('sendVoice')">
 						<view class="img_box round">
 							<image class="abs-center" src="../../static/meetu-img/home_modal_voice.png" mode="aspectFill"></image>
 						</view>
@@ -66,16 +66,19 @@
 </template>
 
 <script>
-	import { mapGetters } from 'vuex';
+	import {
+		mapGetters
+	} from 'vuex';
+	import mixinInit from '../../mixins/init.js';
 	export default {
 		name: 'homeIndex',
-		components: {
-		},
+		components: {},
+		mixins: [mixinInit],
 		data() {
 			return {
-				modalName: '', // 弹窗类型-modal/bottomModal
-				toastText: '',
-				isSendSignal: false,
+				modalName: '', // 弹窗类型-modal/bottomModal/toastModal
+				toastText: '', //toast弹窗提示文本
+				isSendSignal: false, //发送消息,动画展示
 				appName: 'Meet U',
 				showSendToast: false,
 				userNumber: null,
@@ -86,14 +89,14 @@
 			...mapGetters(['userInfo'])
 		},
 		watch: {
-			
+
 		},
 		onLoad() {
 			this.api_UserInfo();
 			this.api_UserNumber();
 		},
 		onReady() {
-			if(uni.getStorageSync('homeSendToast')) {
+			if (uni.getStorageSync('homeSendToast')) {
 				this.showSendToast = false;
 			} else {
 				this.showSendToast = true;
@@ -103,27 +106,30 @@
 			if (getApp().globalData.sendSignal) {
 				this.isSendSignal = true;
 				this.api_UserNumber();
-				setTimeout(()=> {
+				setTimeout(() => {
 					getApp().globalData.sendSignal = false;
 					this.isSendSignal = false;
 				}, 4000);
 			}
 		},
 		methods: {
-			api_UserInfo(){
-				this.$http1.post('user/info').then(res=>{
+			api_UserInfo() {
+				this.$http1.post('user/info').then(res => {
 					// this.userinfo = res.data;
-					this.$store.dispatch('changeVal', {stateKey: 'userInfo', newValue: res.data})
-				}).catch(err=>{
+					this.$store.dispatch('changeVal', {
+						stateKey: 'userInfo',
+						newValue: res.data
+					})
+				}).catch(err => {
 					console.log('userinfo-err', err);
 				})
 			},
-			api_UserNumber() {//操作剩余次数
-				this.$http1.post('user/number').then(res=>{
+			api_UserNumber() { //操作剩余次数
+				this.$http1.post('user/number').then(res => {
 					// console.log('userNumber', res.data);
 					this.userNumber = res.data;
-				}).catch(err=>{
-					
+				}).catch(err => {
+
 				})
 			},
 			linkUser() {
@@ -134,7 +140,7 @@
 				})
 			},
 			linkAction(type) {
-				switch (type){
+				switch (type) {
 					case 'search':
 						uni.navigateTo({
 							url: '../search/search',
@@ -143,10 +149,10 @@
 						})
 						break;
 					case 'send':
-						if(!uni.getStorageSync('homeSendToast')) {
+						if (!uni.getStorageSync('homeSendToast')) {
 							uni.setStorageSync('homeSendToast', true);
 							this.showSendToast = false;
-						} 
+						}
 						this.modalName = 'bottomModal';
 						break;
 					case 'chatList':
@@ -186,6 +192,7 @@
 		.AppName {
 			padding-left: 50upx;
 		}
+
 		.avatar {
 			position: fixed;
 			top: 140upx;
@@ -193,12 +200,13 @@
 			width: 120upx;
 			height: 120upx;
 			overflow: hidden;
-			box-shadow: 0 0  12upx 12upx #69417C;
 		}
+
 		.home_bottom_act {
 			position: fixed;
 			bottom: 60upx;
 			width: 100%;
+
 			.toast {
 				top: -60%;
 				width: 314upx;
@@ -209,6 +217,7 @@
 				box-shadow: 0 0 10upx 10upx #2E2D53;
 				text-align: center;
 				line-height: 2;
+
 				&::after {
 					content: '';
 					position: absolute;
@@ -221,100 +230,122 @@
 					border-top: 60upx solid #453C5B;
 				}
 			}
+
 			.signal-ani {
 				opacity: 0;
-				width: 20rpx;
-				height: 20rpx;
 				border-radius: 50%;
-				background-color: rgba(255, 255, 255, .5);
-				box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .3);
 			}
-			.signal-animation {
-				animation: signal-animation 2s 2s linear both;
-			}
-			@keyframes signal-animation {
-				0%{
-					opacity: 1;
-				}
-				20%{
-					opacity: 1;
-					top: -40rpx;
-				}
-				40%{
-					opacity: .4;
-					top: -100rpx;
-					background-color: rgba(255, 255, 255, .2);
-					box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .5);
-				}
-				80%{
-					opacity: 1;
-					top: -300rpx;
-					background-color: rgba(255, 255, 255, .5);
-					box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .3);
-				}
-				100%{
-					opacity: 0;
-					top: -600rpx;
-					background-color: rgba(255, 255, 255, .3);
-					box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .5);
-				}
-			}
+
 			.home_action {
 				display: flex;
 				align-items: flex-end;
+
 				.action_item {
 					flex: 1;
 					text-align: center;
 					position: relative;
 				}
+
 				.action_item:nth-child(1) {
 					image {
 						width: 77upx;
 						height: 80upx;
 					}
 				}
+
 				.action_item:nth-child(2) {
 					image {
 						width: 130upx;
 						height: 152.6upx;
 					}
 				}
+
 				.action_item:nth-child(3) {
 					image {
 						width: 77upx;
 						height: 64upx;
 					}
-					.badge  {
+
+					.badge {
 						right: 28%;
 						top: -20upx;
 					}
 				}
 			}
+
 			.action_num {
 				margin-top: 20upx;
 			}
 		}
-		
+
 		.modal_info {
 			display: flex;
 			justify-content: space-around;
+
 			.modal_info_item {
 				flex: 1;
 				padding: 20upx 0;
+
 				.img_box {
 					width: 120upx;
 					height: 120upx;
 					margin: 0 auto;
 					position: relative;
 					background: linear-gradient(to left top, #616DEC, #D04795);
+
 					image {
 						width: 50upx;
 						height: 50upx;
 					}
 				}
+
 				.send_type {
 					padding: 10upx 0 20upx;
 				}
+			}
+		}
+	
+		.avatar-animation {
+			animation: avatar-animation 2s linear both infinite;
+		}
+		@keyframes avatar-animation {
+			0%{
+				box-shadow: 0 0 12rpx 12rpx rgba(105,65,124,0.8);
+			}
+			50% {
+				box-shadow: 0 0 12rpx 12rpx rgba(105,65,124,0.4);
+			}
+			100%{
+				box-shadow: 0 0 12rpx 12rpx rgba(105,65,124,0.8);
+			}
+		}
+		
+		.signal-animation { // 发送信号回首页--动画展示
+			animation: signal-animation 2s 2s linear both; 
+		}
+		@keyframes signal-animation {
+			0%{
+				width: 20rpx;
+				height: 20rpx;
+				opacity: 1;
+				background-color: rgba(255, 255, 255, .5);
+				box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .3);
+			}
+			40%{
+				width: 12rpx;
+				height: 12rpx;
+				opacity: 1;
+				top: -200px;
+				background-color: rgba(255, 255, 255, .3);
+				box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .5);
+			}
+			100%{
+				width: 8rpx;
+				height: 8rpx;
+				opacity: 0;
+				top: -600rpx;
+				background-color: rgba(255, 255, 255, .5);
+				box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .2);
 			}
 		}
 	}

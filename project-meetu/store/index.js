@@ -61,7 +61,7 @@ let store = new Vuex.Store({
 	},
 	actions: {
 		changeVal({commit}, options={stateKey, newValue}) {
-			console.log('a-'+options.stateKey, options.newValue);
+			// console.log('a-'+options.stateKey, options.newValue);
 			commit('changeVal', options)
 		}
 	}
