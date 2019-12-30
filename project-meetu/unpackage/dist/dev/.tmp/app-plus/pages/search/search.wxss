@@ -368,10 +368,10 @@
       width: 40rpx;
       height: 40rpx;
 }
-#searchPage .cu-modal {
+#searchPage .cu-modal.Modal {
   background: rgba(0, 0, 0, 0.4);
 }
-#searchPage .cu-modal .cu-dialog {
+#searchPage .cu-modal.Modal .cu-dialog {
     width: 526rpx;
     height: 432rpx;
     box-shadow: 0 0 6rpx 6rpx #4D2797;
@@ -396,6 +396,13 @@
         width: 100rpx;
         height: 100rpx;
         margin-right: 30rpx;
+        position: relative;
+}
+#searchPage .open_star .action_one .user_info .avatar .img_vip {
+          position: absolute;
+          bottom: 16rpx;
+          right: 20rpx;
+          z-index: 6;
 }
 #searchPage .open_star .action_one .user_info .name {
         color: #3A1091;

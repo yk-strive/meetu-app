@@ -20,10 +20,12 @@ let store = new Vuex.Store({
 	//state-仓库-存放定义好的值
 	state: {
 		token: '',
+		dailyLogin: 0, // 每日登录--这里只记录授权成功之后的daily_login的值.防止每日登录领取之后,将应用卸载在下载
 		userInfo: null,
 	},
 	getters: { // 获取仓库中存放的值,供页面使用
 		token(state) { return state.token},
+		dailyLogin(state) {return state.dailyLogin},
 		userInfo(state) { return state.userInfo}
 	},
 	// mutations-改变仓库中变量的值, 只能进行同步操作. 触发条件--store.commit('changeVal')

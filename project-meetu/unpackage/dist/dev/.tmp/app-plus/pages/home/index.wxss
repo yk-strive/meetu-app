@@ -24,16 +24,16 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-#homePage .AppName {
-  padding-left: 50rpx;
-}
-#homePage .avatar {
+#homePage .AppName, #homePage .avatar {
   position: fixed;
   top: 140rpx;
   right: 50rpx;
   width: 120rpx;
   height: 120rpx;
   overflow: hidden;
+}
+#homePage .AppName {
+  left: 50rpx;
 }
 #homePage .home_bottom_act {
   position: fixed;
@@ -83,7 +83,7 @@
       position: relative;
 }
 #homePage .home_bottom_act .home_action .action_item:nth-child(1) image {
-      width: 77rpx;
+      width: 80rpx;
       height: 80rpx;
 }
 #homePage .home_bottom_act .home_action .action_item:nth-child(2) image {
@@ -100,6 +100,36 @@
 }
 #homePage .home_bottom_act .action_num {
     margin-top: 20rpx;
+}
+#homePage .daily-login .daily-login-wrap {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+}
+#homePage .daily-login .daily-login-wrap image.bg, #homePage .daily-login .daily-login-wrap image.coin, #homePage .daily-login .daily-login-wrap view, #homePage .daily-login .daily-login-wrap button {
+    position: absolute;
+}
+#homePage .daily-login .daily-login-wrap image.bg {
+    width: 540rpx;
+}
+#homePage .daily-login .daily-login-wrap image.coin {
+    width: 84rpx;
+    height: 74rpx;
+    margin-top: -90rpx;
+}
+#homePage .daily-login .daily-login-wrap view {
+    width: 200rpx;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+}
+#homePage .daily-login .daily-login-wrap button {
+    width: 270rpx;
+    height: 64rpx;
+    margin-top: 100rpx;
+    margin-left: 10rpx;
 }
 #homePage .modal_info {
   display: -webkit-box;

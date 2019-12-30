@@ -28,6 +28,7 @@
 
 <script>
 	import permision from "@/common/wa-permission/permission.js"
+	import mixinInit from "../../mixins/init.js";
 	import {
 		mapGetters,mapMutations
 	} from 'vuex'
@@ -37,10 +38,9 @@
 	export default {
 		name: 'sendVoice',
 		components: {},
+		mixins: [mixinInit],
 		data() {
 			return {
-				modalName: '',
-				toastText: '',
 				voiceCancel: false, // 询问录音权限未开启时, app弹窗询问时, touchcancel事件触发, 更改值为true; 为true时, 录音将会停止(解决弹窗询问时允许之后,录音依旧开始记录的问题);
 				timer: null,
 				intervalTime: 0,
@@ -197,8 +197,7 @@
 							seconds: self.intIntervalTime,
 						}).then(res=>{
 							console.log('语音信号', res);
-							this.modalName = "toastModal";
-							this.toastText = "信号已发往星球";
+							this.modalShow('toastModal', '信号已发往星球')
 							getApp().globalData.sendSignal = true;
 							setTimeout(function() {
 								uni.navigateBack({

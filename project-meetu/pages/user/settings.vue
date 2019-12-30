@@ -15,13 +15,16 @@
 				<button class="cu-btn bg-color-main round text-letter-df" @click="actionTapHandle('outApp')">退出登录</button>
 			</view>
 		</view>
+		<cu-modal :modalName="modalName" :toastText="toastText"></cu-modal>
 	</view>
 </template>
 
 <script>
-	import { mapMutations } from "vuex"
+	import { mapMutations } from "vuex";
+	import mixinInit from "../../mixins/init.js"
 	export default {
 		name: '',
+		mixins:[mixinInit],
 		data() {
 			return {
 				actionList: [
@@ -46,6 +49,18 @@
 		},
 		methods: {
 			...mapMutations(['outApp']),
+			api_OutApp() {
+				this.$http1.post('user/out-login').then(res=>{
+					if(res.code == 0) {
+						this.outApp();
+						uni.reLaunch({
+							url: '../initial/wxoauth'
+						});
+					} else {
+						this.modalShow('toastModal', res.msg)
+					}
+				})
+			},
 			actionTapHandle(navUrl) {
 				switch(navUrl) {
 					case 'edit':
@@ -62,10 +77,7 @@
 					case 'about':
 						break;
 					case 'outApp':
-						this.outApp();
-						uni.reLaunch({
-							url: '../initial/wxoauth'
-						});
+						
 						break;
 				}
 			}

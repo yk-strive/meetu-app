@@ -26,7 +26,6 @@
 /* 文章场景相关 */
 .custom-nav {
   position: relative;
-  padding-top: 30rpx;
 }
 .custom-nav .custom-nav-bar {
     position: fixed;
@@ -100,5 +99,86 @@
         -webkit-flex: 1;
                 flex: 1;
         padding-right: 30rpx;
+}
+.app-custom-nav {
+  width: 100%;
+  height: 180rpx;
+  position: relative;
+}
+.app-custom-nav .app-custom-nav-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 180rpx;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-align: end;
+    -webkit-align-items: flex-end;
+            align-items: flex-end;
+    border-bottom: 2rpx solid red;
+}
+.app-custom-nav .app-custom-nav-bar .back {
+      height: 100rpx;
+      padding-left: 40rpx;
+      font-size: 70rpx;
+}
+.app-custom-nav .app-custom-nav-bar .action {
+      width: 100%;
+      height: 100rpx;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+              align-items: center;
+}
+.app-custom-nav .app-custom-nav-bar .action .page_title {
+        font-size: 36rpx;
+        padding-left: 40rpx;
+}
+.app-custom-nav .app-custom-nav-bar .action .content {
+        width: 100%;
+}
+.app-custom-nav .app-custom-nav-bar .action .content .scroll-tabs {
+          width: 100%;
+}
+.app-custom-nav .app-custom-nav-bar .action .content .scroll-tabs .scroll-tabs-lists {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-justify-content: space-around;
+                    justify-content: space-around;
+}
+.app-custom-nav .app-custom-nav-bar .action .content .scroll-tabs .scroll-tabs-lists .scroll-tabs-item {
+              height: 100rpx;
+              line-height: 3;
+              color: #FFFFFF;
+              font-size: 30rpx;
+}
+.app-custom-nav .app-custom-nav-bar .action .content .scroll-tabs .scroll-tabs-lists .scroll-tabs-item .cur {
+                position: relative;
+                font-size: 34rpx;
+                line-height: 2.5;
+}
+.app-custom-nav .app-custom-nav-bar .action .content .scroll-tabs .scroll-tabs-lists .scroll-tabs-item .cur::before {
+                  content: '';
+                  position: absolute;
+                  left: 50%;
+                  bottom: -20rpx;
+                  -webkit-transform: translate(-50%, -50%);
+                          transform: translate(-50%, -50%);
+                  width: 50%;
+                  height: 6rpx;
+                  border-radius: 10rpx;
+                  background-color: #FFFFFF;
+}
+.app-custom-nav .app-custom-nav-bar .action .right {
+        position: absolute;
+        right: 0;
+        font-size: 28rpx;
+        padding-right: 40rpx;
 }
 

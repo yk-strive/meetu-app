@@ -28,8 +28,7 @@
   overflow-y: scroll;
 }
 .signal-wrap {
-  margin-top: 100rpx;
-  height: calc(100% - 150rpx);
+  height: calc(100% - 180rpx);
 }
 .signal-wrap .panel-scroll-box {
     width: 100%;

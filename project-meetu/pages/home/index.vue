@@ -1,6 +1,5 @@
 <template>
 	<view id="homePage" class="bg_page_1">
-		<custom-nav :isBack="false"></custom-nav>
 		<view class="AppName text-white text-lg">{{appName}}</view>
 		<view class="avatar round avatar-animation" @tap.stop="linkUser">
 			<image class="wh-100" v-bind:src="userInfo.headimgurl" mode="aspectFill"></image>
@@ -27,7 +26,17 @@
 				今日剩余次数：<text v-if="userNumber">{{userNumber.signal_config-userNumber.signal_number}}/{{userNumber.signal_config}}</text>
 			</view>
 		</view>
-
+		
+		<view class="daily-login cu-modal" :class="showDailyLogin ? 'show' : ''">
+			<view class="daily-login-wrap">
+				<view class="flex-df">
+					<image class="bg" src="../../static/meetu-img/login_prize.png" mode="widthFix"></image>
+					<image class="coin" src="../../static/meetu-img/dou.png" mode="aspectFill"></image>
+					<view class="text-letter-df w-100">星豆+5</view>
+					<button class="cu-btn bg-color-main round" @tap.stop="dailyLogin">立即领取</button>
+				</view>
+			</view>
+		</view>
 		<cu-modal :modalName="modalName" :toastText="toastText" @hideModal="hideModal">
 			<block slot="bottomModal">
 				<view class="modal_info">
@@ -76,9 +85,10 @@
 		mixins: [mixinInit],
 		data() {
 			return {
-				modalName: '', // 弹窗类型-modal/bottomModal/toastModal
-				toastText: '', //toast弹窗提示文本
+				// modalName: '', // 弹窗类型-modal/bottomModal/toastModal
+				// toastText: '', //toast弹窗提示文本
 				isSendSignal: false, //发送消息,动画展示
+				showDailyLogin: false,
 				appName: 'Meet U',
 				showSendToast: false,
 				userNumber: null,
@@ -86,15 +96,16 @@
 			}
 		},
 		computed: {
-			...mapGetters(['userInfo'])
+			...mapGetters(['userInfo', 'dailyLogin'])
 		},
 		watch: {
-
+			
 		},
 		onLoad() {
-			this.api_UserInfo();
 			this.api_UserNumber();
+			// getApp().globalData.socket.initSocket();
 		},
+		
 		onReady() {
 			if (uni.getStorageSync('homeSendToast')) {
 				this.showSendToast = false;
@@ -103,6 +114,7 @@
 			}
 		},
 		onShow() {
+			this.api_UserInfo()
 			if (getApp().globalData.sendSignal) {
 				this.isSendSignal = true;
 				this.api_UserNumber();
@@ -110,6 +122,23 @@
 					getApp().globalData.sendSignal = false;
 					this.isSendSignal = false;
 				}, 4000);
+			}
+
+			if (this.dailyLogin == 1) {
+				return false;
+			} else {
+				if (uni.getStorageSync('dailyLoginExpires')) {
+					let now = (new Date()).getTime();
+					if (now > uni.getStorageSync('dailyLoginExpires')) {
+						this.clog('mow', '超过')
+						this.showDailyLogin = true;
+					} else {
+						this.clog('mow', '未超过')
+						this.showDailyLogin = false;
+					}
+				} else {
+					this.showDailyLogin = true;
+				}
 			}
 		},
 		methods: {
@@ -120,6 +149,7 @@
 						stateKey: 'userInfo',
 						newValue: res.data
 					})
+					this.number = true;
 				}).catch(err => {
 					console.log('userinfo-err', err);
 				})
@@ -131,6 +161,19 @@
 				}).catch(err => {
 
 				})
+			},
+			api_DailyLogin() {
+				let self = this;
+				this.$http1.post('points/daily-login').then(res=>{
+					if (res.code == 0) {
+						this.modalShow('toastModal', '领取成功');
+						this.showDailyLogin = false;
+						uni.setStorageSync('dailyLoginExpires', self.expiresTime());
+					}
+				})
+			},
+			dailyLogin() {
+				this.api_DailyLogin();
 			},
 			linkUser() {
 				uni.navigateTo({
@@ -144,7 +187,7 @@
 					case 'search':
 						uni.navigateTo({
 							url: '../search/search',
-							animationDuration: 300,
+							animationDuration: 500,
 							animationType: 'fade-in'
 						})
 						break;
@@ -158,7 +201,7 @@
 					case 'chatList':
 						uni.navigateTo({
 							url: '../chat/list',
-							animationDuration: 300,
+							animationDuration: 500,
 							animationType: 'fade-in'
 						})
 						break;
@@ -166,7 +209,7 @@
 						this.modalName = '';
 						uni.navigateTo({
 							url: '../send/text',
-							animationDuration: 300,
+							animationDuration: 500,
 							animationType: 'fade-in'
 						})
 						break;
@@ -174,11 +217,19 @@
 						this.modalName = '';
 						uni.navigateTo({
 							url: '../send/voice',
-							animationDuration: 300,
-							animationType: 'slide-in-bottom'
+							animationDuration: 500,
+							animationType: 'fade-in'
 						})
 						break;
 				}
+			},
+			expiresTime() {
+				let now = new Date();
+				var year = now.getFullYear(),
+					month = now.getMonth()+1 > 9 ? now.getMonth()+1 : '0' + now.getMonth()+1,
+					date = now.getDate() > 9 ? now.getDate() : '0' + now.getDate();
+				let expires = year + '/' + month + '/' + date + ' 23:59:59';
+				return (new Date(expires)).getTime();
 			},
 			hideModal() {
 				this.modalName = '';
@@ -189,17 +240,16 @@
 
 <style lang="scss">
 	#homePage {
-		.AppName {
-			padding-left: 50upx;
-		}
-
-		.avatar {
+		.AppName, .avatar {
 			position: fixed;
-			top: 140upx;
-			right: 50upx;
-			width: 120upx;
-			height: 120upx;
+			top: 140rpx;
+			right: 50rpx;
+			width: 120rpx;
+			height: 120rpx;
 			overflow: hidden;
+		}
+		.AppName {
+			left: 50rpx;
 		}
 
 		.home_bottom_act {
@@ -248,33 +298,66 @@
 
 				.action_item:nth-child(1) {
 					image {
-						width: 77upx;
-						height: 80upx;
+						width: 80rpx;
+						height: 80rpx;
 					}
 				}
 
 				.action_item:nth-child(2) {
 					image {
-						width: 130upx;
-						height: 152.6upx;
+						width: 130rpx;
+						height: 152.6rpx;
 					}
 				}
 
 				.action_item:nth-child(3) {
 					image {
-						width: 77upx;
-						height: 64upx;
+						width: 77rpx;
+						height: 64rpx;
 					}
 
 					.badge {
 						right: 28%;
-						top: -20upx;
+						top: -20rpx;
 					}
 				}
 			}
 
 			.action_num {
 				margin-top: 20upx;
+			}
+		}
+
+		.daily-login {
+			.daily-login-wrap {
+				position: relative;
+				display: inline-block;
+				vertical-align: middle;
+				margin-left: auto;
+				margin-right: auto;
+				
+				image.bg,image.coin, view, button {
+					position: absolute;
+				}
+				image.bg {
+					width: 540rpx;
+				}
+				image.coin {
+					width: 84rpx;
+					height: 74rpx;
+					margin-top: -90rpx;
+				}
+				view {
+					width: 200rpx;
+					left: 50%;
+					transform: translateX(-50%);
+				}
+				button {
+					width: 270rpx;
+					height: 64rpx;
+					margin-top: 100rpx;
+					margin-left: 10rpx;
+				}
 			}
 		}
 

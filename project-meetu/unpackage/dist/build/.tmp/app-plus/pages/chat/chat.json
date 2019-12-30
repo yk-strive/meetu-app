@@ -1,0 +1,6 @@
+{
+  "bounce": "none",
+  "usingComponents": {
+    "custom-nav": "/components/custom-nav"
+  }
+}

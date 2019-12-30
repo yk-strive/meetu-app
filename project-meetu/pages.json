@@ -50,11 +50,15 @@
 		},
 		{
 			"path": "pages/user/coin",
-			"style": {}
+			"style": {
+				
+			}
 		},
 		{
 			"path": "pages/user/coinrecord",
-			"style": {}
+			"style": {
+				"onReachBottomDistance": 20
+			}
 		},
 		{
 			"path": "pages/user/settings",

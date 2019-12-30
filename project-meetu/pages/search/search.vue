@@ -5,25 +5,26 @@
 		<image class="img_change" @tap.stop="searchChange" src="../../static/meetu-img/huan.png"></image>
 		<view class="search_view">
 			<view v-if="isSearch" class="text-center text-white padding-top-lg">信号搜寻中, 请期待~~</view>
-			<view class="search_item animation-slide-bottom" v-show="item" v-for="item,index in searchValue" :key="index" :style="[{left: tempLeftNum[index] + 'px'}, {top:tempTopNum[index] + 'px'}, {animationDelay: (index + 1)*0.1 + 's'}]"
+			<view class="search_item animation-slide-bottom" v-show="item.isDisplay" v-for="item,index in searchValue" :key="index" :style="[{left: item.left + 'px'}, {top:item.top + 'px'}, {animationDelay: (index + 1)*0.1 + 's'}]"
 			 @click="openStarHandle(item, index)">
 				<image class="img_star" src="../../static/meetu-img/star.png"></image>
-				<image class="img_avatar round abs-center" :src="item.avatar"></image>
+				<image class="img_avatar round abs-center" :src="item.headimgurl" mode="aspectFill"></image>
 			</view>
 		</view>
 
-		<cu-modal :modalName="modalName" @hideModal="hideModal">
+		<cu-modal :modalName="modalName" @hideModal="hideModal" :toastText="toastText">
 			<block slot="modal">
 				<view class="open_star">
 					<!-- 信息展示 -->
 					<view class="action_one wh-100 padding-lg">
 						<view class="user_info">
 							<view class="avatar">
-								<image class="wh-100 round" :src="openItem.avatar"></image>
+								<image class="wh-100 round" :src="openItem.headimgurl" mode="aspectFill"></image>
+								<image class="img_vip" v-if="openItem.isvip == 1" src="../../static/meetu-img/vip.png" mode="aspectFill"></image>
 							</view>
 							<view>
 								<view class="name text-sm text-left text-letter-df">
-									<text>{{openItem.name}}</text>
+									<text>{{openItem.nickname}}</text>
 									<image :src="openItem.sex==1 ? '../../static/meetu-img/female.png' : '../../static/meetu-img/male.png'"></image>
 								</view>
 								<view class="text-xxs text-black-m text-left text-letter-df">
@@ -32,14 +33,15 @@
 							</view>
 						</view>
 						<view class="star_info text-sm text-letter-df text-left">
-							<text v-if="openItem.contenttype == 'text'">{{openItem.content}}</text>
-							<image class="wh-100" v-if="openItem.contenttype == 'img'" :src="openItem.content" mode="aspectFill"></image>
-							<view class="voice" v-if="openItem.contenttype == 'voice'" @click="playVoiceHandle(openItem.content)">
+							<text v-if="openItem.type == 1">{{openItem.content}}</text>
+							<image class="wh-100" v-if="openItem.type == 3" :src="openItem.content" mode="aspectFill"></image>
+							<view class="voice" v-if="openItem.type == 2" @click="playVoiceHandle(openItem.content)">
 								<image :src="voicePlay ? '../../static/meetu-img/xh.gif' : '../../static/meetu-img/xh.png'" mode="aspectFill"></image>
+								<text>{{openItem.seconds}}s</text>
 							</view>
 						</view>
 						<view class="btn">
-							<button class="cu-btn text-sm" @tap.stop="hideModal('hide')">忽略</button>
+							<button class="cu-btn text-sm" @tap.stop="neglectHandle()">忽略</button>
 							<button class="cu-btn text-sm" @tap.stop="actionTwoToggle('open')">回应</button>
 						</view>
 					</view>
@@ -61,6 +63,7 @@
 
 <script>
 	import cuModal from "@/meetu-ui/components/cu-modal.vue";
+	import mixinInit from '../../mixins/init.js';
 	const innerAudioContext = uni.createInnerAudioContext();
 	innerAudioContext.autoplay = true;
 	export default {
@@ -68,6 +71,7 @@
 		components: {
 			cuModal
 		},
+		mixins: [mixinInit],
 		data() {
 			return {
 				searchItemW: uni.upx2px(74),
@@ -79,8 +83,11 @@
 				// 以上是和信号位置信息相关
 
 				modalName: '',
-				isSearch: true,
+				isSearch: true,  // 展示搜索时的提示
+				
 				searchValue: [],
+				isNewSignal: false, // 是否用新的信号(>5)
+				
 				openItem: null, // 打开某一星星的内容
 				openNum: 0,  // 打开星星的次数
 				showActionTwo: false,
@@ -104,9 +111,126 @@
 				self.maxHNum = data.height / self.searchItemW;
 			}).exec();
 
-			this.searchChange();
+			// this.searchChange();
+		},
+		// 存储-- searchInfo: {searchValue: [], page: }
+		onShow() {
+			this.initData();
+		},
+		watch: {
+			isNewSignal() {
+				if (this.isNewSignal) {
+					this.api_SignalReceive();
+				}
+			}
 		},
 		methods: {
+			api_SignalReceive() {
+				let self = this;
+				this.$http1.post('signal/receive',{
+					page: self.page
+				}).then(res=>{
+					this.isSearch = false;
+					
+					if (res.data && res.data.length > 0) {
+						for (var i = 0; i < res.data.length; i++) {
+							res.data[i].isDisplay = true; // 每一项添加isDisplay--true展示, false隐藏
+							this.randomLocationLeft();
+							this.randomLocationTop();
+							// 每一项的位置的补充, 方便页面卸载/隐藏时 直接存储.
+							res.data[i].top = this.tempTopNum[i];
+							res.data[i].left = this.tempLeftNum[i];
+						}
+						self.searchValue = res.data;
+						self.clog('搜寻结果++'+self.page, res);
+						self.page++;
+					} else {
+						self.clog('没有搜寻结果++'+self.page);
+						// if(self.page == 1) {
+						// 	this.modalShow('toastModal', '没有更多信号了');
+						// } else {
+							self.page = 1;
+							self.api_SignalReceive();
+						// }
+					}
+				}).catch(err=>{
+					this.modalShow('toastModal', err.msg);
+				})
+			},
+			api_SignalRefresh() {
+				console.log('刷星');
+				let self = this;
+				this.$http1.post('signal/refresh').then(res=>{
+					self.clog('刷新信号', res);
+					if(res.data.number >= 5) { // 有超过5条的新信号了
+						this.page = 1;
+						this.isNewSignal = true;
+					} else {
+						this.isNewSignal = false;
+						this.api_SignalReceive();
+					}
+				}).catch(err=>{
+					self.clog('刷新信号失败', err)
+				})
+			},
+			api_SignalNeglect(signalId) {
+				this.$http1.post('signal/neglect', {
+					signal_id: signalId
+				}).then(res=>{
+					this.modalName = '';
+				})
+			},
+			api_SignalReply(signalId,content) {
+				this.$http1.post('signal/reply', {
+					signal_id: signalId,
+					content: content
+				}).then(res=>{
+					// 提交消息完成,textarea值置空, 隐藏弹窗, 回应消息UI状态重置
+					this.textareaValue = '';
+					this.hideModal('hide');
+					this.showActionTwo = false;
+					setTimeout(() => {
+						this.modalShow('toastModal', '回复成功');
+					}, 100);
+				})
+			},
+			initData() { // 页面初始
+				/**
+				 * 搜索信号原则 (因为有搜索次数限制/次数用完星豆消耗的机制, 所以需要这样做.)
+				 * 	第一次进入时(没有存储搜索信息-即App下载后第一次进入该页面时)
+				 * 		请求搜索信号接口, 获取数据
+				 *	其余情况进入
+				 * 		获取存储的数据, 页面展示
+				 * 按照这个原则, 在 页面隐藏onHide(手机Home键,手机进入后台程序)/页面卸载onUnload(uni-back,手机返回按钮) 时,
+				 * 		需要保存当前的数据.
+				 * 按钮刷一刷
+				 * 		需要先请求 api_SignalRefresh, 会返回number, 
+				 * 			number有数据且&&>5时, 就从第一页page=1开始请求.
+				 * 			number无数据 || <5, page++
+				 * */
+				if (uni.getStorageSync('searchInfo')) {
+					let searchInfo = JSON.parse(uni.getStorageSync('searchInfo'));
+					this.clog('存储的搜索信息', searchInfo);
+					this.isSearch = false;
+					this.searchValue = searchInfo.searchValue;
+					this.page = searchInfo.page
+				} else {
+					this.api_SignalReceive();
+				}
+			},
+			
+			saveData() {
+				let self = this;
+				let searchInfo = {
+					searchValue: self.searchValue,
+					page: self.page
+				}
+				uni.setStorage({
+					key: 'searchInfo',
+					data: JSON.stringify(searchInfo)
+				})
+			},
+			
 			randomLocationLeft() { // 获取随机left的位置
 				let left_random = this.getRandomIntInclusive(1, this.maxWNum - 1) * this.searchItemW;
 				if (this.tempLeftNum.length === 0) {
@@ -146,75 +270,28 @@
 				this.searchValue = [];
 				this.isSearch = true;
 				this.openNum = 0;
-				setTimeout(() => {
-					this.isSearch = false;
-					this.searchValue = [{
-							name: '测试1',
-							avatar: '../../static/logo.png',
-							sex: 1 ,
-							contenttype: 'text',
-							content: '命运！不配做我的对手！ |  将这混乱的时代拉回正轨！ | 虽然身为坦克，但是依然不缺少一代王者的霸气！'
-						},
-						{
-							name: '测试2',
-							avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg',
-							sex: 1,
-							contenttype: 'text',
-							content: '不是你记忆中的荆轲，但致命的程度，没两样！ | 不知道你的名字，但清楚你的死期！命运！不配做我的对手！ |  将这混乱的时代拉回正轨！ | 虽然身为坦克，但是依然不缺少一代王者的霸气'
-						},
-						{
-							name: '测试3',
-							avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81005.jpg',
-							sex: 1,
-							contenttype: 'img',
-							content: 'https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=1239991101,3265901600&fm=173&app=25&f=JPEG?w=640&h=360&s=E8D0618C427785C61AD9A18903003082'
-						},
-						{
-							name: '测试4',
-							avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big25002.jpg',
-							sex: 1,
-							contenttype: 'voice',
-							content: '../../static/temp.mp3'
-						},
-						{
-							'name': '测试5',
-							avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big99008.jpg',
-							sex: 0,
-							contenttype: 'voice',
-							content: '../../static/temp.mp3'
-						},
-					]
-					for (var i = 0; i < this.searchValue.length; i++) {
-						this.randomLocationLeft();
-						this.randomLocationTop();
-					}
-					// console.log(this.tempLeftNum);
-					// console.log(this.tempTopNum);
-				}, 2000);
+				this.api_SignalRefresh();
 			},
 
 			openStarHandle(item,index) { // 打开信号
 				this.modalName = 'Modal';
 				this.openItem = item;
 				this.openNum += 1;
-				this.searchValue.splice(index, 1, null);
+				// this.searchValue.splice(index, 1, null);
+				this.searchValue[index].isDisplay = false;
 				
-				if (this.openNum >= 5) {
-					this.searchChange();
+				if (this.openNum >= this.searchValue.length) {
+					// this.searchChange();
 				}
 			},
-
+			neglectHandle() { //忽略信息
+				this.api_SignalNeglect(this.openItem.id);
+			},
 			hideModal(type) { // 隐藏cu-modal
 				if (type) {
 					this.modalName = '';
 					setTimeout(()=> {
-						if (this.openItem.contenttype == 'voice') { // 声音信号隐藏弹窗时的处理
-							if (!innerAudioContext.paused) {
-								innerAudioContext.stop();
-							}
-							innerAudioContext.src = '';
-							this.voicePlay = false;
-						}
+						this.stopVoiceHandle();
 						this.openItem = null;
 					}, 300);
 				}
@@ -232,7 +309,15 @@
 					}
 				}
 			},
-			
+			stopVoiceHandle() { // 停止语音播放
+				if (this.openItem && this.openItem.contenttype == 'voice') {
+					if (!innerAudioContext.paused) {
+						innerAudioContext.stop();
+					}
+					innerAudioContext.src = '';
+					this.voicePlay = false;
+				}
+			},
 			actionTwoToggle(type) { // 展示回应消息UI
 				if (type == 'open') {
 					this.showActionTwo = true;
@@ -243,13 +328,26 @@
 			
 			submitSendHandle(e) { // 提交回应消息
 				// console.log(e);
-				
+				this.api_SignalReply(this.openItem.id, this.textareaValue);
 				// 提交消息完成,textarea值置空, 隐藏弹窗, 回应消息UI状态重置
-				this.textareaValue = '';
-				this.hideModal('hide');
-				this.showActionTwo = false;
+				// this.textareaValue = '';
+				// this.hideModal('hide');
+				// this.showActionTwo = false;
 			}
 		},
+		onHide() {
+			console.log('----隐藏----')
+			this.stopVoiceHandle();
+			this.saveData();
+		},
+		// onBackPress() {
+		// 	console.log('----页面返回----');
+		// },
+		onUnload() {
+			this.stopVoiceHandle();
+			this.saveData();
+			console.log('----页面卸载----');
+		}
 	}
 </script>
 
@@ -301,7 +399,7 @@
 			}
 		}
 
-		.cu-modal {
+		.cu-modal.Modal {
 			background: rgba(0, 0, 0, 0.4);
 
 			.cu-dialog {
@@ -325,6 +423,13 @@
 						width: 100rpx;
 						height: 100rpx;
 						margin-right: 30rpx;
+						position: relative;
+						.img_vip {
+							position: absolute;
+							bottom: 16rpx;
+							right: 20rpx;
+							z-index: 6;
+						}
 					}
 					.name {
 						color: #3A1091;

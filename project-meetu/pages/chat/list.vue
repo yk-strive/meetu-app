@@ -1,7 +1,7 @@
 <template>
 	<view id="chatListPage" class="bg_page_3">
 		<custom-nav :isBack="true" textTitle="消息"></custom-nav>
-		<view class="chatlist-wrap">
+		<view class="chatlist-wrap wrap_heihgt">
 			<mix-pulldown-refresh ref="mixPulldownRefresh" class="panel-content" :top="CustomBar" @refresh="onPulldownReresh"
 			 @setEnableScroll="setEnableScroll">
 				<scroll-view class="panel-scroll-box" :scroll-y="enableScroll" @scrolltolower="loadMore">
@@ -244,15 +244,9 @@
 </script>
 
 <style lang="scss">
-	.chatlist-wrap {  
-		overflow: hidden;
-	}
 	.panel-scroll-box {
 		height: 100%;
-		padding-top: 50rpx;
-	}
-	.cu-list {
-		padding-top: 50rpx;
+		padding-bottom: 20rpx;
 	}
 
 	// 消息列表样式改动, 符合设计图的样式

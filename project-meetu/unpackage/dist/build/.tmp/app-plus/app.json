@@ -2,7 +2,17 @@
   "pages": [
     "pages/initial/wxoauth",
     "pages/initial/personaldata",
-    "pages/home/index"
+    "pages/home/index",
+    "pages/send/text",
+    "pages/send/voice",
+    "pages/search/search",
+    "pages/chat/list",
+    "pages/chat/chat",
+    "pages/user/index",
+    "pages/user/signal",
+    "pages/user/coin",
+    "pages/user/coinrecord",
+    "pages/user/settings"
   ],
   "window": {
     "navigationBarTextStyle": "black",
@@ -20,6 +30,7 @@
   "appname": "project-meetu",
   "compilerVersion": "2.4.6",
   "usingComponents": {
-    "custom-nav": "/components/custom-nav"
+    "custom-nav": "/components/custom-nav",
+    "cu-modal": "/meetu-ui/components/cu-modal"
   }
 }

@@ -2,7 +2,7 @@
 	<view id="personaldata_page" class="bg_page_2">
 		<!-- text-title="完善个人资料" text-right="星豆记录" -->
 		<custom-nav :isBack="isEditInfo?true:false" :textTitle="isEditInfo?'修改个人信息':''"></custom-nav>
-		<scroll-view scroll-y="true">
+		<scroll-view scroll-y="true" class="wrap_heihgt">
 			<view class="avatar_box">
 				<image class="abs-center avatar_bg" src="../../static/meetu-img/face.png" mode="aspectFill"></image>
 				<view class="avatar abs-center round">
@@ -52,7 +52,7 @@
 <script>
 	import wPicker from "@/components/w-picker/w-picker.vue";
 	import pictureTailor from "@/components/picture-tailor/pictureTailor.vue";
-	// 以下路径需根据项目实际情况填写
+	import mixinInit from "../../mixins/init.js";
 	import {
 		mapGetters,mapMutations
 	} from 'vuex'
@@ -62,11 +62,10 @@
 			wPicker,
 			pictureTailor
 		},
+		mixins: [mixinInit],
 		data() {
 			return {
 				isEditInfo: false, // true-从编辑信息页面进入,显示返回按钮和title
-				modalName: '', // 弹窗显示类型
-				toastText: '', // toast弹窗的提示语
 				userInfo: null,
 				ischangeHeadimg: false,
 				selectList: [{
@@ -105,15 +104,6 @@
 		computed: {
 			...mapGetters(['token'])
 		},
-		watch: {
-			modalName() {
-				if (this.modalName === 'toastModal') {
-					setTimeout(()=>{
-						this.modalName = '';
-					}, 1500)
-				}
-			}
-		},
 		onLoad(options) {
 			this.isEditInfo = options.type && options.type == 'edit' ? true : false;
 			this.api_UserInfo();
@@ -126,10 +116,11 @@
 			api_UserInfo() {
 				this.$http1.post('user/info').then(res => {
 					// console.log('------userinfo-----', res);
+					res.data.province = '' ; res.data.city = '';
 					this.userInfo = res.data;
 					this.sex = res.data.sex == 1 ? '男' : '女';
 					this.pickerBirthdayInfo.result = res.data.birthday ? res.data.birthday : this.pickerBirthdayInfo.result;
-					this.pickerRegionInfo.result = res.data.province + '' + res.data.city;
+					this.pickerRegionInfo.result = res.data.province && res.data.city ? res.data.province + '' + res.data.city : this.pickerRegionInfo.result;
 				}).catch(err => {
 					console.log('userinfo-err', err);
 				})
@@ -180,8 +171,7 @@
 			},
 			togglePicker(mode) {
 				if (mode == 'selector' && this.userInfo.isedit == 1) { //isedit==1说明已经修改过性别,则不允许再修改
-					this.modalName = 'toastModal';
-					this.toastText = '性别只能修改一次, 你已修改过';
+					this.modalShow('toastModal', '性别只能修改一次, 你已修改过')
 					return false;
 				}
 				this.mode = mode;
@@ -207,18 +197,15 @@
 				let self = this;
 				let tempInfo = {};
 				if (e.detail.value.nickname == '') {
-					this.modalName = 'toastModal';
-					this.toastText = '昵称不能为空';
+					this.modalShow('toastModal', '昵称不能为空')
 					return false;
 				}
 				if (this.pickerBirthdayInfo.result === '选择生日') {
-					this.modalName = 'toastModal';
-					this.toastText = '请选择你的出生日期';
+					this.modalShow('toastModal', '请选择你的出生日期')
 					return false;
 				}
 				if (this.pickerRegionInfo.result.match(/\w/)!=null) {
-					this.modalName = 'toastModal';
-					this.toastText = '请选择地区(中文)';
+					this.modalShow('toastModal', '请选择地区(中文)')
 					return false;
 				}
 				if (e.detail.value.nickname != this.userInfo.nickname && e.detail.value.nickname!='') {
@@ -252,8 +239,7 @@
 						for (let key in tempInfo) {
 							this.userInfo[key] = tempInfo[key];
 						}
-						this.modalName='toastModal';
-						this.toastText="信息修改成功";
+						this.modalShow('toastModal', '信息修改成功')
 						this.$store.dispatch('changeVal', {stateKey: 'userInfo', newValue: self.userInfo})
 					} else {
 						uni.redirectTo({
@@ -272,17 +258,13 @@
 	#personaldata_page {
 		overflow-y: scroll;
 
-		scroll-view {
-			height: calc(100% - 128upx);
-		}
-
 		.avatar_box {
 			position: relative;
 			width: 100%;
-			height: 346upx;
+			height: 346rpx;
 
 			image.avatar_bg {
-				width: 326upx;
+				width: 326rpx;
 				height: 100%;
 			}
 

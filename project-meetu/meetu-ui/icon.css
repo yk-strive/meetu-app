@@ -59,3 +59,6 @@
 .cuIcon-picfill:before {
 	content: "\e72c";
 }
+.cuIcon-close:before {
+	content: "\e646";
+}

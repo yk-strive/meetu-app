@@ -65,9 +65,7 @@
                         "UniversalLinks" : ""
                     }
                 },
-                "push" : {
-                    "unipush" : {}
-                },
+                "push" : {},
                 "payment" : {
                     "weixin" : {
                         "appid" : "wx04a9745d1e461dcd",

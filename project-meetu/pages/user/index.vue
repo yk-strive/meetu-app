@@ -13,7 +13,8 @@
 				</view>
 				<view class="nickname flex-df text-white text-lg">
 					<text>{{userInfo.nickname}}</text>
-					<image :src="userInfo.sex==1?'../../static/meetu-img/male.png':'../../static/meetu-img/female.png'" mode="aspectFill"></image>
+					<image class="img_vip" v-if="userInfo.isvip == 1" src="../../static/meetu-img/vip.png" mode="aspectFill"></image>
+					<image class="sex" :src="userInfo.sex==1?'../../static/meetu-img/male.png':'../../static/meetu-img/female.png'" mode="aspectFill"></image>
 				</view>
 				<view class="singleid flex-df text-xxs text-white text-letter-df margin-top-sm">
 					<text>星球ID：</text>
@@ -118,9 +119,11 @@
 
 			.nickname {
 				image {
+					margin-left: 10rpx;
+				}
+				.sex {
 					width: 24rpx;
 					height: 24rpx;
-					margin-left: 10rpx;
 				}
 			}
 

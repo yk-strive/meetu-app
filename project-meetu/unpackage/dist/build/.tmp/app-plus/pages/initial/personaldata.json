@@ -1,6 +1,8 @@
 {
   "usingComponents": {
     "custom-nav": "/components/custom-nav",
-    "w-picker": "/components/w-picker/w-picker"
+    "cu-modal": "/meetu-ui/components/cu-modal",
+    "w-picker": "/components/w-picker/w-picker",
+    "picture-tailor": "/components/picture-tailor/pictureTailor"
   }
 }

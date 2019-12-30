@@ -58,12 +58,22 @@
 							}, {
 								custom: {istoken: false, v2: true}
 							}).then(res=>{
+								console.log('----登录----', res)
 								self.$store.dispatch('changeVal', {stateKey: 'token', newValue: res.data.token});
-								uni.redirectTo({
-									url: './personaldata',
-									animationDuration: 300,
-									animationType: 'slide-in-right'
-								})
+								self.$store.dispatch('changeVal', {stateKey: 'dailyLogin', newValue: res.data.daily_login});
+								if (res.data.old_user == 1) {
+									uni.redirectTo({
+										url: '../home/index',
+										animationDuration: 300,
+										animationType: 'fade-in'
+									})
+								} else {
+									uni.redirectTo({
+										url: './personaldata',
+										animationDuration: 300,
+										animationType: 'fade-in'
+									})
+								}
 							}).catch(err=>{
 								console.log('app-err', err);
 							})

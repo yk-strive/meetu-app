@@ -250,6 +250,35 @@ image {
 	justify-content: center;
 	max-width: 100%;
 }
+.cu-bar .action:last-child {
+	margin-right: 30upx;
+}
+.cu-bar .action>text[class*="cuIcon-"],
+.cu-bar .action>view[class*="cuIcon-"] {
+	font-size: 36upx;
+}
+
+.cu-bar .action>text[class*="cuIcon-"]+text[class*="cuIcon-"] {
+	margin-left: 0.5em;
+}
+.cu-bar .content {
+	position: absolute;
+	text-align: center;
+	width: calc(100% - 340upx);
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	margin: auto;
+	height: 60upx;
+	font-size: 32upx;
+	line-height: 60upx;
+	cursor: none;
+	pointer-events: none;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
 .cu-bar.fixed {
 	position: fixed;
 	width: 100%;
