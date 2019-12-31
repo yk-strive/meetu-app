@@ -7,6 +7,7 @@
 	export default {
 		onLaunch: function() {
 			console.log('App Launch');
+			
 			uni.getSystemInfo({
 				success: function(e) {
 					// console.log(e)
@@ -49,7 +50,7 @@
 							stateKey: 'token',
 							newValue: res.data
 						});
-						this.initSocket(res.data);
+						this.initSocket();
 						if (storageInfo.keys.indexOf('firstPerfectInfo') != -1 && uni.getStorageSync('firstPerfectInfo')) {
 							// 一般直接进入首页-home/index;
 							uni.redirectTo({
@@ -69,7 +70,8 @@
 			}
 		},
 		onShow: function() {
-
+			// 连接socket;
+			this.globalData.socket.initSocket();
 		},
 		onHide: function() {
 
@@ -79,19 +81,23 @@
 		},
 		methods: {
 			...mapMutations(['changeVal']),
-			initSocket(token) {
+			initSocket() {
+				let self = this;
 				let socket = new mSocket({
-					url: 'wss://api.meetu.letwx.com/im',
-					timeout: 5000,
+					url: 'wss://api.meetu.letwx.com/im?token='+self.token,
+					timeout: 30000,
 					isSendHeart: true,
+					heartData: {"msgType":"ping","data":{}},
 					isReconnection: true,
 					reConnectTime: 3000,
 					debug: process.env.NODE_ENV === "development",
 					params: { // 发送消息时如果时json则自动加上组合里面参数
-						token: token
+						// token: token
 					},
 					onSocketOpen: header => {},
-					onSocketMessage: data => {},
+					onSocketMessage: data => {
+						self.$store.dispatch('setSocketState', data);
+					},
 					onSocketError: res => {},
 					onSocketClose: res => {}
 				});

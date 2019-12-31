@@ -1,6 +1,6 @@
 <template>
 	<view id="chatPage" class="bg_page_3">
-		<custom-nav :isBack="true" :textTitle="'与' + oppositeinfo.name + '的对话'"></custom-nav>
+		<custom-nav :isBack="true" :textTitle="'与 ' + chatUserInfo.nickname + ' 的对话'"></custom-nav>
 		<scroll-view class="panel-scroll-chat-box" scroll-y v-bind:scroll-with-animation="true" v-bind:style="{height: style.contentViewHeight+'px', marginTop: style.scrollViewMarginTop + 'px'} "
 		 v-bind:scroll-top="scrollTop" v-on:click.prevent="InputBlur" :scroll-into-view="scrollToView" @scrolltoupper="loadHistoryChatInfo">
 			<!-- 加载历史数据waitingUI -->
@@ -13,33 +13,35 @@
 					<view class="rect5"></view>
 				</view>
 			</view>
-			<view class="cu-chat" v-show="!isLoad">
-				<view v-for="(item, index) in chatInfo" v-bind:key="index">
-					<view v-if="item.contentType != 'tip'" :id="'chat-item'+item.id" class="cu-item" v-bind:class="item.isself ? 'self' : ''">
+			<!-- v-show="!isLoad" -->
+			<view class="cu-chat" >
+				<view v-for="(item, index) in list" v-bind:key="index">
+					<!-- v-if="item.contentType != 'tip'" -->
+					<view :id="'chat-item'+item.id" class="cu-item" v-bind:class="item.user_id == userInfo.id ? 'self' : ''">
 						<view class="date">
-							<text class="round">{{item.date}}</text>
+							<text class="round">{{item.created_at}}</text>
 						</view>
-						<view v-if="!item.isself" class="cu-avatar round">
-							<image class="round" :src="item.avatarUrl"></image>
+						<view v-if="item.user_id != userInfo.id" class="cu-avatar round">
+							<image class="round" :src="item.headimgurl" mode="aspectFill"></image>
 						</view>
 
 						<view class="main">
-							<view v-if="item.contentType == 'text'" class="content shadow" v-bind:class="item.isself?'bg-color-main':''">
+							<view v-if="item.type == 1" class="content shadow" v-bind:class="item.user_id == userInfo.id?'bg-color-main':''">
 								<text>{{item.content}}</text>
 							</view>
-							<view v-if="item.contentType == 'image'" class="content-img" @tap.stop="previmg">
+							<view v-if="item.type == 3" class="content-img" @tap.stop="previmg">
 								<image :src="item.content" class="radius" mode="widthFix"></image>
 							</view>
-							<view v-if="item.contentType == 'voice'">
+							<view v-if="item.type == 2">
 								<!-- <view class="action text-bold text-grey"></view> -->
 								<view class="content shadow">
-									<text class="cuIcon-sound text-xxl padding-right-xl"></text> <text class="voice-time">{{item.voicetime}}</text>
+									<text class="cuIcon-sound text-xxl padding-right-xl"></text> <text class="voice-time">{{item.seconds}}s</text>
 								</view>
 							</view>
 						</view>
 
-						<view v-if="item.isself" class="cu-avatar round">
-							<image class="round" :src="item.avatarUrl"></image>
+						<view v-if="item.user_id == userInfo.id" class="cu-avatar round">
+							<image class="round" :src="item.headimgurl" mode="aspectFill"></image>
 						</view>
 					</view>
 				</view>
@@ -67,11 +69,13 @@
 </template>
 
 <script>
+	import { mapGetters, mapState } from 'vuex';
+	const WS = getApp().globalData.socket;
 	export default {
 		name: 'chat',
 		data() {
 			return {
-				oppositeinfo: null,
+				chatUserInfo: null,
 				style: {
 					contentViewHeight: 0,
 					mitemHeight: 0,
@@ -86,82 +90,22 @@
 
 				isLoad: true,
 				isHistoryLoad: false,
-				chatInfo: [{
-						id: 1,
-						contentType: 'text',
-						isself: true,
-						avatarUrl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg',
-						content: '狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋!',
-						date: '2018年3月23日 13:23',
-					},
-					// {
-					// 	contentType: 'tip',
-					// 	content: '对方撤回一条消息!',
-					// },
-					{
-						id: 2,
-						contentType: 'text',
-						isself: false,
-						avatarUrl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big143004.jpg',
-						content: '狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋!',
-						date: '13:23',
-					},
-					{
-						id: 3,
-						contentType: 'image',
-						isself: true,
-						avatarUrl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg',
-						content: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10004.jpg',
-						date: '13:23',
-					},
-					// {
-					// 	contentType: 'voice',
-					// 	isself: true,
-					// 	avatarUrl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big107000.jpg',
-					// 	content: '',
-					// 	voicetime: '3"',
-					// 	date: '13:23',
-					// },
-					{
-						id: 4,
-						contentType: 'image',
-						isself: false,
-						avatarUrl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big143004.jpg',
-						content: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10006.jpg',
-						date: '13:23',
-					},
-					{
-						id: 5,
-						contentType: 'text',
-						isself: false,
-						avatarUrl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big143004.jpg',
-						content: '狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋!',
-						date: '13:23',
-					},
-					{
-						id: 6,
-						contentType: 'text',
-						isself: false,
-						avatarUrl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big143004.jpg',
-						content: '狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋!',
-						date: '13:23',
-					},
-					{
-						id: 7,
-						contentType: 'text',
-						isself: false,
-						avatarUrl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big143004.jpg',
-						content: '狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋! 狗蛋!',
-						date: '13:23',
-					},
-				]
 			}
 		},
-		onLoad(options) {
-			this.oppositeinfo = JSON.parse(options.oppositeinfo);
+		
+		computed: {
+			...mapGetters(['userInfo']),
+			...mapState({
+				list: state=>state.socketInfo.list
+			})
 		},
+		
+		onLoad(options) {
+			this.chatUserInfo = JSON.parse(options.chatItem);
+			this.ws_GetChatLogInfo();
+		},
+		
 		onShow() {
-
 			const res = uni.getSystemInfoSync(); //获取手机可使用窗口高度     api为获取系统信息同步接口
 			this.style.contentViewHeight = res.windowHeight - res.screenWidth / 750 * (100) - this.CustomBar - this.style.scrollViewMarginTop;
 			setTimeout(() => {
@@ -170,6 +114,18 @@
 			}, 1000);
 		},
 		methods: {
+			ws_GetChatLogInfo() {
+				let self = this;
+				WS.sendSocketMessage({
+					msgType:"getChatLogInfo",
+					data:{
+						page: null,
+						user_id: self.chatUserInfo.user_id,
+					}
+				}, okRes=>{
+					// self.clog('----消息发送OK----', okRes); // 这里的res(成功)->只代表uni-socket发送消息是否成功
+				})
+			},
 			loadChatInfo() { // 加载chatInfo
 				console.log('加载');
 				setTimeout(()=> {

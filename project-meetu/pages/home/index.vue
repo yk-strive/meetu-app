@@ -19,7 +19,7 @@
 				</view>
 				<view class="action_item" v-on:click="linkAction('chatList')">
 					<image src="../../static/meetu-img/home_action3.png" mode="aspectFill"></image>
-					<view v-if="notreadNum>0" class="cu-tag badge">{{notreadNum}}</view>
+					<view v-if="unread>0" class="cu-tag badge">{{unread}}</view>
 				</view>
 			</view>
 			<view class="action_num text-center text-white text-xxs">
@@ -33,7 +33,7 @@
 					<image class="bg" src="../../static/meetu-img/login_prize.png" mode="widthFix"></image>
 					<image class="coin" src="../../static/meetu-img/dou.png" mode="aspectFill"></image>
 					<view class="text-letter-df w-100">星豆+5</view>
-					<button class="cu-btn bg-color-main round" @tap.stop="dailyLogin">立即领取</button>
+					<button class="cu-btn bg-color-main round" @tap.stop="getDailyLogin">立即领取</button>
 				</view>
 			</view>
 		</view>
@@ -76,7 +76,7 @@
 
 <script>
 	import {
-		mapGetters
+		mapState, mapGetters
 	} from 'vuex';
 	import mixinInit from '../../mixins/init.js';
 	export default {
@@ -92,18 +92,19 @@
 				appName: 'Meet U',
 				showSendToast: false,
 				userNumber: null,
-				notreadNum: 0
 			}
 		},
 		computed: {
-			...mapGetters(['userInfo', 'dailyLogin'])
+			...mapGetters(['userInfo', 'dailyLogin']),
+			...mapState({
+				unread: state=>state.socketInfo.unread
+			})
 		},
 		watch: {
 			
 		},
 		onLoad() {
 			this.api_UserNumber();
-			// getApp().globalData.socket.initSocket();
 		},
 		
 		onReady() {
@@ -112,9 +113,10 @@
 			} else {
 				this.showSendToast = true;
 			}
+			console.log('----ping----', this.pong || this.connect)
 		},
 		onShow() {
-			this.api_UserInfo()
+			this.api_UserInfo();
 			if (getApp().globalData.sendSignal) {
 				this.isSendSignal = true;
 				this.api_UserNumber();
@@ -144,12 +146,11 @@
 		methods: {
 			api_UserInfo() {
 				this.$http1.post('user/info').then(res => {
-					// this.userinfo = res.data;
+					console.log( res.data);
 					this.$store.dispatch('changeVal', {
 						stateKey: 'userInfo',
 						newValue: res.data
 					})
-					this.number = true;
 				}).catch(err => {
 					console.log('userinfo-err', err);
 				})
@@ -172,7 +173,7 @@
 					}
 				})
 			},
-			dailyLogin() {
+			getDailyLogin() {
 				this.api_DailyLogin();
 			},
 			linkUser() {

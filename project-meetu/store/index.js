@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from "vuex";
-
+import socketInfo from './modules/socketInfo.js';
 Vue.use(Vuex);
 /*
   js文件下使用
@@ -24,13 +24,22 @@ let store = new Vuex.Store({
 		userInfo: null,
 	},
 	getters: { // 获取仓库中存放的值,供页面使用
-		token(state) { return state.token},
-		dailyLogin(state) {return state.dailyLogin},
-		userInfo(state) { return state.userInfo}
+		token(state) {
+			return state.token
+		},
+		dailyLogin(state) {
+			return state.dailyLogin
+		},
+		userInfo(state) {
+			return state.userInfo
+		}
 	},
 	// mutations-改变仓库中变量的值, 只能进行同步操作. 触发条件--store.commit('changeVal')
 	mutations: {
-		changeVal(state, options={stateKey, newValue}) { // 更新仓库中的某变量的值
+		changeVal(state, options = {
+			stateKey,
+			newValue
+		}) { // 更新仓库中的某变量的值
 			state[options.stateKey] = options.newValue;
 			if (options.stateKey == 'token') {
 				uni.setStorage({
@@ -62,10 +71,18 @@ let store = new Vuex.Store({
 		}
 	},
 	actions: {
-		changeVal({commit}, options={stateKey, newValue}) {
+		changeVal({
+			commit
+		}, options = {
+			stateKey,
+			newValue
+		}) {
 			// console.log('a-'+options.stateKey, options.newValue);
 			commit('changeVal', options)
 		}
+	},
+	modules: {
+		socketInfo
 	}
 })
 
