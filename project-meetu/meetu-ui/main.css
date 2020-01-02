@@ -383,7 +383,7 @@ image {
 
 .cu-chat .cu-item>.main .content {
 	padding: 20upx;
-	border-radius: 6upx;
+	border-radius: 10upx;
 	display: inline-flex;
 	max-width: 100%;
 	align-items: center;
@@ -414,7 +414,7 @@ image {
 	align-items: center;
 }
 
-.cu-chat .cu-item>.main .content::after {
+.cu-chat .cu-item>.main .content:not([class*="-signal"])::after {
 	content: "";
 	top: 27upx;
 	transform: rotate(45deg);
@@ -429,12 +429,12 @@ image {
 	background-color: inherit;
 } 
 
-.cu-chat .cu-item.self>.main .content::after {
+.cu-chat .cu-item.self>.main .content:not([class*="-signal"])::after {
 	left: auto;
 	right: -12upx;
 }
 
-.cu-chat .cu-item>.main .content::before {
+.cu-chat .cu-item>.main .content:not([class*="-signal"])::before {
 	content: "";
 	top: 30upx;
 	transform: rotate(45deg);
@@ -456,7 +456,7 @@ image {
 	opacity: 0.1;
 }
 
-.cu-chat .cu-item.self>.main .content::before {
+.cu-chat .cu-item.self>.main .content:not([class*="-signal"])::before {
 	left: auto;
 	right: -12upx;
 }

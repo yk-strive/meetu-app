@@ -3,19 +3,13 @@
 		<custom-nav :isBack="true" :textTitle="'与 ' + chatUserInfo.nickname + ' 的对话'"></custom-nav>
 		<scroll-view class="panel-scroll-chat-box" scroll-y v-bind:scroll-with-animation="true" v-bind:style="{height: style.contentViewHeight+'px', marginTop: style.scrollViewMarginTop + 'px'} "
 		 v-bind:scroll-top="scrollTop" v-on:click.prevent="InputBlur" :scroll-into-view="scrollToView" @scrolltoupper="loadHistoryChatInfo">
-			<!-- 加载历史数据waitingUI -->
-			<view v-if="isHistoryLoad" class="loading">
-				<view class="spinner">
-					<view class="rect1"></view>
-					<view class="rect2"></view>
-					<view class="rect3"></view>
-					<view class="rect4"></view>
-					<view class="rect5"></view>
-				</view>
+		 
+			<view class="loadmore text-center" v-if="chatInfoList.length < 4" @tap.stop="loadHistoryChatInfo">
+				<text class="text-black-s">点击加载历史消息</text>
 			</view>
 			<!-- v-show="!isLoad" -->
 			<view class="cu-chat" >
-				<view v-for="(item, index) in list" v-bind:key="index">
+				<view v-for="(item, index) in chatInfoList" v-bind:key="index">
 					<!-- v-if="item.contentType != 'tip'" -->
 					<view :id="'chat-item'+item.id" class="cu-item" v-bind:class="item.user_id == userInfo.id ? 'self' : ''">
 						<view class="date">
@@ -26,15 +20,18 @@
 						</view>
 
 						<view class="main">
-							<view v-if="item.type == 1" class="content shadow" v-bind:class="item.user_id == userInfo.id?'bg-color-main':''">
+							<view v-if="item.type == 1 && item.is_signal" class="content bg-signal">
 								<text>{{item.content}}</text>
 							</view>
-							<view v-if="item.type == 3" class="content-img" @tap.stop="previmg">
+							<view v-if="item.type == 1 && !item.is_signal" class="content" :class="item.user_id == userInfo.id?'bg-color-main':''" >
+								<text>{{item.content}}</text>
+							</view>
+							<view v-if="item.type == 3" class="content-img" @tap.stop="previmg(item.content)">
 								<image :src="item.content" class="radius" mode="widthFix"></image>
 							</view>
 							<view v-if="item.type == 2">
 								<!-- <view class="action text-bold text-grey"></view> -->
-								<view class="content shadow">
+								<view class="content" :class="item.is_signal?'bg-signal':''">
 									<text class="cuIcon-sound text-xxl padding-right-xl"></text> <text class="voice-time">{{item.seconds}}s</text>
 								</view>
 							</view>
@@ -60,9 +57,9 @@
 			<view class="action" v-if="InputCursor === 0">
 				<text class="cuIcon-roundadd"></text>
 			</view> -->
-			<view class="btn-send bg-color-main text-center">
-				<text class="cuIcon-picfill"></text>
-				<input type="text" v-on:click="submit" v-on:blur="InputBlur">
+			<view class="btn-send bg-color-main text-center flex-df" v-on:click="submit">
+				<image src="../../static/meetu-img/send.png" mode="aspectFill"></image>
+				<!-- <input type="text" :disabled="submitInputDisable" v-on:click="submit" v-on:blur="InputBlur"> -->
 			</view>
 		</view>
 	</view>
@@ -70,9 +67,11 @@
 
 <script>
 	import { mapGetters, mapState } from 'vuex';
+	import mixinInit from '../../mixins/init.js';
 	const WS = getApp().globalData.socket;
 	export default {
 		name: 'chat',
+		mixins: [mixinInit],
 		data() {
 			return {
 				chatUserInfo: null,
@@ -87,21 +86,50 @@
 				SoftKeyboardHeight: 0,
 				textareaValue: '',
 				isFocus: false,
+				submitInputDisable: true,
 
-				isLoad: true,
 				isHistoryLoad: false,
+				
+				prevImgArr: [],
+				page: 4,   // 请求信息的page, page根据请求返回的信息 进行处理, 默认是最后一页, 
 			}
 		},
 		
 		computed: {
-			...mapGetters(['userInfo']),
+			...mapGetters(['userInfo', 'token']),
 			...mapState({
-				list: state=>state.socketInfo.list
+				chatInfoList: state=>state.socketInfo.chatInfo,
+				chatMsg: state=>state.socketInfo.chatMsg
 			})
 		},
 		
+		watch: {
+			chatMsg(newValue, oldValue) {
+				this.chatInfoList.push({
+					id: newValue.id,
+					user_id: newValue.user_id,
+					nickname: newValue.nickname,
+					headimgurl: newValue.headimgurl,
+					type: newValue.type,
+					content: newValue.content,
+					created_at: newValue.created_at
+				});
+				setTimeout(()=> {
+					this.scrollToBottom();
+				}, 10);
+			},
+			chatInfoList(newValue, oldValue) {
+				this.page = this.page < 1 ? 0 : newValue[0].page - 1;
+				for(let i = 0; i<newValue.length; i++) {
+					if (newValue[i].type == 3) {
+						this.prevImgArr.push(newValue[i].content);
+					}
+				}
+			}
+		},
 		onLoad(options) {
 			this.chatUserInfo = JSON.parse(options.chatItem);
+			this.clog('对话人', this.chatUserInfo)
 			this.ws_GetChatLogInfo();
 		},
 		
@@ -109,36 +137,72 @@
 			const res = uni.getSystemInfoSync(); //获取手机可使用窗口高度     api为获取系统信息同步接口
 			this.style.contentViewHeight = res.windowHeight - res.screenWidth / 750 * (100) - this.CustomBar - this.style.scrollViewMarginTop;
 			setTimeout(() => {
-				this.isLoad = false;
+				// this.isLoad = false;
 				this.scrollToBottom();
 			}, 1000);
 		},
 		methods: {
-			ws_GetChatLogInfo() {
+			ws_GetChatLogInfo(loadType) {
 				let self = this;
+				this.clog('---加载11----')
+				if (loadType && loadType == 'add') {
+					if (this.page == 0) {
+						return false;
+					}
+					if (this.isHistoryLoad) {
+						return false;
+					}
+					this.isHistoryLoad = true;
+				}
+				this.clog('---加载22----')
 				WS.sendSocketMessage({
 					msgType:"getChatLogInfo",
 					data:{
-						page: null,
+						page: self.page,
 						user_id: self.chatUserInfo.user_id,
 					}
 				}, okRes=>{
 					// self.clog('----消息发送OK----', okRes); // 这里的res(成功)->只代表uni-socket发送消息是否成功
+					if (loadType && loadType == 'add') {
+						setTimeout(()=>{
+							this.isHistoryLoad = false;
+						}, 200)
+					}
 				})
 			},
-			loadChatInfo() { // 加载chatInfo
-				console.log('加载');
-				setTimeout(()=> {
-					this.isHistoryLoad = false;
-				}, 2000);
+			ws_sendMsg(contentType, content) {
+				let self = this;
+				let msgToFillList = {
+					id: self.chatInfoList[self.chatInfoList.length - 1].id + 1,
+					user_id: self.userInfo.id,
+					nickname: self.userInfo.nickname,
+					headimgurl: self.userInfo.headimgurl,
+					type: contentType,
+					content: content,
+				}
+				WS.sendSocketMessage({
+					msgType: 'chatMsg',
+					data: {
+						to_id: self.chatUserInfo.user_id,
+						content_type: contentType,
+						content: content
+					}
+				}, okRes=>{
+					self.clog('---聊天消息发送OK----', okRes); // 这里的res(成功)->只代表uni-socket发送消息是否成功
+					if (this.textareaValue) {
+						console.log(this.textareaValue)
+						this.textareaValue = '';
+					}
+					self.chatInfoList.push(msgToFillList);
+					setTimeout(()=>{
+						self.scrollToBottom();
+					}, 10)
+				}, errRes=>{
+					self.clog('---聊天消息发送ERR----', errRes);
+				})
 			},
 			loadHistoryChatInfo() {
-				if (this.isHistoryLoad) {
-					return;
-				}
-				this.isHistoryLoad = true;
-				
-				this.loadChatInfo();
+				this.ws_GetChatLogInfo('add');
 			},
 			scrollToBottom() {
 				let that = this;
@@ -160,27 +224,32 @@
 				})
 			},
 			TextareaFocus(e) {
+				this.submitInputDisable = false;
 				this.softKeyboardHeightHandle('up', e.detail.height);
 				let self = this;
+				
 				setTimeout(function() {
-					self.scrollToBottom()
-				}, 10);
+					// self.scrollToBottom()
+					self.scrollToView = "chat-item" + self.chatInfoList[self.chatInfoList.length - 1].id;
+					// self.scrollToView = ''
+				}, 10)
 			},
 			TextareaInput(e) {
 				this.textareaValue = e.detail.value;
 			},
 			TextareaBulr() {
 				let self = this;
-				if (self.isFocus == false) {
+				// if (self.isFocus == false) {
 					self.softKeyboardHeightHandle('down', self.SoftKeyboardHeight);
 					setTimeout(function() {
 						self.scrollToBottom()
 					}, 10);
-				}
+				// }
 			},
 			InputBlur(e) {
 				let self = this;
 				self.isFocus = false;
+				this.submitInputDisable = true;
 				self.softKeyboardHeightHandle('down', self.SoftKeyboardHeight);
 				setTimeout(function() {
 					self.scrollToBottom()
@@ -195,31 +264,70 @@
 					this.SoftKeyboardHeight = 0;
 				}
 			},
+			previmg(curImgUrl) {
+				let self = this;
+				uni.previewImage({
+					current: curImgUrl,
+					urls: self.prevImgArr
+				})
+			},
 			chooseImg() {
+				let self = this;
 				uni.chooseImage({
-					count: 3,
+					count: 1,
 					sizeType: ['compressed '],
 					sourceType: ['album ', 'camera '],
 					success: (res) => {
 						console.log(res);
+						let tempFilePath = res.tempFilePaths[0];
+						uni.uploadFile({
+							url: 'https://api.meetu.letwx.com/v2/sys/upload-img?token='+self.token,
+							filePath: tempFilePath,
+							name: 'imgfile',
+							formData: {
+								'name': 'imgfile',
+								'formData': JSON.stringify({
+									'sort': 0
+								})
+							},
+							success: (uploadFileRes) => {
+								// console.log('upok',JSON.parse(uploadFileRes.data));
+								let img = JSON.parse(uploadFileRes.data).data.imgUrl;
+								self.ws_sendMsg(3, img);
+							},
+							fail: (err) => {
+								console.log('err', err);
+							}
+						});
 					}
 				})
 			},
 			submit() {
 				this.isFocus = true;
-				if (this.textareaValue) {
-					console.log(this.textareaValue)
-					this.textareaValue = '';
+				if (!this.textareaValue) {
+					return false;
 				}
+				this.ws_sendMsg(1, this.textareaValue);
 			}
 		},
 		onHide() {
-			this.InputBlur()
+			this.InputBlur();
+			// this.$store.commit('emptyInfo', 'chatInfo');
+			console.log('-----onHide--------');
+		},
+		onUnload() {
+			this.$store.commit('emptyInfo', 'chatInfo');
+			console.log('-----onUnload--------');
 		}
 	}
 </script>
 
 <style lang="scss">
+	.bg-signal { //信号源样式
+		background: transparent;
+		color: #FFFFFF;
+		border: 2rpx solid #D04795;
+	}
 	#chatPage {
 		overflow: hidden;
 
@@ -287,7 +395,11 @@
 			height: 90rpx;
 			line-height: 90rpx;
 			font-size: 50rpx;
-
+			image {
+				width: 64rpx;
+				height: 64rpx;
+				
+			}
 			input {
 				position: absolute;
 				top: 0;

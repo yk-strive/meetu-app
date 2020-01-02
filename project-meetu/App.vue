@@ -83,6 +83,7 @@
 			...mapMutations(['changeVal']),
 			initSocket() {
 				let self = this;
+				console.log(self.token);
 				let socket = new mSocket({
 					url: 'wss://api.meetu.letwx.com/im?token='+self.token,
 					timeout: 30000,
@@ -98,7 +99,9 @@
 					onSocketMessage: data => {
 						self.$store.dispatch('setSocketState', data);
 					},
-					onSocketError: res => {},
+					onSocketError: res => {
+						self.$store.dispatch('setSocketStateErr', res.errMsg);
+					},
 					onSocketClose: res => {}
 				});
 				this.globalData.socket = socket;

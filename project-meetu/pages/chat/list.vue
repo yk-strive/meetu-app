@@ -15,7 +15,7 @@
 								<view class="text-time_news-color text-sm flex padding-top-xs">
 									<view class="text-cut">
 										<!-- <text class="cuIcon-infofill text-red  margin-right-xs"></text> -->
-										{{item.type == 1 ? item.content : item.contenttype == 3?'[图片]' : ''}}
+										{{item.type == 1 ? item.content : item.type == 3?'[图片]' : ''}}
 									</view>
 								</view>
 							</view>
@@ -53,6 +53,7 @@
 				enableScroll: true,
 				loadType: '',
 				refreshing: 0,
+				pageUnload: false,
 			}
 		},
 		
@@ -64,7 +65,7 @@
 		
 		watch: {
 			list(newV, oldV) {
-				if (!this.list && this.loadType == '') {
+				if (!this.list && this.loadType == '' && !this.pageUnload) {
 					this.modalShow('toastModal', '还没有和ta人交流过')
 				}
 				if (((this.list.length) % (this.pageSize) != 0) && this.page > 1 && newV.length == oldV.length) {
@@ -74,6 +75,7 @@
 		},
 		
 		onShow() {
+			this.pageUnload = false;
 			this.ws_GetChatList();
 		},
 		
@@ -86,7 +88,7 @@
 						this.showLoadMore = false;
 						this.loadMoreStatus = 0;
 						this.page = 1;
-						this.$store.commit('emptyInfo');
+						this.$store.commit('emptyInfo', 'list');
 					}
 					if (loadType === 'add') {
 						if (this.loadMoreStatus == 2) {
@@ -157,10 +159,12 @@
 		},
 		
 		onHide() {
-			this.$store.commit('emptyInfo');
+			this.pageUnload = true;
+			this.$store.commit('emptyInfo', 'list');
 		},
 		onUnload() {
-			this.$store.commit('emptyInfo');
+			this.pageUnload = true;
+			this.$store.commit('emptyInfo', 'list');
 		}
 	}
 </script>

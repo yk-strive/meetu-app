@@ -62,3 +62,6 @@
 .cuIcon-close:before {
 	content: "\e646";
 }
+.cuIcon-sound:before {
+	content: "\e77b";
+}
