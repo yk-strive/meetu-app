@@ -107,6 +107,10 @@
     height: 90rpx;
     margin: 0;
 }
+#chatPage .soundImg {
+    width: 100rpx;
+    height: 40rpx;
+}
 #chatPage .btn-send {
     position: relative;
     width: 128rpx;

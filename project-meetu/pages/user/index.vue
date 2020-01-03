@@ -61,7 +61,7 @@
 					{
 						imgUrl: '../../static/meetu-img/i6.png',
 						text: '购买VIP',
-						navUrl: 'VIP'
+						navUrl: './vip'
 					}
 				]
 			}
@@ -72,11 +72,6 @@
 		methods: {
 			actionTapHandle(navUrl) {
 				let self = this;
-				if (navUrl == 'VIP') {
-					//TODO
-					
-					return;
-				}
 				if (navUrl == 'copyId') {
 					//TODO
 					uni.setClipboardData({

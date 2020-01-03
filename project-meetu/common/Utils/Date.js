@@ -16,13 +16,11 @@ export const timeFormat = (date) => {
 	let W = date.getDay()
 	let H = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
 	let Min = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
-	console.log('---消息时间---', D);
 	// 获取当前时间
 	let nowY = nowtime.getFullYear()
 	let nowM = nowtime.getMonth() + 1 < 10 ? '0' + (nowtime.getMonth() + 1) : nowtime.getMonth() + 1
 	let nowD = nowtime.getDate() < 10 ? '0' + nowtime.getDate() : nowtime.getDate()
 	let isWeek = Math.abs(date - nowtime) < 7 * 24 * 3600 * 1000
-	console.log('---当前时间---', (nowD == D) );
 	if (Y < nowY) {
 		// 去年
 		newtime = Y + '-' + M + '-' + D
@@ -30,15 +28,12 @@ export const timeFormat = (date) => {
 		if (isWeek) { // Y === nowY && M === nowM && (nowD - D <= 7)
 			// 昨天
 			if ((nowD - D) === 1) {
-				newtime = '昨天';
-				console.log('-----newTime---', '昨天' );
+				newtime = '昨天 ' + H + ':' + Min;
 			} else if (nowD == D) { // nowD === D
 				// 当天
 				newtime = H + ':' + Min
-				console.log('-----newTime---', '当天--'+ newtime );
 			} else {
 				// 一周内
-				console.log('-----newTime---', '进入一周计算-- 41' );
 				newtime = weekFormat(W)
 			}
 		} else {
@@ -54,7 +49,6 @@ export const timeFormat = (date) => {
 		// 	newtime = M + '-' + D
 		// }
 	}
-	console.log('---newtime-----',newtime)
 	return newtime
 }
 
@@ -122,6 +116,7 @@ export const dateFormat = (date, fmt) => {
 		'q+': Math.floor((date.getMonth() + 3) / 3), // 季度
 		'S': date.getMilliseconds() // 毫秒
 	}
+	console.log('----- 0 ------', o)
 	if (/(y+)/.test(fmt)) {
 		fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
 	}
@@ -131,4 +126,21 @@ export const dateFormat = (date, fmt) => {
 		}
 	}
 	return fmt
+}
+
+/**
+ * 时间差值计算
+ * */
+export const dateDiff = (time1, time2, dfDiff) => {
+	let defaultDiff = dfDiff ? dfDiff : 5 * 60 * 1000;
+	if (!time1 && !time2) return ''
+	
+	time1 = new Date(time1.replace(/\./g, '/')).getTime();
+	time2 = new Date(time2.replace(/\./g, '/')).getTime();
+	
+	if (Math.abs(time2 - time1) > defaultDiff) {
+		return 1;
+	} else {
+		return 0;
+	}
 }

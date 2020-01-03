@@ -113,7 +113,7 @@
         }
       }
     },
-    "arguments": "{\"name\":\"单页面测试\",\"path\":\"\",\"query\":\"\",\"id\":0}",
+    "arguments": "{\"name\":\"单页面测试\",\"query\":\"\",\"id\":0,\"pathName\":\"pages/user/vip\"}",
     "allowsInlineMediaPlayback": true,
     "uni-app": {
       "compilerVersion": "2.4.6",

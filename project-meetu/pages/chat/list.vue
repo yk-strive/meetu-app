@@ -20,7 +20,7 @@
 								</view>
 							</view>
 							<view class="action">
-								<view class="text-time_news-color text-sm time">{{item.created_at}}</view>
+								<view class="text-time_news-color text-sm time">{{item.created_at_format}}</view>
 								<view class="cu-tag round bg-news sm text-white padding-top-xs" v-show="item.unread !=0">{{item.unread !=0 ? item.unread : ''}}</view>
 							</view>
 						</view>
@@ -38,6 +38,7 @@
 	import mixPulldownRefresh from '@/components/mix-pulldown-refresh/mix-pulldown-refresh';
 	import mixLoadMore from '@/components/mix-load-more/mix-load-more';
 	import mixinInit from '../../mixins/init.js';
+	import * as DateUtils from "../../common/Utils/Date.js";
 	import { mapState } from 'vuex';
 	const WS = getApp().globalData.socket;
 	export default {
@@ -59,7 +60,8 @@
 		
 		computed: {
 			...mapState({
-				list: state=>state.socketInfo.list
+				list: state=>state.socketInfo.list,
+				chatMsg: state=>state.socketInfo.chatMsg  // 存储接收到消息
 			})
 		},
 		
@@ -71,6 +73,18 @@
 				if (((this.list.length) % (this.pageSize) != 0) && this.page > 1 && newV.length == oldV.length) {
 					this.loadMoreStatus = 2;
 				}
+			},
+			chatMsg(newV, oldV) {
+				this.list.map(item=>{
+					if(item.user_id == newV.user_id) {
+						item.id = newV.id;
+						item.type = newV.type;
+						item.content = newV.content;
+						item.unread = Number(item.unread) + 1;
+						item.created_at = newV.created_at;
+						item.created_at_format = DateUtils.timeFormat(newV.created_at);
+					}
+				})
 			}
 		},
 		
@@ -115,6 +129,17 @@
 				})
 			},
 			
+			ws_read(userId) {
+				WS.sendSocketMessage({
+					msgType:"read",
+					data:{
+						user_id: userId
+					}
+				}, okRes=>{
+					this.clog('----读取未读消息OK----', okRes); // 这里的res(成功)->只代表uni-socket读取消息是否成功
+				})
+			},
+			
 			onPulldownReresh() {
 				this.ws_GetChatList('refresh');
 			},
@@ -124,6 +149,7 @@
 			},
 			
 			linkChat(item) {
+				this.ws_read(item.user_id);
 				uni.navigateTo({
 					url: './chat?chatItem=' + JSON.stringify(item),
 					animationDuration: 300,

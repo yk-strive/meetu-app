@@ -1227,6 +1227,9 @@ image {
 .margin-right-xl {
 	margin-right: 50rpx;
 }
+.margin-right-xxl {
+	margin-right: 60rpx;
+}
 .margin-bottom-xs {
 	margin-bottom: 10rpx;
 }
