@@ -11,6 +11,7 @@
     "pages/user/index",
     "pages/user/signal",
     "pages/user/coin",
+    "pages/user/vip",
     "pages/user/coinrecord",
     "pages/user/settings"
   ],
@@ -27,7 +28,7 @@
     "alwaysShowBeforeRender": true,
     "autoclose": false
   },
-  "appname": "project-meetu",
+  "appname": "MeetU",
   "compilerVersion": "2.4.6",
   "usingComponents": {
     "custom-nav": "/components/custom-nav",

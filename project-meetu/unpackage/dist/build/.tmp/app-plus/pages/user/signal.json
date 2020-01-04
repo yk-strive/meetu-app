@@ -1,6 +1,7 @@
 {
   "usingComponents": {
     "custom-nav": "/components/custom-nav",
+    "cu-modal": "/meetu-ui/components/cu-modal",
     "mix-pulldown-refresh": "/components/mix-pulldown-refresh/mix-pulldown-refresh",
     "mix-load-more": "/components/mix-load-more/mix-load-more"
   }

@@ -1,0 +1,44 @@
+
+.cu-modal.dialog-modal .cu-dialog {
+	width: 600rpx;
+}
+.cu-modal.bottom-modal .cu-dialog {
+	max-height: 850rpx;
+	overflow-y: scroll;
+	border-top-left-radius: 20rpx;
+	border-top-right-radius: 20rpx;
+}
+.cu-modal.bottom-modal .cu-dialog::before {
+	content: '';
+	position: absolute;
+	top: 20rpx;
+	left: 50%;
+	-webkit-transform: translateX(-50%);
+	        transform: translateX(-50%);
+	width: 160rpx;
+	height: 8rpx;
+	border-radius: 6rpx;
+	background-color: #E5E5E5;
+}
+.bg-white {
+	background-color: #ffffff;
+	color: #333333;
+}
+.line-gray {
+	border: 2rpx solid #dadada;
+	color: #333333;
+}
+.justify-end {
+	-webkit-box-pack: end;
+	-webkit-justify-content: flex-end;
+	        justify-content: flex-end;
+}
+.justify-around {
+	-webkit-justify-content: space-around;
+	        justify-content: space-around;
+}
+.dialog-modal-cancel,
+.dialog-modal-confirm {
+	width: 200rpx;
+}
+

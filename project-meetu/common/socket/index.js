@@ -1,3 +1,8 @@
+/**
+ * Home/index.vue---wx_init() 方法进行 WS的初始配置以及连接
+ * Vuex--modules/socket.js-- 存放WS,以供其余页面使用.
+ * */
+
 // 心跳包时间索引
 let timer = null;
 // 断线重连时间索引
@@ -74,6 +79,11 @@ export default class Socket {
                 typeof fail === "function" && fail(err, this);
               },
               success: (res2) => {
+				  uni.showToast({
+				  	title: 'WS连接成功',
+				  	    mask: false,
+				  	    duration: 1500
+				  })
                 console.log("%c [socket] %c 连接成功", 'color:blue;', 'color:#000;', res2)
                 typeof success === "function" && success(this);
               }

@@ -62,6 +62,10 @@
 								self.$store.dispatch('changeVal', {stateKey: 'token', newValue: res.data.token});
 								self.$store.dispatch('changeVal', {stateKey: 'dailyLogin', newValue: res.data.daily_login});
 								if (res.data.old_user == 1) {
+									uni.setStorage({
+										key: 'oldUser',
+										data: res.data.old_user
+									});
 									uni.redirectTo({
 										url: '../home/index',
 										animationDuration: 300,

@@ -24,6 +24,11 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
+.bg-signal {
+  background: transparent;
+  color: #FFFFFF;
+  border: 2rpx solid #D04795;
+}
 #chatPage {
   overflow: hidden;
 }
@@ -102,12 +107,20 @@
     height: 90rpx;
     margin: 0;
 }
+#chatPage .soundImg {
+    width: 100rpx;
+    height: 40rpx;
+}
 #chatPage .btn-send {
     position: relative;
     width: 128rpx;
     height: 90rpx;
     line-height: 90rpx;
     font-size: 50rpx;
+}
+#chatPage .btn-send image {
+      width: 64rpx;
+      height: 64rpx;
 }
 #chatPage .btn-send input {
       position: absolute;

@@ -20,8 +20,9 @@
 </template>
 
 <script>
-	import { mapMutations } from "vuex";
-	import mixinInit from "../../mixins/init.js"
+	import { mapState, mapMutations } from "vuex";
+	import mixinInit from "../../mixins/init.js";
+
 	export default {
 		name: '',
 		mixins:[mixinInit],
@@ -47,11 +48,17 @@
 				]
 			}
 		},
+		computed: {
+			...mapState({
+				WS: state=> state.socketInfo.WS,
+			})
+		},
 		methods: {
 			...mapMutations(['outApp']),
 			api_OutApp() {
 				this.$http1.post('user/out-login').then(res=>{
 					if(res.code == 0) {
+						this.WS.closeSocket();
 						this.outApp();
 						uni.reLaunch({
 							url: '../initial/wxoauth'
@@ -59,6 +66,8 @@
 					} else {
 						this.modalShow('toastModal', res.msg)
 					}
+				}).catch(err=>{
+					console.log('退出err', err)
 				})
 			},
 			actionTapHandle(navUrl) {
@@ -77,7 +86,7 @@
 					case 'about':
 						break;
 					case 'outApp':
-						
+						this.api_OutApp();
 						break;
 				}
 			}

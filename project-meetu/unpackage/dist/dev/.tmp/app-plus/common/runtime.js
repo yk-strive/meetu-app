@@ -102,11 +102,11 @@
 /******/
 /******/
 /******/ 		// mini-css-extract-plugin CSS loading
-/******/ 		var cssChunks = {"components/custom-nav":1,"meetu-ui/components/cu-modal":1,"components/w-picker/w-picker":1,"components/picture-tailor/pictureTailor":1,"components/mix-load-more/mix-load-more":1,"components/mix-pulldown-refresh/mix-pulldown-refresh":1};
+/******/ 		var cssChunks = {"components/custom-nav":1,"meetu-ui/components/cu-modal":1,"components/w-picker/w-picker":1,"components/mix-load-more/mix-load-more":1,"components/mix-pulldown-refresh/mix-pulldown-refresh":1};
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 			promises.push(installedCssChunks[chunkId] = new Promise(function(resolve, reject) {
-/******/ 				var href = "" + ({"components/custom-nav":"components/custom-nav","meetu-ui/components/cu-modal":"meetu-ui/components/cu-modal","components/w-picker/w-picker":"components/w-picker/w-picker","components/picture-tailor/pictureTailor":"components/picture-tailor/pictureTailor","components/mix-load-more/mix-load-more":"components/mix-load-more/mix-load-more","components/mix-pulldown-refresh/mix-pulldown-refresh":"components/mix-pulldown-refresh/mix-pulldown-refresh"}[chunkId]||chunkId) + ".wxss";
+/******/ 				var href = "" + ({"components/custom-nav":"components/custom-nav","meetu-ui/components/cu-modal":"meetu-ui/components/cu-modal","components/w-picker/w-picker":"components/w-picker/w-picker","components/mix-load-more/mix-load-more":"components/mix-load-more/mix-load-more","components/mix-pulldown-refresh/mix-pulldown-refresh":"components/mix-pulldown-refresh/mix-pulldown-refresh"}[chunkId]||chunkId) + ".wxss";
 /******/ 				var fullhref = __webpack_require__.p + href;
 /******/ 				var existingLinkTags = document.getElementsByTagName("link");
 /******/ 				for(var i = 0; i < existingLinkTags.length; i++) {

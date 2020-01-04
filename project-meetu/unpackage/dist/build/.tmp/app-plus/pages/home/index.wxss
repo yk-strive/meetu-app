@@ -24,16 +24,16 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-#homePage .AppName {
-  padding-left: 50rpx;
-}
-#homePage .avatar {
+#homePage .AppName, #homePage .avatar {
   position: fixed;
   top: 140rpx;
   right: 50rpx;
   width: 120rpx;
   height: 120rpx;
   overflow: hidden;
+}
+#homePage .AppName {
+  left: 50rpx;
 }
 #homePage .home_bottom_act {
   position: fixed;
@@ -83,7 +83,7 @@
       position: relative;
 }
 #homePage .home_bottom_act .home_action .action_item:nth-child(1) image {
-      width: 77rpx;
+      width: 80rpx;
       height: 80rpx;
 }
 #homePage .home_bottom_act .home_action .action_item:nth-child(2) image {

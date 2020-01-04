@@ -27,9 +27,6 @@
 #personaldata_page {
   overflow-y: scroll;
 }
-#personaldata_page scroll-view {
-    height: calc(100% - 128rpx);
-}
 #personaldata_page .avatar_box {
     position: relative;
     width: 100%;

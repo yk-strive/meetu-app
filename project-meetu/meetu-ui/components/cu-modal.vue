@@ -37,7 +37,7 @@
 				<view class="cu-bar bg-white justify-around">
 					<!-- <view class="action"> -->
 					<button class="cu-btn line-gray dialog-modal-cancel" @tap="hideModal">取消</button>
-					<button class="cu-btn bg-color-main dialog-modal-confirm" @tap="dialogConfirm">确定</button>
+					<button class="cu-btn bg-color-main dialog-modal-confirm" @tap="dialogConfirm">{{dialogSureText}}</button>
 					<!-- </view> -->
 				</view>
 			</view>
@@ -59,6 +59,10 @@
 			dialogText: {
 				type: String,
 				default: ''
+			},
+			dialogSureText: {
+				type: String,
+				default: '确定'
 			}
 		},
 

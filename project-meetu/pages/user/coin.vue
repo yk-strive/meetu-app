@@ -29,7 +29,7 @@
 			</view>
 		</view>
 		
-		<cu-modal :modalName="modalName" @hideModal="hideModal">
+		<cu-modal :modalName="modalName" :toastText="toastText" :dialogText="dialogText" :dialogSureText="dialogSureText" @hideModal="hideModal" @dialogConfirm="dialogConfirm">
 			<block slot="bottomModal">
 				<view class="recharge_modal">
 					<view class="title text-center text-lg">
@@ -75,6 +75,16 @@
 				modalName: '',
 				pointsList: [],
 				pointsPropery: [],
+				payOk: false,
+				orderSn: null,
+				orderInfo: null,
+			}
+		},
+		watch: {
+			payOk(newValue, oldValue) {
+				if (this.payOk) {
+					this.api_UserInfo();
+				}
 			}
 		},
 		onLoad() {
@@ -100,6 +110,89 @@
 					self.pointsPropery = res.data;
 				})
 			},
+			api_UserInfo() {
+				this.$http1.post('user/info').then(res => {
+					this.$store.dispatch('changeVal', {
+						stateKey: 'userInfo',
+						newValue: res.data
+					})
+				}).catch(err => {
+					console.log('userinfo-err', err);
+				})
+			},
+			async api_OrderCreate(item) {
+				let self = this;
+				if (!item) {
+					self.modalShow('toastModal', '请选择充值规格');
+					return false;
+				}
+				let rstOrder = await self.$http1.post('order/create', {
+					fee: item.money,
+					type: 1, // 1-星豆, 2-vip
+					property: item.id,
+					pay_type: 1, // 1-微信, 2-支付宝, 3-银联  暂时只对接微信
+					status: 'unpaid'
+				})
+				self.clog('下单', rstOrder)
+				if (rstOrder.code == 0) {
+					this.orderSn = rstOrder.data.order_sn;
+					return rstOrder.data.order_sn
+				} else {
+					self.modalShow('toastModal', rstOrder.msg);
+					return false;
+				}
+			},
+			
+			async api_OrderCancel() {
+				if (!this.orderSn) {
+					return false;
+				}
+				let self = this;
+				let orderCancel = await this.$http1.post('order/cancel', {
+					order_sn: self.orderSn
+				});
+				if (orderCancel.code == 0) {
+					this.orderSn = null;
+					self.modalShow('toastModal', '订单删除成功');
+				}
+			},
+			
+			async api_WxPay(orderSn) {
+				if (!orderSn) {
+					return false;
+				}
+				let self = this;
+				let rstWxPayParams = await self.$http1.post('wxapay/pay-params', {
+					order_sn: orderSn
+				});
+				self.clog('微信支付', rstWxPayParams)
+				if (rstWxPayParams.code == 0) {
+					let orderInfo = rstWxPayParams.data.params;
+					this.orderInfo = orderInfo;
+					uni.requestPayment({
+						provider: 'wxpay',
+						orderInfo: orderInfo,
+						success: (res) => {
+							// self.modalShow('toastModal', '155---' + res);
+							self.payOk = true;
+							self.modalShow('toastModal', '支付成功');
+						},
+						fail: (err) => {
+							self.clog('Uni-pay-fail', err);
+							// self.modalShow('toastModal', '158----' + err.errMsg);
+							if (err.errMsg.indexOf("payment微信:-2") != -1) {
+								self.modalName = 'dialogModal';
+								self.dialogText = '你取消了支付, 是否继续支付?';
+								self.dialogSureText = '继续支付';
+							} else {
+								elf.modalShow('toastModal', err.errMsg);
+							}
+						}
+					})
+				} else {
+					
+				}
+			},
 			navRightHandle() {
 				uni.navigateTo({
 					url: './coinrecord',
@@ -111,11 +204,51 @@
 				this.modalName = 'bottomModal';
 			},
 			hideModal() {
-				this.modalName = '';
+				if (this.modalName == 'bottomModal') {
+					this.modalName = '';
+				}
+				if (this.modalName == 'dialogModal') {
+					this.modalName = '';
+					this.orderInfo = null;
+					this.api_OrderCancel();
+				}
 			},
-			properyHandle(item) { // 星豆充值规格点击
+			async properyHandle(item) { // 星豆充值规格点击
 				console.log(item);
+				let orderSn = await this.api_OrderCreate(item);
+				if (orderSn) {
+					await this.api_WxPay(orderSn);
+				}
 			},
+			
+			dialogConfirm() { // 继续支付
+				let self = this;
+				console.log('继续支付', self.orderInfo);
+				uni.requestPayment({
+					provider: 'wxpay',
+					orderInfo: self.orderInfo,
+					success: (res) => {
+						self.payOk = true;
+						this.modalName = '';
+						self.modalShow('toastModal', '支付成功');
+					},
+					fail: (err) => {
+						self.clog('Uni-pay-fail', err);
+						// self.modalShow('toastModal', '158----' + err.errMsg);
+						if (self.modalName == 'dialogModal') {
+							return false;
+						}
+						if (err.errMsg.indexOf("payment微信:-2") != -1) {
+							self.modalName = 'dialogModal';
+							self.dialogText = '你取消了支付, 是否继续支付?';
+							self.dialogSureText = '继续支付';
+						} else {
+							self.modalShow('toastModal', err.errMsg);
+						}
+					}
+				})
+			},
+			
 			pointsTapHandle(item) { // 免费得星豆点击
 				
 			}

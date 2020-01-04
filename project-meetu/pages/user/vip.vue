@@ -7,9 +7,9 @@
 					<image class="wh-100 round" :src="userInfo.headimgurl" mode="aspectFill"></image>
 				</view>
 				<view class="margin-left-lg">
-					<view class="flex-df">
+					<view class="text-left">
 						<text class="text-letter-df">{{userInfo.nickname}}</text>
-						<image class="img_vip" mode="aspectFill" src="../../static/meetu-img/vip.png"></image>
+						<image v-show="userInfo.isvip" class="img_vip" mode="aspectFill" src="../../static/meetu-img/vip.png"></image>
 					</view>
 					<view class="text-letter-df margin-top-sm text-xs">
 						<text>{{userInfo.isvip ? '有效期至：'+userInfo.expires_in : 'VIP未开通'}}</text>
@@ -57,7 +57,7 @@
 				<button class="cu-btn bg-color-main round" @tap.stop="vipPay">立即开通</button>
 			</view>
 		</view>
-		<cu-modal :modalName="modalName" :toastText="toastText"></cu-modal>
+		<cu-modal :modalName="modalName" :toastText="toastText" :dialogText="dialogText" :dialogSureText="dialogSureText" @hideModal="hideModal" @dialogConfirm="dialogConfirm"></cu-modal>
 	</view>
 </template>
 
@@ -76,10 +76,20 @@
 			return {
 				vipProperty: null,
 				selectPropertyItem: null,
+				orderSn: null,
+				orderInfo: null,
+				payOk: false,
 			}
 		},
 		onLoad() {
-			this.api_GetVipProperty()
+			this.api_GetVipProperty();
+		},
+		watch: {
+			payOk(newValue, oldValue) {
+				if (this.payOk) {
+					this.api_UserInfo();
+				}
+			}
 		},
 		methods: {
 			api_GetVipProperty() {
@@ -89,59 +99,140 @@
 					}
 				}).then(res => {
 					this.vipProperty = res.data;
-					console.log('------Vip--------', JSON.stringify(this.vipProperty))
 				})
 			},
 
+			api_UserInfo() {
+				this.$http1.post('user/info').then(res => {
+					this.$store.dispatch('changeVal', {
+						stateKey: 'userInfo',
+						newValue: res.data
+					})
+				}).catch(err => {
+					console.log('userinfo-err', err);
+				})
+			},
+			
+			async api_OrderCreate() {
+				let self = this;
+				if (!self.selectPropertyItem) {
+					self.modalShow('toastModal', '请选择充值规格');
+					return false;
+				}
+				let rstOrder = await self.$http1.post('order/create', {
+					fee: self.selectPropertyItem.price,
+					type: 2, // 1-星豆, 2-vip
+					property: self.selectPropertyItem.id,
+					pay_type: 1, // 1-微信, 2-支付宝, 3-银联  暂时只对接微信
+					status: 'unpaid'
+				})
+				self.clog('下单', rstOrder)
+				if (rstOrder.code == 0) {
+					this.orderSn = rstOrder.data.order_sn;
+					return rstOrder.data.order_sn
+				} else {
+					self.modalShow('toastModal', rstOrder.msg);
+					return false;
+				}
+			},
+			
+			async api_OrderCancel() {
+				if (!this.orderSn) {
+					return false;
+				}
+				let self = this;
+				let orderCancel = await this.$http1.post('order/cancel', {
+					order_sn: self.orderSn
+				});
+				if (orderCancel.code == 0) {
+					this.orderSn = null;
+					self.modalShow('toastModal', '订单删除成功');
+				}
+			},
+			
+			async api_WxPay(orderSn) {
+				if (!orderSn) {
+					return false;
+				}
+				let self = this;
+				let rstWxPayParams = await self.$http1.post('wxapay/pay-params', {
+					order_sn: orderSn
+				});
+				self.clog('微信支付', rstWxPayParams)
+				if (rstWxPayParams.code == 0) {
+					let orderInfo = rstWxPayParams.data.params;
+					this.orderInfo = orderInfo;
+					uni.requestPayment({
+						provider: 'wxpay',
+						orderInfo: orderInfo,
+						success: (res) => {
+							// self.modalShow('toastModal', '155---' + res);
+							self.payOk = true;
+							self.modalShow('toastModal', '支付成功');
+						},
+						fail: (err) => {
+							self.clog('Uni-pay-fail', err);
+							// self.modalShow('toastModal', '158----' + err.errMsg);
+							if (err.errMsg.indexOf("payment微信:-2") != -1) {
+								self.modalName = 'dialogModal';
+								self.dialogText = '你取消了支付, 是否继续支付?';
+								self.dialogSureText = '继续支付';
+							} else {
+								elf.modalShow('toastModal', err.errMsg);
+							}
+						}
+					})
+				} else {
+					
+				}
+			},
+			
 			vipPropertyChange(index) {
 				this.selectPropertyItem = this.vipProperty[index];
 			},
 
-			vipPay() {
+			async vipPay() {
 				let self = this;
-				self.$http1.post('wxapay/pay-params', {
-					order_sn: "O20200103B92B3E8" //res.data.order_sn
-				}).then(res=>{
-					self.clog('支付', res)
-					if (res.data.error == 0) {
-						uni.requestPayment({
-							provider: 'wxpay',
-							timeStamp: res.data.params.timeStamp,
-							nonceStr: res.data.params.nonceStr,
-							package: res.data.params.package,
-							singType: 'MD5',
-							paySign: res.data.params.sign,
-							orderInfo: res.ordernum,
-							service: 3,
-							_debug: 1,
-							success: (res) => {
-								console.log('------success-----', res);
-							},
-							fail: (err) => {
-								console.log('------fail-----', err);
-							}
-						})
-					} else {
-						self.modalShow('toastModal', res.msg);
-					}
-				}).catch(err=>{
-					self.clog('支付失败', err)
-				})
-				// this.$http1.post('order/create', {
-				// 	fee: 0.1,
-				// 	type: 2, // 1-星豆, 2-vip
-				// 	property: self.selectPropertyItem.id,
-				// 	pay_type: 1, // 1-微信, 2-支付宝, 3-银联  暂时只对接微信
-				// 	status: 'unpaid'
-				// }).then(res=>{
-				// 	self.clog('下单', res)
-				// 	if (res.code === 0) {
-						
-				// 	} else {
-				// 		self.modalShow('toastModal', res.msg);
-				// 	}
-				// })
+				let orderSn = await self.api_OrderCreate();
+				console.log('---VIPpAY----', orderSn)
+				if (orderSn) {
+					await self.api_WxPay(orderSn);
+				}
 			},
+			
+			hideModal() {
+				this.modalName = '';
+				this.orderInfo = null;
+				this.api_OrderCancel();
+			},
+			
+			dialogConfirm() { // 继续支付
+				let self = this;
+				console.log('继续支付', self.orderInfo);
+				uni.requestPayment({
+					provider: 'wxpay',
+					orderInfo: self.orderInfo,
+					success: (res) => {
+						self.payOk = true;
+						this.modalName = '';
+						self.modalShow('toastModal', '支付成功');
+					},
+					fail: (err) => {
+						self.clog('Uni-pay-fail', err);
+						// self.modalShow('toastModal', '158----' + err.errMsg);
+						if (self.modalName == 'dialogModal') {
+							return false;
+						}
+						if (err.errMsg.indexOf("payment微信:-2") != -1) {
+							self.modalName = 'dialogModal';
+							self.dialogText = '你取消了支付, 是否继续支付?';
+							self.dialogSureText = '继续支付';
+						} else {
+							self.modalShow('toastModal', err.errMsg);
+						}
+					}
+				})
+			}
 		},
 	}
 </script>
@@ -195,15 +286,15 @@
 
 				.rechargeList {
 					margin-top: 30rpx;
-					padding: 0 10rpx;
-					display: flex;
-					justify-content: flex-start;
-					flex-wrap: wrap;
+					// display: flex;
+					// justify-content: flex-start;
+					// flex-wrap: wrap;
 
 					.rechargeItem {
 						position: relative;
-						display: flex;
-						flex-direction: column;
+						// display: flex;
+						// flex-direction: column;
+						display: inline-block;
 						width: 181rpx;
 						height: 172rpx;
 						border-radius: 10rpx;

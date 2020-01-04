@@ -72,7 +72,7 @@
 	} from 'vuex';
 	import * as DateUtils from "../../common/Utils/Date.js";
 	import mixinInit from '../../mixins/init.js';
-	const WS = getApp().globalData.socket;
+
 	const innerAudioContext = uni.createInnerAudioContext();
 	innerAudioContext.autoplay = true;
 	export default {
@@ -108,6 +108,7 @@
 		computed: {
 			...mapGetters(['userInfo', 'token']),
 			...mapState({
+				WS: state=> state.socketInfo.WS,
 				chatInfoList: state => state.socketInfo.chatInfo, // 聊天详情信息
 				chatMsg: state => state.socketInfo.chatMsg // 存储接收到消息
 			})
@@ -177,7 +178,7 @@
 					}
 					this.isHistoryLoad = true;
 				}
-				WS.sendSocketMessage({
+				this.WS.sendSocketMessage({
 					msgType: "getChatLogInfo",
 					data: {
 						page: self.page,
@@ -213,7 +214,7 @@
 					created_at_format: DateUtils.timeFormat(created_at),
 					is_show_time: DateUtils.dateDiff(self.lastInfoTime, created_at),
 				}
-				WS.sendSocketMessage({
+				this.WS.sendSocketMessage({
 					msgType: 'chatMsg',
 					data: {
 						to_id: self.chatUserInfo.user_id,
@@ -232,12 +233,12 @@
 						self.lastInfoTime = created_at;
 					}, 10)
 				}, errRes => {
-					self.clog('---聊天消息发送ERR----', errRes);
+					self.clog('---聊天消息发送ERR----', errRes); 
 				})
 			},
 
 			ws_read(userId) {
-				WS.sendSocketMessage({
+				this.WS.sendSocketMessage({
 					msgType: "read",
 					data: {
 						user_id: userId

@@ -51,7 +51,6 @@
 
 <script>
 	import wPicker from "@/components/w-picker/w-picker.vue";
-	import pictureTailor from "@/components/picture-tailor/pictureTailor.vue";
 	import mixinInit from "../../mixins/init.js";
 	import {
 		mapGetters,mapMutations
@@ -60,7 +59,6 @@
 		name: 'personaldata',
 		components: {
 			wPicker,
-			pictureTailor
 		},
 		mixins: [mixinInit],
 		data() {
@@ -204,6 +202,10 @@
 					this.modalShow('toastModal', '请选择你的出生日期')
 					return false;
 				}
+				if (this.pickerRegionInfo.result == '选择地区') {
+					this.modalShow('toastModal', '请选择地区')
+					return false;
+				}
 				if (this.pickerRegionInfo.result.match(/\w/)!=null) {
 					this.modalShow('toastModal', '请选择地区(中文)')
 					return false;
@@ -234,7 +236,7 @@
 					return false;
 				}
 				this.$http1.post('user/edit', tempInfo).then(res=>{
-					uni.setStorageSync('firstPerfectInfo', true);
+					uni.setStorageSync('oldUser', 1);
 					if (this.isEditInfo) {
 						for (let key in tempInfo) {
 							this.userInfo[key] = tempInfo[key];
@@ -242,6 +244,7 @@
 						this.modalShow('toastModal', '信息修改成功')
 						this.$store.dispatch('changeVal', {stateKey: 'userInfo', newValue: self.userInfo})
 					} else {
+						// this.$store.dispatch('changeVal', {stateKey: 'carryParamsInHome', newValue: 'page_personaldata'})
 						uni.redirectTo({
 							url: '../home/index',
 						})

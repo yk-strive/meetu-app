@@ -1,6 +1,7 @@
 import * as DateUtils from '../../common/Utils/Date.js'
 let socketInfo = {
 	state: {
+		WS: null,
 		unread: 0, // 未读消息数量
 		list: false, // 数组-- 存放消息列表 -1--当聊天列表为空时, -1 更改为null, 页面watch监听, 方便给提示 
 		chatInfo: false, // 聊天信息
@@ -8,6 +9,9 @@ let socketInfo = {
 		errMag: null,
 	},
 	mutations: {
+		WS(state, WS) {
+			state.WS = WS
+		},
 		setSocketState(state, info) {
 			switch (info.msgType) {
 				case 'socketConnect':
@@ -58,6 +62,9 @@ let socketInfo = {
 		}
 	},
 	actions: {
+		WS({ commit }, WS) {
+			commit('WS', WS);
+		},
 		setSocketState({ commit }, info) {
 			console.log('---WS+socketInfo--接收---', info)
 			commit('setSocketState', info);

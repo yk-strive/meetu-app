@@ -5,14 +5,15 @@
 		<image class="img_change" @tap.stop="searchChange" src="../../static/meetu-img/huan.png"></image>
 		<view class="search_view">
 			<view v-if="isSearch" class="text-center text-white padding-top-lg">信号搜寻中, 请期待~~</view>
-			<view class="search_item animation-slide-bottom" v-show="item.isDisplay" v-for="item,index in searchValue" :key="index" :style="[{left: item.left + 'px'}, {top:item.top + 'px'}, {animationDelay: (index + 1)*0.1 + 's'}]"
-			 @click="openStarHandle(item, index)">
+			<view class="search_item animation-slide-bottom" v-show="item.isDisplay" v-for="item,index in searchValue" :key="index"
+			 :style="[{left: item.left + 'px'}, {top:item.top + 'px'}, {animationDelay: (index + 1)*0.1 + 's'}]" @click="openStarHandle(item, index)">
 				<image class="img_star" src="../../static/meetu-img/star.png"></image>
 				<image class="img_avatar round abs-center" :src="item.headimgurl" mode="aspectFill"></image>
 			</view>
 		</view>
 
-		<cu-modal :modalName="modalName" @hideModal="hideModal" :toastText="toastText">
+		<cu-modal :modalName="modalName" @hideModal="hideModal" @dialogConfirm="dialogConfirm" :toastText="toastText"
+		 :dialogText="dialogText" :dialogSureText="dialogSureText">
 			<block slot="modal">
 				<view class="open_star">
 					<!-- 信息展示 -->
@@ -101,21 +102,21 @@
 				console.log('播放结束')
 				self.voicePlay = false;
 			});
-		},
-		onReady() {
-			let self = this;
+			
 			const query = uni.createSelectorQuery();
 			query.select('.search_view').boundingClientRect(data => {
 				// console.log(data);
 				self.maxWNum = data.width / self.searchItemW;
 				self.maxHNum = data.height / self.searchItemW;
 			}).exec();
-
-			// this.searchChange();
 		},
+
 		// 存储-- searchInfo: {searchValue: [], page: }
 		onShow() {
+			console.log('onShow')
 			this.initData();
+			// let left_random = this.getRandomIntInclusive(1, this.maxWNum - 1) * this.searchItemW;
+			
 		},
 		watch: {
 			isNewSignal() {
@@ -131,21 +132,21 @@
 					page: self.page
 				}).then(res=>{
 					this.isSearch = false;
-					
+					self.clog('搜寻结果'+self.page, res);
+					this.randomLocationLeft();
+					this.randomLocationTop();
 					if (res.data && res.data.length > 0) {
 						for (var i = 0; i < res.data.length; i++) {
 							res.data[i].isDisplay = true; // 每一项添加isDisplay--true展示, false隐藏
-							this.randomLocationLeft();
-							this.randomLocationTop();
+							
 							// 每一项的位置的补充, 方便页面卸载/隐藏时 直接存储.
 							res.data[i].top = this.tempTopNum[i];
 							res.data[i].left = this.tempLeftNum[i];
 						}
 						self.searchValue = res.data;
-						self.clog('搜寻结果++'+self.page, res);
-						self.page++;
+						this.page += 1;
 					} else {
-						self.clog('没有搜寻结果++'+self.page);
+						// self.clog('没有搜寻结果++'+self.page);
 						// if(self.page == 1) {
 						// 	this.modalShow('toastModal', '没有更多信号了');
 						// } else {
@@ -154,9 +155,11 @@
 						// }
 					}
 				}).catch(err=>{
+					console.log(err)
 					this.modalShow('toastModal', err.msg);
 				})
 			},
+			
 			api_SignalRefresh() {
 				console.log('刷星');
 				let self = this;
@@ -170,16 +173,24 @@
 						this.api_SignalReceive();
 					}
 				}).catch(err=>{
-					self.clog('刷新信号失败', err)
+					if (err.code == '300010') {
+						this.modalName = 'dialogModal';
+						this.dialogText = err.msg;
+						this.dialogSureText = '充值星豆';
+					}
 				})
 			},
+			
 			api_SignalNeglect(signalId) {
 				this.$http1.post('signal/neglect', {
 					signal_id: signalId
 				}).then(res=>{
 					this.modalName = '';
+					this.stopVoiceHandle();
+					this.openItem = null;
 				})
 			},
+			
 			api_SignalReply(signalId,content) {
 				this.$http1.post('signal/reply', {
 					signal_id: signalId,
@@ -187,8 +198,11 @@
 				}).then(res=>{
 					// 提交消息完成,textarea值置空, 隐藏弹窗, 回应消息UI状态重置
 					this.textareaValue = '';
-					this.hideModal('hide');
+					this.modalName = '';
+					// this.hideModal('hide');
 					this.showActionTwo = false;
+					this.stopVoiceHandle();
+					this.openItem = null;
 					setTimeout(() => {
 						this.modalShow('toastModal', '回复成功');
 					}, 100);
@@ -232,36 +246,45 @@
 			},
 			
 			randomLocationLeft() { // 获取随机left的位置
-				let left_random = this.getRandomIntInclusive(1, this.maxWNum - 1) * this.searchItemW;
-				if (this.tempLeftNum.length === 0) {
-					this.tempLeftNum.push(left_random);
-				} else {
-					if (this.tempLeftNum.indexOf(left_random) != -1) {
-						this.randomLocationLeft();
-					} else {
-						this.tempLeftNum.push(left_random);
-					}
-				}
-
+				this.tempLeftNum = this.selectRandom(5, 1, this.maxWNum - 1).map(num=>{
+					return num*this.searchItemW
+				});
+				console.log(this.tempLeftNum)
 			},
 			
 			randomLocationTop() { // 获取随机top的位置
-				let top_random = this.getRandomIntInclusive(1, this.maxHNum - 1) * this.searchItemH;
-				if (this.tempTopNum.length === 0) {
-					this.tempTopNum.push(top_random);
-				} else {
-					if (this.tempTopNum.indexOf(top_random) != -1) {
-						this.randomLocationTop();
-					} else {
-						this.tempTopNum.push(top_random);
-					}
-				}
+				this.tempTopNum = this.selectRandom(5, 1, this.maxWNum - 1).map(num=>{
+					return num*this.searchItemH
+				});
 			},
-
-			getRandomIntInclusive(min, max) {
-				min = Math.ceil(min);
-				max = Math.floor(max);
-				return Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值 
+			
+			selectRandom (num, from, to) {
+			    let arr = [];
+			    let json = {};
+			    let needNum;
+			
+			    if (from - to >= 0) {
+			        console.log(111)
+			        return '起始值要小于末尾值'
+			    }
+			
+			    if (to - from == to) {
+			        needNum = parseInt(to) + 1;
+				} else {
+			        needNum = to - from;
+			    }
+			    if (num > needNum) {
+			        return
+			    } else {
+			        while (arr.length < num) {
+			          let ranNum = Math.ceil(Math.random() * needNum);
+			          if (!json[ranNum]) {
+			            json[ranNum] = 1;
+			            arr.push(ranNum)
+			          }
+			        }
+			        return arr;
+			    }
 			},
 
 			searchChange() { // 点击--换一换(请求接口)
@@ -287,16 +310,21 @@
 			neglectHandle() { //忽略信息
 				this.api_SignalNeglect(this.openItem.id);
 			},
-			hideModal(type) { // 隐藏cu-modal
-				if (type) {
+			hideModal() { // 隐藏cu-modal -- 这里只做星豆不足,dialog提示关闭/ 其余打开信号--在忽略和回复接口成功时进行关闭
+				if (this.modalName == 'dialogModal') {
 					this.modalName = '';
-					setTimeout(()=> {
-						this.stopVoiceHandle();
-						this.openItem = null;
-					}, 300);
 				}
 			},
-		
+			
+			dialogConfirm() {
+				this.modalName = "";
+				uni.navigateTo({
+					url: '../user/coin',
+					animationDuration: 300,
+					animationType: 'fade-in'
+				})
+			},
+			
 			playVoiceHandle(voiceContent) { // 播放星星信号--语音
 				if (this.voicePlay) {
 					innerAudioContext.pause();

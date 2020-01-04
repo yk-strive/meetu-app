@@ -24,18 +24,15 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.coinrecord_wrap {
-  padding-top: 40rpx;
-}
 .coinrecord_wrap .coinrecord_item {
-    -webkit-box-pack: justify;
-    -webkit-justify-content: space-between;
-            justify-content: space-between;
-    min-height: 130rpx;
-    margin: 40rpx 0;
-    padding: 0 40rpx;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+          justify-content: space-between;
+  min-height: 130rpx;
+  margin: 40rpx 0;
+  padding: 0 40rpx;
 }
 .coinrecord_wrap .coinrecord_item .record_info view:nth-child(2) {
-      color: #5D4C8B;
+    color: #5D4C8B;
 }
 

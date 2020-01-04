@@ -24,15 +24,9 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-.chatlist-wrap {
-  overflow: hidden;
-}
 .panel-scroll-box {
   height: 100%;
-  padding-top: 50rpx;
-}
-.cu-list {
-  padding-top: 50rpx;
+  padding-bottom: 20rpx;
 }
 .cu-list.menu-avatar .cu-item {
   background-color: transparent;

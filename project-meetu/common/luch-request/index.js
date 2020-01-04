@@ -47,12 +47,12 @@ http_v1.validateStatus = (statusCode) => {
 }
 
 http_v1.interceptor.response((response) => { /* 请求之后拦截器 */
-	if (response.data.code !== 0) {
-		return Promise.reject(response)
-	}
+	// if (response.data.code !== 0) {
+	// 	return Promise.reject(response.data)
+	// }
 	return response.data
 }, (response) => { // 请求错误的处理
-	return response; 
+	return response.data; 
 })
 
 // 还可以接着重新创建一个请求,

@@ -5,7 +5,7 @@
     "iPad"
   ],
   "id": "__UNI__2A25171",
-  "name": "project-meetu",
+  "name": "MeetU",
   "version": {
     "name": "1.0.0",
     "code": "100"
@@ -52,6 +52,21 @@
     "usingComponents": true,
     "nvueCompiler": "uni-app",
     "distribute": {
+      "splashscreen": {
+        "android": {
+          "hdpi": "",
+          "xhdpi": "",
+          "xxhdpi": ""
+        }
+      },
+      "icons": {
+        "android": {
+          "hdpi": "static/res/drawable-hdpi/logo.9.png",
+          "xhdpi": "static/res/drawable-xhdpi/logo.9.png",
+          "xxhdpi": "static/res/drawable-xxhdpi/logo.9.png",
+          "xxxhdpi": "static/res/drawable-xxxhdpi/logo.9.png"
+        }
+      },
       "google": {
         "permissions": [
           "<uses-feature android:name=\"android.hardware.camera\"/>",

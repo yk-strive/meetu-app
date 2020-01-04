@@ -26,7 +26,7 @@
 				今日剩余次数：<text v-if="userNumber">{{userNumber.signal_config-userNumber.signal_number}}/{{userNumber.signal_config}}</text>
 			</view>
 		</view>
-		
+
 		<view class="daily-login cu-modal" :class="showDailyLogin ? 'show' : ''">
 			<view class="daily-login-wrap">
 				<view class="flex-df">
@@ -76,9 +76,11 @@
 
 <script>
 	import {
-		mapState, mapGetters
+		mapState,
+		mapGetters
 	} from 'vuex';
 	import mixinInit from '../../mixins/init.js';
+	import mSocket from '@/common/socket/index.js';
 	export default {
 		name: 'homeIndex',
 		components: {},
@@ -95,25 +97,24 @@
 			}
 		},
 		computed: {
-			...mapGetters(['userInfo', 'dailyLogin']),
+			...mapGetters(['userInfo', 'dailyLogin', 'token']),
 			...mapState({
-				unread: state=>state.socketInfo.unread
+				unread: state => state.socketInfo.unread
 			})
 		},
-		watch: {
-			
-		},
-		onLoad() {
+
+		onLoad(options) {
 			this.api_UserNumber();
+			uni.removeStorageSync('searchInfo')
 		},
-		
+
 		onReady() {
+			// this.ws_init()
 			if (uni.getStorageSync('homeSendToast')) {
 				this.showSendToast = false;
 			} else {
 				this.showSendToast = true;
 			}
-			console.log('----ping----', this.pong || this.connect)
 		},
 		onShow() {
 			this.api_UserInfo();
@@ -144,16 +145,46 @@
 			}
 		},
 		methods: {
-			api_UserInfo() {
-				this.$http1.post('user/info').then(res => {
-					console.log( res.data);
+			ws_init() {
+				let self = this;
+				let socket = new mSocket({
+					url: 'wss://api.meetu.letwx.com/im?token=' + self.token,
+					timeout: 30000,
+					isSendHeart: true,
+					heartData: {
+						"msgType": "ping",
+						"data": {}
+					},
+					isReconnection: true,
+					reConnectTime: 3000,
+					debug: process.env.NODE_ENV === "development",
+					params: { // 发送消息时如果时json则自动加上组合里面参数
+						// token: token
+					},
+					onSocketOpen: header => {},
+					onSocketMessage: data => {
+						self.$store.dispatch('setSocketState', data);
+					},
+					onSocketError: res => {
+						self.$store.dispatch('setSocketStateErr', res.errMsg);
+					},
+					onSocketClose: res => {}
+				});
+				console.log('--socket--', socket)
+				self.$store.dispatch('WS', socket);
+				socket.initSocket();
+			},
+
+			async api_UserInfo() {
+				let rstUserInfo = await this.$http1.post('user/info');
+				if (rstUserInfo.code == 0) {
 					this.$store.dispatch('changeVal', {
 						stateKey: 'userInfo',
-						newValue: res.data
+						newValue: rstUserInfo.data
 					})
-				}).catch(err => {
-					console.log('userinfo-err', err);
-				})
+				} else {
+					this.modelShow('toastModal', rstUserInfo.msg);
+				}
 			},
 			api_UserNumber() { //操作剩余次数
 				this.$http1.post('user/number').then(res => {
@@ -165,12 +196,15 @@
 			},
 			api_DailyLogin() {
 				let self = this;
-				this.$http1.post('points/daily-login').then(res=>{
+				this.$http1.post('points/daily-login').then(res => {
 					if (res.code == 0) {
 						this.modalShow('toastModal', '领取成功');
 						this.showDailyLogin = false;
 						uni.setStorageSync('dailyLoginExpires', self.expiresTime());
 					}
+				}).catch(err => {
+					this.showDailyLogin = false;
+					this.modalShow('toastModal', err.data.msg);
 				})
 			},
 			getDailyLogin() {
@@ -227,7 +261,7 @@
 			expiresTime() {
 				let now = new Date();
 				var year = now.getFullYear(),
-					month = now.getMonth()+1 > 9 ? now.getMonth()+1 : '0' + now.getMonth()+1,
+					month = now.getMonth() + 1 > 9 ? now.getMonth() + 1 : '0' + now.getMonth() + 1,
 					date = now.getDate() > 9 ? now.getDate() : '0' + now.getDate();
 				let expires = year + '/' + month + '/' + date + ' 23:59:59';
 				return (new Date(expires)).getTime();
@@ -241,7 +275,9 @@
 
 <style lang="scss">
 	#homePage {
-		.AppName, .avatar {
+
+		.AppName,
+		.avatar {
 			position: fixed;
 			top: 140rpx;
 			right: 50rpx;
@@ -249,6 +285,7 @@
 			height: 120rpx;
 			overflow: hidden;
 		}
+
 		.AppName {
 			left: 50rpx;
 		}
@@ -336,23 +373,30 @@
 				vertical-align: middle;
 				margin-left: auto;
 				margin-right: auto;
-				
-				image.bg,image.coin, view, button {
+
+				image.bg,
+				image.coin,
+				view,
+				button {
 					position: absolute;
 				}
+
 				image.bg {
 					width: 540rpx;
 				}
+
 				image.coin {
 					width: 84rpx;
 					height: 74rpx;
 					margin-top: -90rpx;
 				}
+
 				view {
 					width: 200rpx;
 					left: 50%;
 					transform: translateX(-50%);
 				}
+
 				button {
 					width: 270rpx;
 					height: 64rpx;
@@ -388,34 +432,40 @@
 				}
 			}
 		}
-	
+
 		.avatar-animation {
 			animation: avatar-animation 2s linear both infinite;
 		}
+
 		@keyframes avatar-animation {
-			0%{
-				box-shadow: 0 0 12rpx 12rpx rgba(105,65,124,0.8);
+			0% {
+				box-shadow: 0 0 12rpx 12rpx rgba(105, 65, 124, 0.8);
 			}
+
 			50% {
-				box-shadow: 0 0 12rpx 12rpx rgba(105,65,124,0.4);
+				box-shadow: 0 0 12rpx 12rpx rgba(105, 65, 124, 0.4);
 			}
-			100%{
-				box-shadow: 0 0 12rpx 12rpx rgba(105,65,124,0.8);
+
+			100% {
+				box-shadow: 0 0 12rpx 12rpx rgba(105, 65, 124, 0.8);
 			}
 		}
-		
-		.signal-animation { // 发送信号回首页--动画展示
-			animation: signal-animation 2s 2s linear both; 
+
+		.signal-animation {
+			// 发送信号回首页--动画展示
+			animation: signal-animation 2s 2s linear both;
 		}
+
 		@keyframes signal-animation {
-			0%{
+			0% {
 				width: 20rpx;
 				height: 20rpx;
 				opacity: 1;
 				background-color: rgba(255, 255, 255, .5);
 				box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .3);
 			}
-			40%{
+
+			40% {
 				width: 12rpx;
 				height: 12rpx;
 				opacity: 1;
@@ -423,7 +473,8 @@
 				background-color: rgba(255, 255, 255, .3);
 				box-shadow: 0 0 8rpx 6rpx rgba(255, 255, 255, .5);
 			}
-			100%{
+
+			100% {
 				width: 8rpx;
 				height: 8rpx;
 				opacity: 0;

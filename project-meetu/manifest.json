@@ -1,5 +1,5 @@
 {
-    "name" : "project-meetu",
+    "name" : "MeetU",
     "appid" : "__UNI__2A25171",
     "description" : "",
     "versionName" : "1.0.0",
@@ -77,6 +77,21 @@
                         "appid" : "wx04a9745d1e461dcd",
                         "UniversalLinks" : ""
                     }
+                }
+            },
+            "splashscreen" : {
+                "android" : {
+                    "hdpi" : "",
+                    "xhdpi" : "",
+                    "xxhdpi" : ""
+                }
+            },
+            "icons" : {
+                "android" : {
+                    "hdpi" : "static/res/drawable-hdpi/logo.9.png",
+                    "xhdpi" : "static/res/drawable-xhdpi/logo.9.png",
+                    "xxhdpi" : "static/res/drawable-xxhdpi/logo.9.png",
+                    "xxxhdpi" : "static/res/drawable-xxxhdpi/logo.9.png"
                 }
             }
         }

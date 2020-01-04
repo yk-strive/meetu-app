@@ -24,6 +24,9 @@ let store = new Vuex.Store({
 		userInfo: null,
 	},
 	getters: { // 获取仓库中存放的值,供页面使用
+		carryParamsInHome(state) {
+			return state.carryParamsInHome
+		},
 		token(state) {
 			return state.token
 		},
@@ -41,9 +44,18 @@ let store = new Vuex.Store({
 			newValue
 		}) { // 更新仓库中的某变量的值
 			state[options.stateKey] = options.newValue;
+			if (options.stateKey == 'carryParamsInHome') {
+				console.log('------Vuex---carryParamsInHome---------', options.newValue)
+			}
 			if (options.stateKey == 'token') {
 				uni.setStorage({
 					key: 'token',
+					data: options.newValue
+				});
+			}
+			if (options.stateKey == 'dailyLogin') {
+				uni.setStorage({
+					key: 'dailyLogin',
 					data: options.newValue
 				});
 			}

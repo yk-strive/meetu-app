@@ -3,7 +3,7 @@
 	import {
 		mapGetters, mapMutations
 	} from "vuex";
-	import mSocket from '@/common/socket/index.js';
+	// import mSocket from '@/common/socket/index.js';
 	export default {
 		onLaunch: function() {
 			console.log('App Launch');
@@ -42,16 +42,13 @@
 			})
 			// 判断app接下来的入口
 			let storageInfo = uni.getStorageInfoSync();
-			if (storageInfo.keys.indexOf('token') != -1) {
+			if (storageInfo.keys.indexOf('token') != -1 && uni.getStorageSync('token')) {
 				uni.getStorage({
 					key: 'token',
 					success: (res) => {
-						this.changeVal({
-							stateKey: 'token',
-							newValue: res.data
-						});
-						this.initSocket();
-						if (storageInfo.keys.indexOf('firstPerfectInfo') != -1 && uni.getStorageSync('firstPerfectInfo')) {
+						this.changeVal({stateKey: 'token',newValue: res.data});
+						this.changeVal({stateKey: 'dailyLogin', newValue: uni.getStorageSync('dailyLogin')})
+						if (storageInfo.keys.indexOf('oldUser') != -1 && uni.getStorageSync('oldUser')) {
 							// 一般直接进入首页-home/index;
 							uni.redirectTo({
 								url: 'pages/home/index',
@@ -70,8 +67,7 @@
 			}
 		},
 		onShow: function() {
-			// 连接socket;
-			this.globalData.socket.initSocket();
+			
 		},
 		onHide: function() {
 
@@ -81,35 +77,9 @@
 		},
 		methods: {
 			...mapMutations(['changeVal']),
-			initSocket() {
-				let self = this;
-				console.log(self.token);
-				let socket = new mSocket({
-					url: 'wss://api.meetu.letwx.com/im?token='+self.token,
-					timeout: 30000,
-					isSendHeart: true,
-					heartData: {"msgType":"ping","data":{}},
-					isReconnection: true,
-					reConnectTime: 3000,
-					debug: process.env.NODE_ENV === "development",
-					params: { // 发送消息时如果时json则自动加上组合里面参数
-						// token: token
-					},
-					onSocketOpen: header => {},
-					onSocketMessage: data => {
-						self.$store.dispatch('setSocketState', data);
-					},
-					onSocketError: res => {
-						self.$store.dispatch('setSocketStateErr', res.errMsg);
-					},
-					onSocketClose: res => {}
-				});
-				this.globalData.socket = socket;
-			}
 		},
 		globalData: {
 			sendSignal: false,
-			socket: null,
 		}
 	}
 </script>

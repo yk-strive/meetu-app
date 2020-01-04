@@ -11,7 +11,7 @@ export default {
 			modalName: '',
 			toastText: '',
 			dialogText: '',
-			
+			dialogSureText: '',
 		}
 	},
 	watch: {

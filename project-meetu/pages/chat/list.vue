@@ -40,7 +40,7 @@
 	import mixinInit from '../../mixins/init.js';
 	import * as DateUtils from "../../common/Utils/Date.js";
 	import { mapState } from 'vuex';
-	const WS = getApp().globalData.socket;
+
 	export default {
 		name: 'chatlist',
 		components: {
@@ -60,6 +60,7 @@
 		
 		computed: {
 			...mapState({
+				WS: state=> state.socketInfo.WS,
 				list: state=>state.socketInfo.list,
 				chatMsg: state=>state.socketInfo.chatMsg  // 存储接收到消息
 			})
@@ -115,7 +116,7 @@
 						}, 100)
 					}
 				}
-				WS.sendSocketMessage({
+				self.WS.sendSocketMessage({
 					msgType:"getChatLogList",
 					data:{
 						page: self.page,
@@ -130,7 +131,7 @@
 			},
 			
 			ws_read(userId) {
-				WS.sendSocketMessage({
+				this.WS.sendSocketMessage({
 					msgType:"read",
 					data:{
 						user_id: userId

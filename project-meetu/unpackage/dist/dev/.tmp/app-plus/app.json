@@ -28,7 +28,7 @@
     "alwaysShowBeforeRender": true,
     "autoclose": false
   },
-  "appname": "project-meetu",
+  "appname": "MeetU",
   "compilerVersion": "2.4.6",
   "usingComponents": {
     "custom-nav": "/components/custom-nav",

@@ -37,9 +37,11 @@
     height: 218rpx;
 }
 .user-wrap .userinfo .nickname image {
+  margin-left: 10rpx;
+}
+.user-wrap .userinfo .nickname .sex {
   width: 24rpx;
   height: 24rpx;
-  margin-left: 10rpx;
 }
 .user-wrap .userinfo .singleid text:nth-child(2) {
   color: #299ABE;
