@@ -109,7 +109,7 @@
 		},
 
 		onReady() {
-			// this.ws_init()
+			this.ws_init()
 			if (uni.getStorageSync('homeSendToast')) {
 				this.showSendToast = false;
 			} else {

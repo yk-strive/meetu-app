@@ -117,6 +117,8 @@
 		watch: {
 			chatMsg(newValue, oldValue) { // 监听chatMsg, 收到消息就这条消息push到chatInfoList
 				let self = this;
+				self.lastInfoTime = self.lastInfoTime ? self.lastInfoTime : self.chatInfoList[self.chatInfoList.length - 1].created_at;
+				
 				this.chatInfoList.push({
 					id: newValue.id,
 					user_id: newValue.user_id,
@@ -152,10 +154,6 @@
 			this.chatUserInfo = JSON.parse(options.chatItem);
 			this.clog('对话人', this.chatUserInfo)
 			this.ws_GetChatLogInfo();
-		},
-		onReady() {
-			// 存放消息列表最后一条的时间
-			this.lastInfoTime = this.chatInfoList[this.chatInfoList.length - 1].created_at;
 		},
 		onShow() {
 			const res = uni.getSystemInfoSync(); //获取手机可使用窗口高度     api为获取系统信息同步接口
@@ -197,19 +195,24 @@
 			ws_sendMsg(contentType, content) {
 				let self = this;
 				let created_at = DateUtils.dateFormat(new Date(), 'yyyy.MM.dd hh:mm:ss');
+				self.lastInfoTime = self.lastInfoTime ? self.lastInfoTime : self.chatInfoList[self.chatInfoList.length - 1].created_at;
+				// return false;
 				/**
 				 * created_at_format: 时间在页面展示上的处理,
 				 * is_show_time: 是否需要展示时间
 				 * 
 				 * 消息发送成功--将lastInfoTime 变更为 created_at
 				 * */
+				 console.log('------最后一条消息时间-----', self.lastInfoTime);
+				 console.log('------发送消息时间-----', created_at);
+				 // return false;
 				let msgToFillList = {
 					id: self.chatInfoList[self.chatInfoList.length - 1].id + 1,
 					user_id: self.userInfo.id,
 					nickname: self.userInfo.nickname,
 					headimgurl: self.userInfo.headimgurl,
 					type: contentType,
-					content: content,
+					content: content, 
 					created_at: created_at,
 					created_at_format: DateUtils.timeFormat(created_at),
 					is_show_time: DateUtils.dateDiff(self.lastInfoTime, created_at),
@@ -231,6 +234,7 @@
 					setTimeout(() => {
 						self.scrollToBottom();
 						self.lastInfoTime = created_at;
+						
 					}, 10)
 				}, errRes => {
 					self.clog('---聊天消息发送ERR----', errRes); 
