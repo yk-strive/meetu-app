@@ -5,6 +5,7 @@
 			<image class="wh-100" v-bind:src="userInfo.headimgurl" mode="aspectFill"></image>
 		</view>
 
+		<view class="abs-center text-white"  @click="copyHandle">{{token}}</view>
 		<view class="home_bottom_act">
 			<view v-if="showSendToast" class="toast abs-center text-white text-xxs">
 				<text>给茫茫宇宙发射一个信号寻找远方的回应</text>
@@ -81,6 +82,7 @@
 	} from 'vuex';
 	import mixinInit from '../../mixins/init.js';
 	import mSocket from '@/common/socket/index.js';
+	import {throttle} from '@/common/Utils/common.js';
 	export default {
 		name: 'homeIndex',
 		components: {},
@@ -109,7 +111,7 @@
 		},
 
 		onReady() {
-			this.ws_init()
+			// this.ws_init()
 			if (uni.getStorageSync('homeSendToast')) {
 				this.showSendToast = false;
 			} else {
@@ -166,7 +168,7 @@
 						self.$store.dispatch('setSocketState', data);
 					},
 					onSocketError: res => {
-						self.$store.dispatch('setSocketStateErr', res.errMsg);
+						self.$store.dispatch('setSocketStateErr', res);
 					},
 					onSocketClose: res => {}
 				});
@@ -174,7 +176,7 @@
 				self.$store.dispatch('WS', socket);
 				socket.initSocket();
 			},
-
+			
 			async api_UserInfo() {
 				let rstUserInfo = await this.$http1.post('user/info');
 				if (rstUserInfo.code == 0) {
@@ -268,7 +270,17 @@
 			},
 			hideModal() {
 				this.modalName = '';
-			}
+			},
+			
+			copyHandle: throttle(function() {
+				let self = this;
+				uni.setClipboardData({
+				    data: self.token,
+				    success: function () {
+				        // uni.hideToast()
+				    }
+				});
+			}, 5000)
 		}
 	}
 </script>

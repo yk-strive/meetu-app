@@ -3,8 +3,8 @@
 		<!-- <web-view src="http://q.letwx.com/app/ggchristmas2019-build/index.html"></web-view> -->
 		<custom-nav :isBack="true" textTitle="发布语音信号"></custom-nav>
 		<view class="voice_action">
-			<view class="voice_time text-white text-center">
-				<text>{{intIntervalTime}}</text>
+			<view class="voice_time text-white text-center" v-show="intIntervalTime >= 0">
+				<text>{{intIntervalTime}}”</text>
 			</view>
 			<view v-if="!isRecordEnd" class="voice_init round text-xl text-center" @touchstart="touchStartHandle" @touchcancel="touchCancelHandle"
 			 @touchend="touchEndHandle">
@@ -45,6 +45,7 @@
 				timer: null,
 				intervalTime: 0,
 				isRecord: false, //记录状态, 录音中/未开始
+				timeShort: false, // 录音时间过短
 				isRecordEnd: false, // 录音结束, 更新ui
 				voiceTempPath: '', // 录音临时文件
 				audioPlay: false,
@@ -134,24 +135,31 @@
 			},
 			touchEndHandle() {
 				let self = this;
-				if (this.intervalTime <= 0.5) {
+				if (self.intervalTime <= 0.5) {
 					console.log('录音太短了');
-					this.voiceCancel = true;
+					recorderManager.stop();
+					clearInterval(self.timer);
+					self.timer = null;
+					self.isRecord = false;
+					
+					self.voiceCancel = true;
+				} else {
+					clearInterval(this.timer);
+					if (this.isRecord) {
+						this.isRecordEnd = true;
+						// 延迟小段时间停止录音, 体验更好
+						setTimeout(function() {
+							recorderManager.stop();
+							self.isRecord = false;
+							console.log(self.isRecord);
+							recorderManager.onStop(function(res) {
+								console.log("录音停止" + JSON.stringify(res))
+								self.voiceTempPath = res.tempFilePath;
+							});
+						}, 500);
+					}
 				}
-				clearInterval(this.timer);
-				if (this.isRecord) {
-					this.isRecordEnd = true;
-					// 延迟小段时间停止录音, 体验更好
-					setTimeout(function() {
-						recorderManager.stop();
-						self.isRecord = false;
-						console.log(self.isRecord);
-						recorderManager.onStop(function(res) {
-							console.log("录音停止" + JSON.stringify(res))
-							self.voiceTempPath = res.tempFilePath;
-						});
-					}, 500);
-				}
+				
 			},
 			resetVoiceHandle() {
 				this.isRecordEnd = false; // 将标识重置, 说明用户有意重新录制
@@ -227,9 +235,9 @@
 			width: 100%;
 
 			.voice_init {
-				width: 180upx;
-				height: 180upx;
-				line-height: 180upx;
+				width: 220upx;
+				height: 220upx;
+				line-height: 220upx;
 				background-color: #FFFFFF;
 				color: #333333;
 				margin: 20upx auto;
@@ -243,9 +251,9 @@
 
 				.voice_reset,
 				.voice_send {
-					width: 120upx;
-					height: 120upx;
-					line-height: 120upx;
+					width: 150upx;
+					height: 150upx;
+					line-height: 150upx;
 					color: #FFFFFF;
 				}
 
@@ -258,9 +266,9 @@
 				}
 
 				.voice_play {
-					width: 180upx;
-					height: 180upx;
-					line-height: 180upx;
+					width: 220upx;
+					height: 220upx;
+					line-height: 220upx;
 					background-color: #FFFFFF;
 				}
 			}

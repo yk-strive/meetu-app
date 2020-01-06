@@ -24,7 +24,8 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
-#homePage .AppName, #homePage .avatar {
+#homePage .AppName,
+#homePage .avatar {
   position: fixed;
   top: 140rpx;
   right: 50rpx;
@@ -108,7 +109,10 @@
   margin-left: auto;
   margin-right: auto;
 }
-#homePage .daily-login .daily-login-wrap image.bg, #homePage .daily-login .daily-login-wrap image.coin, #homePage .daily-login .daily-login-wrap view, #homePage .daily-login .daily-login-wrap button {
+#homePage .daily-login .daily-login-wrap image.bg,
+  #homePage .daily-login .daily-login-wrap image.coin,
+  #homePage .daily-login .daily-login-wrap view,
+  #homePage .daily-login .daily-login-wrap button {
     position: absolute;
 }
 #homePage .daily-login .daily-login-wrap image.bg {

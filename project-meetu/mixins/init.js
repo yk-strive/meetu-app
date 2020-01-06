@@ -29,10 +29,12 @@ export default {
 		},
 		modalShow(modalName, toastText) {
 			this.modalName = modalName;
-			if (!toastText) {
-				return false;
+			if (modalName == 'toastModal') {
+				this.toastText = toastText?toastText:'';
 			}
-			this.toastText = toastText?toastText:'';
+			if (modalName == 'dialogModal') {
+				this.dialogText = toastText;
+			}
 		},
 		
 	}

@@ -6,7 +6,9 @@ let socketInfo = {
 		list: false, // 数组-- 存放消息列表 -1--当聊天列表为空时, -1 更改为null, 页面watch监听, 方便给提示 
 		chatInfo: false, // 聊天信息
 		chatMsg: false, //对象-- 发送消息返回的消息信息,
-		errMag: null,
+		chatMsgErr: null,
+		deleteErr: null,
+		errMsg: null
 	},
 	mutations: {
 		WS(state, WS) {
@@ -45,11 +47,21 @@ let socketInfo = {
 					}
 					break;
 				case 'chatMsg':
-					state.chatMsg = info;
-					state.unread = Number(state.unread) + 1;
+					
+					if (info.error &&  info.error != 0) {
+						state.chatMsgErr = info;
+					} else {
+						state.chatMsg = info;
+						state.chatMsgErr = info;
+						state.unread = Number(state.unread) + 1;
+					}
+					
 					break;
 				case 'read':
 					state.unread = Number(state.unread) - info.count;
+					break;
+				case 'delete':
+					state.deleteErr = info;
 					break;
 			}
 			// console.log('-----mutations更新-----', state)

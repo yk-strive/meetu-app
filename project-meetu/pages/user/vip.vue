@@ -33,7 +33,7 @@
 					</view>
 					<view class="privilegeItem text-center">
 						<image src="../../static/meetu-img/i13.png" mode="aspectFill"></image>
-						<view class="text-white text-xs text-letter-df">无限收发</view>
+						<view class="text-white text-xs text-letter-df">星豆福利</view>
 					</view>
 				</view>
 			</view>
@@ -66,6 +66,7 @@
 		mapGetters
 	} from "vuex";
 	import mixinInit from "../../mixins/init.js";
+	import { throttle } from '@/common/Utils/common.js';
 	export default {
 		name: 'vip',
 		computed: {
@@ -193,8 +194,7 @@
 
 			async vipPay() {
 				let self = this;
-				let orderSn = await self.api_OrderCreate();
-				console.log('---VIPpAY----', orderSn)
+				let orderSn = await self.api_OrderCreate(); 
 				if (orderSn) {
 					await self.api_WxPay(orderSn);
 				}

@@ -136,6 +136,7 @@ export default class Socket {
         this._clearHeart()._startHeart();
       }
       // 发送消息队列消息
+	  console.log('----消息队列----', socketMsgQueue)
       for (let i = 0; i < socketMsgQueue.length; i++) {
         this.config.debug && console.log("%c [socket] %c 正在发送消息队列消息:", 'color:blue;',
           'color:#000;', i, socketMsgQueue[i]);

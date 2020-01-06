@@ -6,7 +6,7 @@
 			 @setEnableScroll="setEnableScroll">
 				<scroll-view class="panel-scroll-box" :scroll-y="enableScroll" @scrolltolower="loadMore">
 					<view class="cu-list menu-avatar">
-						<view class="cu-item" v-for="item,index in list" :key="index" @tap.stop="linkChat(item)">
+						<view class="cu-item" v-for="item,index in list" :key="index" @tap.stop="linkChat(item)" @longpress="removeChatItem(item.user_id,index)">
 							<view class="cu-avatar round">
 								<image class="round" :src="item.headimgurl" mode="aspectFill"></image>
 							</view>
@@ -30,7 +30,7 @@
 				</scroll-view>
 			</mix-pulldown-refresh>
 		</view>
-		<cu-modal :modalName="modalName" :toastText="toastText"></cu-modal>
+		<cu-modal :modalName="modalName" :toastText="toastText" :dialogText="dialogText" @hideModal="hideModal" @dialogConfirm="dialogConfirm"></cu-modal>
 	</view>
 </template>
 
@@ -39,6 +39,7 @@
 	import mixLoadMore from '@/components/mix-load-more/mix-load-more';
 	import mixinInit from '../../mixins/init.js';
 	import * as DateUtils from "../../common/Utils/Date.js";
+	import {throttle} from '@/common/Utils/common.js';
 	import { mapState } from 'vuex';
 
 	export default {
@@ -55,6 +56,7 @@
 				loadType: '',
 				refreshing: 0,
 				pageUnload: false,
+				removeItemInfo: null,
 			}
 		},
 		
@@ -62,7 +64,8 @@
 			...mapState({
 				WS: state=> state.socketInfo.WS,
 				list: state=>state.socketInfo.list,
-				chatMsg: state=>state.socketInfo.chatMsg  // 存储接收到消息
+				chatMsg: state=>state.socketInfo.chatMsg  ,// 存储接收到消息
+				deleteErr: state=>state.socketInfo.deleteErr
 			})
 		},
 		
@@ -86,6 +89,12 @@
 						item.created_at_format = DateUtils.timeFormat(newV.created_at);
 					}
 				})
+			},
+			deleteErr(newV) {
+				if (newV.error == 0) {
+					this.modalName = '';
+					this.list.splice(this.removeItemInfo.index, 1);
+				}
 			}
 		},
 		
@@ -141,9 +150,24 @@
 				})
 			},
 			
-			onPulldownReresh() {
-				this.ws_GetChatList('refresh');
+			ws_delete(removeInfo) {
+				this.WS.sendSocketMessage({
+					msgType:"delete",
+					data:{
+						user_id: removeInfo.userId
+					}
+				}, okRes=>{
+					this.clog('----读取未读消息OK----', okRes); // 这里的res(成功)->只代表uni-socket读取消息是否成功
+				})
 			},
+			
+			onPulldownReresh: throttle(function(){
+				let self = this;
+				self.ws_GetChatList('refresh');
+			}, 5000, function() {
+				let self = this;
+				self.$refs.mixPulldownRefresh && self.$refs.mixPulldownRefresh.endPulldownRefresh();
+			}),
 			
 			loadMore() {
 				this.ws_GetChatList('add');
@@ -158,12 +182,30 @@
 				})
 			},
 			
+			removeChatItem(userId, index) {
+				this.removeItemInfo = {
+					userId: userId,
+					index: index
+				}
+				this.modalShow('dialogModal', '删除会话?');
+			},
+			
 			setEnableScroll(enable) {
 				if (this.enableScroll !== enable) {
 					this.enableScroll = enable;
 				}
 			},
 			
+			dialogConfirm() {
+				this.ws_delete(this.removeItemInfo)
+			},
+			
+			hideModal() {
+				this.modalName = '';
+				if (this.modalName == 'dialogModal') {
+					this.removeItemInfo = null;
+				}
+			},
 			// ListTouch触摸开始
 			ListTouchStart(e) {
 				this.listTouchStart = e.touches[0].pageX

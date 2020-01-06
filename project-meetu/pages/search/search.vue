@@ -26,7 +26,7 @@
 							<view>
 								<view class="name text-sm text-left text-letter-df">
 									<text>{{openItem.nickname}}</text>
-									<image :src="openItem.sex==1 ? '../../static/meetu-img/female.png' : '../../static/meetu-img/male.png'"></image>
+									<image :src="openItem.sex==1 ? '../../static/meetu-img/male.png' : '../../static/meetu-img/famale.png'"></image>
 								</view>
 								<view class="text-xxs text-black-m text-left text-letter-df">
 									<text>从 未知星球 发来信号</text>
@@ -36,7 +36,7 @@
 						<view class="star_info text-sm text-letter-df text-left">
 							<text v-if="openItem.type == 1">{{openItem.content}}</text>
 							<image class="wh-100" v-if="openItem.type == 3" :src="openItem.content" mode="aspectFill"></image>
-							<view class="voice" v-if="openItem.type == 2" @click="playVoiceHandle(openItem.content)">
+							<view class="voice flex-df" v-if="openItem.type == 2" @click="playVoiceHandle(openItem.content)">
 								<image :src="voicePlay ? '../../static/meetu-img/xh.gif' : '../../static/meetu-img/xh.png'" mode="aspectFill"></image>
 								<text>{{openItem.seconds}}s</text>
 							</view>

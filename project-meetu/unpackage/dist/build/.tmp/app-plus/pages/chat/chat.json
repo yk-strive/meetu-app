@@ -1,6 +1,7 @@
 {
   "bounce": "none",
   "usingComponents": {
-    "custom-nav": "/components/custom-nav"
+    "custom-nav": "/components/custom-nav",
+    "cu-modal": "/meetu-ui/components/cu-modal"
   }
 }

@@ -31,9 +31,9 @@
   width: 100%;
 }
 #sendVoicePage .voice_action .voice_init {
-    width: 180rpx;
-    height: 180rpx;
-    line-height: 180rpx;
+    width: 220rpx;
+    height: 220rpx;
+    line-height: 220rpx;
     background-color: #FFFFFF;
     color: #333333;
     margin: 20rpx auto;
@@ -51,9 +51,9 @@
 }
 #sendVoicePage .voice_action .voice_handle .voice_reset,
     #sendVoicePage .voice_action .voice_handle .voice_send {
-      width: 120rpx;
-      height: 120rpx;
-      line-height: 120rpx;
+      width: 150rpx;
+      height: 150rpx;
+      line-height: 150rpx;
       color: #FFFFFF;
 }
 #sendVoicePage .voice_action .voice_handle .voice_reset {
@@ -65,9 +65,9 @@
       background: linear-gradient(to right, #16BDBB, #2464CE);
 }
 #sendVoicePage .voice_action .voice_handle .voice_play {
-      width: 180rpx;
-      height: 180rpx;
-      line-height: 180rpx;
+      width: 220rpx;
+      height: 220rpx;
+      line-height: 220rpx;
       background-color: #FFFFFF;
 }
 
