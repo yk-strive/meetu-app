@@ -204,7 +204,7 @@
 			height: 180rpx;
 			display: flex;
 			align-items: flex-end;
-			border-bottom: 2rpx solid red;
+			// border-bottom: 2rpx solid red;
 			.back {
 				height: 100rpx;
 				padding-left: 40rpx;

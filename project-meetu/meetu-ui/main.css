@@ -372,13 +372,14 @@ image {
 
 .cu-chat .cu-item>.main .content-img {
 	width: 400upx;
-	max-height: 200upx;
+	max-height: 300upx;
 	padding: 10upx;
 	overflow: hidden; 
 }
 
 .cu-chat .cu-item>.main .content-img>image {
 	width: 100%;
+	/* transform: scaleY(0.7); */
 }
 
 .cu-chat .cu-item>.main .content {

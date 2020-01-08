@@ -5,7 +5,8 @@
 		<image class="img_change" @tap.stop="searchChange" src="../../static/meetu-img/huan.png"></image>
 		<view class="search_view">
 			<view v-if="isSearch" class="text-center text-white padding-top-lg">信号搜寻中, 请期待~~</view>
-			<view class="search_item animation-slide-bottom" v-show="item.isDisplay" v-for="item,index in searchValue" :key="index"
+			<view class="search_item" v-show="item.isDisplay" v-for="item,index in searchValue" :key="index"
+			 :class="starsAni ? 'star-boxs' : 'animation-slide-bottom'"
 			 :style="[{left: item.left + 'px'}, {top:item.top + 'px'}, {animationDelay: (index + 1)*0.1 + 's'}]" @click="openStarHandle(item, index)">
 				<image class="img_star" src="../../static/meetu-img/star.png"></image>
 				<image class="img_avatar round abs-center" :src="item.headimgurl" mode="aspectFill"></image>
@@ -94,29 +95,35 @@
 				showActionTwo: false,
 				textareaValue: '',
 				voicePlay: false, 
+				
+				starsAni: false,
 			}
 		},
 		onLoad() {
 			let self = this;
 			innerAudioContext.onEnded(() => {
-				console.log('播放结束')
+				console.log('播放结束') 
 				self.voicePlay = false;
 			});
-			
+		},
+		
+		onReady() {
+			let self = this;
+			setTimeout(function() {
+				self.starsAni = true;
+			}, 1500);
+		},
+		
+		// 存储-- searchInfo: {searchValue: [], page: }
+		onShow() {
+			let self = this;
 			const query = uni.createSelectorQuery();
 			query.select('.search_view').boundingClientRect(data => {
 				// console.log(data);
 				self.maxWNum = data.width / self.searchItemW;
 				self.maxHNum = data.height / self.searchItemW;
+				self.initData();
 			}).exec();
-		},
-
-		// 存储-- searchInfo: {searchValue: [], page: }
-		onShow() {
-			console.log('onShow')
-			this.initData();
-			// let left_random = this.getRandomIntInclusive(1, this.maxWNum - 1) * this.searchItemW;
-			
 		},
 		watch: {
 			isNewSignal() {
@@ -403,14 +410,15 @@
 			padding: 100upx 50upx;
 			position: relative;
 
+			.star-boxs{
+				animation: star-boxs 2s linear both infinite;
+			}
 			.search_item {
 				position: absolute;
-				// width: 74upx;
-				// height: 74upx;
 				width: 50rpx;
 				height: 50rpx;
 				border-radius: 50%;
-				box-shadow: 0 0 10rpx 8rpx #904ADB;
+				box-shadow: 0 0 10rpx 8rpx rgba(144,74,219,1);
 				.img_star {
 					width: 74upx;
 					height: 72upx;
@@ -423,6 +431,19 @@
 				.img_avatar {
 					width: 40upx;
 					height: 40upx;
+				}
+				@keyframes star-boxs {
+					0% {
+						box-shadow: 0 0 10rpx 8rpx rgba(144,74,219,1);
+					}
+				
+					50% {
+						box-shadow: 0 0 10rpx 8rpx rgba(144,74,219,0.2);
+					}
+				
+					100% {
+						box-shadow: 0 0 10rpx 8rpx rgba(144,74,219,1);
+					}
 				}
 			}
 		}

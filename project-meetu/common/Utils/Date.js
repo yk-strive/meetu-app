@@ -116,7 +116,7 @@ export const dateFormat = (date, fmt) => {
 		'q+': Math.floor((date.getMonth() + 3) / 3), // 季度
 		'S': date.getMilliseconds() // 毫秒
 	}
-	console.log('----- 0 ------', o)
+	// console.log('----- 0 ------', o)
 	if (/(y+)/.test(fmt)) {
 		fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length))
 	}
@@ -134,8 +134,8 @@ export const dateFormat = (date, fmt) => {
 export const dateDiff = (time1, time2, dfDiff) => {
 	let defaultDiff = dfDiff ? dfDiff : 5 * 60 * 1000;
 	if (!time1 && !time2) return ''
-	console.log('-------Time1------', time1);
-	console.log('-------Time2------', time2);
+	// console.log('-------Time1------', time1);
+	// console.log('-------Time2------', time2);
 	time1 = new Date(time1.replace(/\./g, '/')).getTime();
 	time2 = new Date(time2.replace(/\./g, '/')).getTime();
 	

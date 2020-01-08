@@ -153,6 +153,9 @@
 .cuIcon-sound:before {
 	content: "\E77B";
 }
+.cuIcon-voice:before {
+	content: "\E6EF";
+}
 /**
  * meetu-ui: 使用的是ColorUi(by 文晓港)中样式, 项目会使用到的样式从其拿过来.
  */
@@ -536,12 +539,13 @@ image {
 }
 .cu-chat .cu-item>.main .content-img {
 	width: 400rpx;
-	max-height: 200rpx;
+	max-height: 300rpx;
 	padding: 10rpx;
 	overflow: hidden;
 }
 .cu-chat .cu-item>.main .content-img>image {
 	width: 100%;
+	/* transform: scaleY(0.7); */
 }
 .cu-chat .cu-item>.main .content {
 	padding: 20rpx;

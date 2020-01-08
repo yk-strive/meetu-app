@@ -113,12 +113,11 @@
 			...mapMutations(['changeVal']),
 			api_UserInfo() {
 				this.$http1.post('user/info').then(res => {
-					// console.log('------userinfo-----', res);
-					res.data.province = '' ; res.data.city = '';
+					console.log('------userinfo-----', res);
 					this.userInfo = res.data;
 					this.sex = res.data.sex == 1 ? '男' : '女';
 					this.pickerBirthdayInfo.result = res.data.birthday ? res.data.birthday : this.pickerBirthdayInfo.result;
-					this.pickerRegionInfo.result = res.data.province && res.data.city ? res.data.province + '' + res.data.city : this.pickerRegionInfo.result;
+					this.pickerRegionInfo.result = (res.data.province && res.data.city) ? res.data.province + '' + res.data.city : this.pickerRegionInfo.result;
 				}).catch(err => {
 					console.log('userinfo-err', err);
 				})
@@ -219,7 +218,7 @@
 				if (this.sex != (this.userInfo.sex == 1 ? '男' : '女')) {
 					tempInfo.sex = this.sex == '男' ? 1 : 2;
 				}
-				if (this.pickerBirthdayInfo.result != this.userInfo.birthday && this.userInfo.birthday == null) {
+				if (this.pickerBirthdayInfo.result != this.userInfo.birthday) {
 					tempInfo.birthday = this.pickerBirthdayInfo.result;
 				}
 				if (this.pickerRegionInfo.checkArr[0] != this.userInfo.province) {

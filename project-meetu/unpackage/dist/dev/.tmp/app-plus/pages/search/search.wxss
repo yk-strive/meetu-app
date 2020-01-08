@@ -348,12 +348,16 @@
   padding: 100rpx 50rpx;
   position: relative;
 }
+#searchPage .search_view .star-boxs {
+    -webkit-animation: star-boxs 2s linear both infinite;
+            animation: star-boxs 2s linear both infinite;
+}
 #searchPage .search_view .search_item {
     position: absolute;
     width: 50rpx;
     height: 50rpx;
     border-radius: 50%;
-    box-shadow: 0 0 10rpx 8rpx #904ADB;
+    box-shadow: 0 0 10rpx 8rpx #904adb;
 }
 #searchPage .search_view .search_item .img_star {
       width: 74rpx;
@@ -367,6 +371,28 @@
 #searchPage .search_view .search_item .img_avatar {
       width: 40rpx;
       height: 40rpx;
+}
+@-webkit-keyframes star-boxs {
+0% {
+    box-shadow: 0 0 10rpx 8rpx #904adb;
+}
+50% {
+    box-shadow: 0 0 10rpx 8rpx rgba(144, 74, 219, 0.2);
+}
+100% {
+    box-shadow: 0 0 10rpx 8rpx #904adb;
+}
+}
+@keyframes star-boxs {
+0% {
+    box-shadow: 0 0 10rpx 8rpx #904adb;
+}
+50% {
+    box-shadow: 0 0 10rpx 8rpx rgba(144, 74, 219, 0.2);
+}
+100% {
+    box-shadow: 0 0 10rpx 8rpx #904adb;
+}
 }
 #searchPage .cu-modal.Modal {
   background: rgba(0, 0, 0, 0.4);

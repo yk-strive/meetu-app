@@ -65,3 +65,6 @@
 .cuIcon-sound:before {
 	content: "\e77b";
 }
+.cuIcon-voice:before {
+	content: "\e6ef";
+}

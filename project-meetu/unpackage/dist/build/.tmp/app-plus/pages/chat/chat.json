@@ -2,6 +2,7 @@
   "bounce": "none",
   "usingComponents": {
     "custom-nav": "/components/custom-nav",
-    "cu-modal": "/meetu-ui/components/cu-modal"
+    "cu-modal": "/meetu-ui/components/cu-modal",
+    "mix-pulldown-refresh": "/components/mix-pulldown-refresh/mix-pulldown-refresh"
   }
 }

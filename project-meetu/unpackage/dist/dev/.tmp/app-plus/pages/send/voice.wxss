@@ -24,6 +24,67 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
+#sendVoicePage .voiceRecordTosat {
+  background: rgba(0, 0, 0, 0.2);
+  width: 300rpx;
+  height: 200rpx;
+  border-radius: 10rpx;
+  line-height: 200rpx;
+}
+#sendVoicePage .voiceRecordTosat .cuIcon-voice {
+    font-size: 100rpx;
+    margin-right: 20rpx;
+}
+@-webkit-keyframes stretchdelay {
+0% {
+    background-color: #666666;
+}
+100% {
+    background-color: #FFFFFF;
+}
+}
+@keyframes stretchdelay {
+0% {
+    background-color: #666666;
+}
+100% {
+    background-color: #FFFFFF;
+}
+}
+#sendVoicePage .voiceRecordTosat .voiceAni .rect {
+    height: 8rpx;
+    border-radius: 6rpx;
+    margin: 10rpx 0;
+}
+#sendVoicePage .voiceRecordTosat .voiceAni .rect1, #sendVoicePage .voiceRecordTosat .voiceAni .rect2, #sendVoicePage .voiceRecordTosat .voiceAni .rect3, #sendVoicePage .voiceRecordTosat .voiceAni .rect4 {
+    background-color: #666666;
+    -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
+            animation: stretchdelay 1.2s infinite ease-in-out;
+}
+#sendVoicePage .voiceRecordTosat .voiceAni .rect1 {
+    width: 50rpx;
+    -webkit-animation-delay: -0.8s;
+            animation-delay: -0.8s;
+}
+#sendVoicePage .voiceRecordTosat .voiceAni .rect2 {
+    width: 46rpx;
+    -webkit-animation-delay: -0.9s;
+            animation-delay: -0.9s;
+}
+#sendVoicePage .voiceRecordTosat .voiceAni .rect3 {
+    width: 42rpx;
+    -webkit-animation-delay: -1.0s;
+            animation-delay: -1.0s;
+}
+#sendVoicePage .voiceRecordTosat .voiceAni .rect4 {
+    width: 38rpx;
+    -webkit-animation-delay: -1.1s;
+            animation-delay: -1.1s;
+}
+#sendVoicePage .voiceRecordTosat .voiceAni .rect5 {
+    width: 34rpx;
+    background-color: #FFFFFF;
+}
 #sendVoicePage .voice_action {
   position: fixed;
   bottom: 100rpx;
@@ -36,7 +97,7 @@
     line-height: 220rpx;
     background-color: #FFFFFF;
     color: #333333;
-    margin: 20rpx auto;
+    margin: 20rpx auto 0;
 }
 #sendVoicePage .voice_action .voice_handle {
     margin-top: 20rpx;

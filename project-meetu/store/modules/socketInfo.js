@@ -53,12 +53,11 @@ let socketInfo = {
 					} else {
 						state.chatMsg = info;
 						state.chatMsgErr = info;
-						state.unread = Number(state.unread) + 1;
 					}
 					
 					break;
 				case 'read':
-					state.unread = Number(state.unread) - info.count;
+					// state.unread = Number(state.unread) - info.count;
 					break;
 				case 'delete':
 					state.deleteErr = info;

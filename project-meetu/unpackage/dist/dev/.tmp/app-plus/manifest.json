@@ -97,9 +97,16 @@
         "abiFilters": [
           "armeabi-v7a",
           "arm64-v8a"
-        ]
+        ],
+        "targetSdkVersion": "",
+        "minSdkVersion": ""
       },
-      "apple": {},
+      "apple": {
+        "privacyDescription": {
+          "NSPhotoLibraryUsageDescription": "选取相册照片, 用于您聊天",
+          "NSMicrophoneUsageDescription": "获取录音, 用于您发送语音信号"
+        }
+      },
       "plugins": {
         "oauth": {
           "weixin": {
@@ -121,6 +128,7 @@
             "UniversalLinks": ""
           }
         },
+        "speech": {},
         "audio": {
           "mp3": {
             "description": "Android平台录音支持MP3格式文件"

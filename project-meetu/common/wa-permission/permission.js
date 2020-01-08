@@ -162,6 +162,7 @@ function requestAndroidPermission(permissionID) {
 			[permissionID], // 理论上支持多个权限同时查询，但实际上本函数封装只处理了一个权限的情况。有需要的可自行扩展封装
 			function(resultObj) {
 				var result = 0;
+				console.log('99999999999999999999999', resultObj)
 				for (var i = 0; i < resultObj.granted.length; i++) {
 					var grantedPermission = resultObj.granted[i];
 					console.log('已获取的权限：' + grantedPermission);

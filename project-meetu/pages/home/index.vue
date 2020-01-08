@@ -5,7 +5,7 @@
 			<image class="wh-100" v-bind:src="userInfo.headimgurl" mode="aspectFill"></image>
 		</view>
 
-		<view class="abs-center text-white"  @click="copyHandle">{{token}}</view>
+		<view class="abs-center text-white" style="opacity: 0;" @click="copyHandle">{{token}}</view>
 		<view class="home_bottom_act">
 			<view v-if="showSendToast" class="toast abs-center text-white text-xxs">
 				<text>给茫茫宇宙发射一个信号寻找远方的回应</text>
@@ -83,6 +83,7 @@
 	import mixinInit from '../../mixins/init.js';
 	import mSocket from '@/common/socket/index.js';
 	import {throttle} from '@/common/Utils/common.js';
+	import permision from "@/common/wa-permission/permission.js"
 	export default {
 		name: 'homeIndex',
 		components: {},
@@ -111,7 +112,7 @@
 		},
 
 		onReady() {
-			// this.ws_init()
+			this.ws_init()
 			if (uni.getStorageSync('homeSendToast')) {
 				this.showSendToast = false;
 			} else {
@@ -220,6 +221,7 @@
 				})
 			},
 			linkAction(type) {
+				let self = this;
 				switch (type) {
 					case 'search':
 						uni.navigateTo({
@@ -271,7 +273,6 @@
 			hideModal() {
 				this.modalName = '';
 			},
-			
 			copyHandle: throttle(function() {
 				let self = this;
 				uni.setClipboardData({

@@ -116,6 +116,10 @@
 					pageSize: self.pageSize
 				}).then(res => {
 					self.clog('signallist', res);
+					if (!res.data && !loadType) {
+						self.modalShow('toastModal', '暂无记录')
+						return false;
+					}
 					if (res.data) {
 						if (loadType && loadType == 'add') {
 							self.signalList = Object.assign(self.signalList, res.data);

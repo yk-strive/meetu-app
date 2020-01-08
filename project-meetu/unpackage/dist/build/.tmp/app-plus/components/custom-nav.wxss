@@ -118,7 +118,6 @@
     -webkit-box-align: end;
     -webkit-align-items: flex-end;
             align-items: flex-end;
-    border-bottom: 2rpx solid red;
 }
 .app-custom-nav .app-custom-nav-bar .back {
       height: 100rpx;

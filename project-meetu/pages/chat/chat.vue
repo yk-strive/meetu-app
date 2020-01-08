@@ -27,7 +27,7 @@
 									<text>{{item.content}}</text>
 								</view>
 								<view v-if="item.type == 3" class="content-img" @tap.stop="previmg(item.content)">
-									<image :src="item.content" class="radius" mode="widthFix"></image>
+									<image :src="item.content" class="radius" mode="aspectFill"></image>
 								</view>
 								<view v-if="item.type == 2">
 									<view class="content" :class="item.is_signal?'bg-signal':''" @tap.stop="playVoiceHandle(item)">
@@ -355,6 +355,10 @@
 				})
 			},
 
+			getUid(tempFilePath) {
+				return tempFilePath.substring(tempFilePath.indexOf('/')+1, tempFilePath.lastIndexOf('.'));
+			},
+			
 			chooseImg() {
 				let self = this;
 				uni.chooseImage({
@@ -364,25 +368,36 @@
 					success: (res) => {
 						console.log(res);
 						let tempFilePath = res.tempFilePaths[0];
-						uni.uploadFile({
-							url: 'https://api.meetu.letwx.com/v2/sys/upload-img?token=' + self.token,
-							filePath: tempFilePath,
-							name: 'imgfile',
-							formData: {
-								'name': 'imgfile',
-								'formData': JSON.stringify({
-									'sort': 0
-								})
+						plus.zip.compressImage({
+								src: tempFilePath,
+								dst: "_doc/" + self.getUid(tempFilePath) +".jpg",
+								overwrite: true,
+								quality: 20
 							},
-							success: (uploadFileRes) => {
-								// console.log('upok',JSON.parse(uploadFileRes.data));
-								let img = JSON.parse(uploadFileRes.data).data.imgUrl;
-								self.ws_sendMsg(3, img);
+							function(event) {
+								uni.uploadFile({
+									url: 'https://api.meetu.letwx.com/v2/sys/upload-img?token=' + self.token,
+									filePath: tempFilePath,
+									name: 'imgfile',
+									formData: {
+										'name': 'imgfile',
+										'formData': JSON.stringify({
+											'sort': 0
+										})
+									},
+									success: (uploadFileRes) => {
+										// console.log('upok',JSON.parse(uploadFileRes.data));
+										let img = JSON.parse(uploadFileRes.data).data.imgUrl;
+										self.ws_sendMsg(3, img);
+									},
+									fail: (err) => {
+										console.log('err', err);
+									}
+								});
 							},
-							fail: (err) => {
-								console.log('err', err);
-							}
-						});
+							function(error) {
+								console.log('plus-error', error)
+							});
 					}
 				})
 			},
