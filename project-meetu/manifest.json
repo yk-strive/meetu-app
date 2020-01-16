@@ -59,7 +59,7 @@
             /* ios打包配置 */
             "ios" : {
                 "privacyDescription" : {
-                    "NSPhotoLibraryUsageDescription" : "选取相册照片, 用于您聊天",
+                    "NSPhotoLibraryUsageDescription" : "选取相册照片, 用于您编辑个人资料/聊天",
                     "NSMicrophoneUsageDescription" : "获取录音, 用于您发送语音信号"
                 }
             },
@@ -72,7 +72,9 @@
                         "UniversalLinks" : ""
                     }
                 },
-                "push" : {},
+                "push" : {
+                    "unipush" : {}
+                },
                 "payment" : {
                     "weixin" : {
                         "appid" : "wx04a9745d1e461dcd",
@@ -108,7 +110,7 @@
     "quickapp" : {},
     /* 小程序特有相关 */
     "mp-weixin" : {
-        "appid" : "wx7f874faa3203001e",
+        "appid" : "",
         "setting" : {
             "urlCheck" : false
         },

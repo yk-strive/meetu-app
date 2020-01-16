@@ -11,8 +11,9 @@
 							<text>{{key.split('-')[0]}}</text>
 						</view>
 						<view class="cu-item not-icon" v-for="citem,cindex in item" :key="citem.id">
-							<view class="content" v-if="citem.type==1">
-								<text>{{citem.content}}</text>
+							<view class="content text" v-if="citem.type==1">
+								<text>{{citem.contentSub && citem.islong ? citem.contentSub : citem.content}}</text>
+								<view v-if="citem.contentSub" class="coin-color margin-top-sm" @tap.stop="toggleContent(citem)">{{citem.contentSub && citem.islong ? '查看更多' : '收起'}}</view>
 							</view>
 							<view class="content voice" v-if="citem.type==2" @tap.stop="playVoice(citem)">
 								<view class="voice_img flex-df">
@@ -28,7 +29,7 @@
 								<view class="action_delete text-right text-xs" @tap.stop="showDialogModal(key, citem,cindex)">
 									<text class="cuIcon-delete padding-right-xs text-sm"></text>删除
 								</view>
-								<view class="action_share text-right text-xs" @tap.stop="shareSignal(key, citem, cindex)">
+								<view class="action_share text-right text-xs" @tap.stop="shareModal(key, citem, cindex)">
 									<text class="cuIcon-share padding-right-xs text-sm"></text>分享
 								</view>
 							</view>
@@ -38,7 +39,26 @@
 				</view>
 			</scroll-view>
 		</view>
-		<cu-modal :modalName="modalName" :dialogText="dialogText" :toastText="toastText" @hideModal="hideModal" @dialogConfirm="dialogConfirm"></cu-modal>
+		<cu-modal :modalName="modalName" :dialogText="dialogText" :toastText="toastText" @hideModal="hideModal"
+		 @dialogConfirm="dialogConfirm">
+			<block slot="bottomModal">
+				<view class="shareProvider">
+					<block v-for="item in providerList" :key="item.id">
+						<view class="shareProviderItem" @tap.stop="share(item)">
+							<view class="icon">
+								<text class="cuIcon-weixin"></text>
+							</view>
+							<view class="name margin-top-sm">
+								<text>{{item.name}}</text>
+							</view>
+							<view class="desc text-xs text-black-s">
+								<text>{{item.desc}}</text>
+							</view>
+						</view>
+					</block>
+				</view>
+			</block>
+		</cu-modal>
 	</view>
 </template>
 
@@ -80,9 +100,12 @@
 				signalList: null,
 				deleteInfo: null,
 				audioPlay: false,
-				audioPlayCur: -1
+				audioPlayCur: -1,
+				providerList: [],
+				shareInfo: null,
 			}
 		},
+
 		onLoad(options) {
 			innerAudioContext.onEnded(() => {
 				console.log('播放结束')
@@ -93,7 +116,7 @@
 			if (options.navId) {
 				this.tabsInfo.tabCur = options.navId == 'text' ? this.tabsInfo.tabsList[0].id : this.tabsInfo.tabsList[1].id
 			}
-
+			this.providerList = getApp().globalData.shareProviderList;
 			this.api_SignalList();
 		},
 		methods: {
@@ -121,6 +144,18 @@
 						return false;
 					}
 					if (res.data) {
+						for (let key in res.data) {
+							res.data[key].map(item => {
+								if (item.type == 1) {
+									let contentLen = item.content.byteLength();
+									if (contentLen > 50) {
+										item.contentSub = item.content.substr(0, 50) + '...';
+										item.islong = true;
+									}
+								}
+								return item;
+							})
+						}
 						if (loadType && loadType == 'add') {
 							self.signalList = Object.assign(self.signalList, res.data);
 							//上拉加载提示取消
@@ -133,7 +168,7 @@
 						this.loadMoreStatus = 2; // 没有数据了
 					}
 				})
-			}, 
+			},
 			api_DeleteSignal() {
 				/*
 				删除信号--> 先 showDialogModal 展示弹窗警示, --> 弹窗中点击确定 dialogConfirm, 调用该函数
@@ -143,11 +178,11 @@
 				let deleteObj = dateObj[this.deleteInfo.cindex]; // 要删除的信号
 				this.$http1.post('signal/delete', {
 					signal_id: deleteObj.id
-				}).then(res=>{
+				}).then(res => {
 					self.modalName = 'toastModal';
 					self.toastText = '删除信号成功';
 					this.signalList[self.deleteInfo.key].splice(self.deleteInfo.cindex, 1);
-				}).catch(err=>{
+				}).catch(err => {
 					self.modalName = 'toastModal';
 					self.toastText = err.msg;
 				})
@@ -197,6 +232,11 @@
 					this.audioPlay = false;
 				}
 			},
+			toggleContent(citem) {
+				if (citem.contentSub) {
+					citem.islong = !citem.islong;
+				}
+			},
 			showDialogModal(key, citem, cindex) {
 				/**
 				 * 接口数据结构
@@ -223,13 +263,49 @@
 			},
 			dialogConfirm() {
 				this.clog('删除信号', this.deleteInfo);
-				this.hideModal(); 
+				this.hideModal();
 				this.api_DeleteSignal()
 			},
-			shareSignal(key, citem, cindex) {
-				this.modalName = 'toastModal';
-				this.toastText = '进行分享后期调整';
+			shareModal(key, citem, cindex) {
+				this.modalName = 'bottomModal';
+				this.shareInfo = citem;
 			},
+			async share(e) {
+				let self = this;
+				let shareType = self.tabsInfo.tabCur == '1' ? 0 : 3;
+				let shareOptions = {
+					provider: e.id,
+					scene: e.type && e.type === 'WXSenceTimeline' ? 'WXSenceTimeline' : 'WXSceneSession',
+					//WXSceneSession”分享到聊天界面，“WXSenceTimeline”分享到朋友圈，“WXSceneFavorite”分享到微信收藏 
+					type: shareType, //0-图文; 1-纯文本; 2-纯图片; 3-音乐; 4-视频; 5-小程序
+					success: (e) => {
+						console.log('success', e);
+						self.modalShow('toastModal', '已分享')
+					},
+					fail: (e) => {
+						console.log('fail', e)
+						self.modalShow('toastModal', e.errMsg);
+					},
+					complete: function() {
+						console.log('分享操作结束!')
+					}
+				}
+				switch (shareType) {
+					case 0:
+						shareOptions.summary = '分享内容摘要:' + self.shareInfo.content;
+						shareOptions.imageUrl = require('../../static/meetu-img/logo.png');
+						shareOptions.title = '分享测试标题: Meet U';
+						shareOptions.href = 'http://q.letwx.com/app/ggSpringFestival2020-build/index.html';
+						break;
+					case 3:
+						shareOptions.title = '分享测试标题: Meet U';
+						// shareOptions.imageUrl = require('../../static/meetu-img/logo.png');
+						shareOptions.mediaUrl = self.shareInfo.content;
+						// shareOptions.href = 'http://q.letwx.com/app/ggSpringFestival2020-build/index.html';
+						break;
+				}
+				uni.share(shareOptions);
+			}
 		},
 		onHide() {
 			// console.log('----隐藏----')
@@ -245,6 +321,10 @@
 <style lang="scss">
 	#signalPage {
 		overflow-y: scroll;
+	}
+
+	.border-b {
+		border: 2rpx solid blue;
 	}
 
 	.signal-wrap {
@@ -314,6 +394,28 @@
 						color: #DAB96B;
 					}
 				}
+			}
+		}
+	}
+
+	.shareProvider {
+		display: flex;
+		flex-flow: row wrap;
+
+		.shareProviderItem {
+			flex: 1;
+			display: flex;
+			align-items: center;
+			flex-direction: column;
+
+			.icon {
+				background-color: rgb(0, 187, 49);
+				color: #FFFFFF;
+				width: 100rpx;
+				height: 100rpx;
+				line-height: 100rpx;
+				font-size: 70rpx;
+				border-radius: 500rpx;
 			}
 		}
 	}

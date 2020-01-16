@@ -103,7 +103,7 @@
       },
       "apple": {
         "privacyDescription": {
-          "NSPhotoLibraryUsageDescription": "选取相册照片, 用于您聊天",
+          "NSPhotoLibraryUsageDescription": "选取相册照片, 用于您编辑个人资料/聊天",
           "NSMicrophoneUsageDescription": "获取录音, 用于您发送语音信号"
         }
       },
@@ -115,7 +115,9 @@
             "UniversalLinks": ""
           }
         },
-        "push": {},
+        "push": {
+          "unipush": {}
+        },
         "payment": {
           "weixin": {
             "appid": "wx04a9745d1e461dcd",
@@ -138,7 +140,7 @@
     },
     "allowsInlineMediaPlayback": true,
     "uni-app": {
-      "compilerVersion": "2.4.6",
+      "compilerVersion": "2.5.1",
       "control": "v8",
       "nvueCompiler": "uni-app",
       "renderer": "auto",

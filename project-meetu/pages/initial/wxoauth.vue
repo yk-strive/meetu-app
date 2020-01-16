@@ -23,10 +23,12 @@
 			</button>
 			<!-- #endif -->
 		</view>
+		<cu-modal :modalName="modalName" :toastText="toastText"></cu-modal>
 	</view>
 </template>
 
 <script>
+	import mixinInit from '../../mixins/init.js';
 	export default {
 		name: 'wxoauth',
 		data() {
@@ -34,12 +36,13 @@
 
 			}
 		},
+		mixins: [mixinInit],
 		methods: {
 			getUserInfo(e) {
 				console.log(e)
 
 				// #ifdef MP-WEIXIN | MP-QQ | MP-BAIDU 
-				
+
 				// #endif
 
 				//slide-in-right | slide-in-left | slide-in-top | slide-in-bottom | pop-in | fade-in | zoom-out | zoom-fade-out | none
@@ -56,11 +59,21 @@
 								openid: res.authResult.openid,
 								expires_in: res.authResult.expires_in
 							}, {
-								custom: {istoken: false, v2: true}
-							}).then(res=>{
+								custom: {
+									istoken: false,
+									v2: true
+								}
+							}).then(res => {
 								console.log('----登录----', res)
-								self.$store.dispatch('changeVal', {stateKey: 'token', newValue: res.data.token});
-								self.$store.dispatch('changeVal', {stateKey: 'dailyLogin', newValue: res.data.daily_login});
+								self.$store.dispatch('changeVal', {
+									stateKey: 'token',
+									newValue: res.data.token
+								});
+								self.$store.dispatch('changeVal', {
+									stateKey: 'dailyLogin',
+									newValue: res.data.daily_login
+								});
+								self.upCid();
 								if (res.data.old_user == 1) {
 									uni.setStorage({
 										key: 'oldUser',
@@ -78,13 +91,37 @@
 										animationType: 'fade-in'
 									})
 								}
-							}).catch(err=>{
+							}).catch(err => {
 								console.log('app-err', err);
 							})
 						}
 					}
 				})
-			}
+			},
+			upCid() {
+				setTimeout(() => {
+					const clientInfo = plus.push.getClientInfo();
+					console.log('-----clientInfo-----', clientInfo);
+					if (clientInfo.clientid) {
+						this.$http1.post('user/upload-cid', {
+							client_id: clientInfo.clientid
+						}, {
+							custom: {istoken: true,v2: true}
+						}).then(res => {
+							console.log(res);
+							uni.showToast({
+							    title: 'CID提交了',
+							    duration: 2000
+							});
+						})
+					} else {
+						uni.showToast({
+						    title: 'CID为空',
+						    duration: 2000
+						});
+					}
+				}, 100)
+			},
 		},
 	}
 </script>

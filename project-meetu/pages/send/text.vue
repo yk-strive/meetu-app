@@ -3,7 +3,7 @@
 		<custom-nav :isBack="true" textTitle="发布文字信号"></custom-nav>
 		<form @submit="submitSendText">
 			<view class="padding">
-				<textarea class="text-white" name="sendtext" maxlength="300" placeholder="请输入想说的话" placeholder-style="color: #FFFFFF"/>
+				<textarea class="text-white" :focus="true" name="sendtext" maxlength="300" placeholder="请输入想说的话" placeholder-style="color: #FFFFFF"/>
 			</view>
 			<view class="btn_send flex-df">
 				<button class="bg-color-main cu-btn round text-letter-df" form-type="submit">确认发送</button>
@@ -26,6 +26,9 @@
 
 			}
 		},
+		onLoad() {
+			plus.key.showSoftKeybord()
+		},
 		methods: {
 			submitSendText(e) {
 				
@@ -38,13 +41,10 @@
 					type: 1,
 					content: sendText,
 				}).then(res=>{
-					this.modalShow('toastModal', '信号已发往星球')
 					getApp().globalData.sendSignal = true;
-					setTimeout(function() {
-						uni.navigateBack({
-							detail: 1
-						})
-					}, 1500);
+					uni.navigateBack({
+						detail: 1
+					})
 				})
 			}
 		},

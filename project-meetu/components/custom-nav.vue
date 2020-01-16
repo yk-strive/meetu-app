@@ -57,11 +57,14 @@
 </template>
 
 <script>
+	import Vue from 'vue';
+	const statusBar = Vue.prototype.StatusBar;
+	const customBar = Vue.prototype.CustomBar;
 	export default {
 		data() {
 			return {
-				StatusBar: this.StatusBar,
-				CustomBar: this.CustomBar,
+				StatusBar: statusBar,
+				CustomBar: customBar,
 			};
 		},
 		name: 'custom-nav',
@@ -93,9 +96,16 @@
 		},
 		methods: {
 			BackPage() {
-				uni.navigateBack({
-					delta: 1
-				});
+				let chatListPageEnterMode = getApp().globalData.chatListPageOpenMode;
+				if (chatListPageEnterMode) {
+					uni.redirectTo({
+						url:'/pages/home/index'
+					})
+				} else {
+					uni.navigateBack({
+						delta: 1
+					});
+				}
 			},
 			rightHandle() {
 				if (!this.textRight) {
@@ -119,35 +129,35 @@
 			width: 100%;
 			z-index: 9999;
 			/* #ifdef MP-WEIXIN */
-			padding-right: 220upx;
+			padding-right: 220rpx;
 			/* #endif */
 
 			/* #ifdef MP-ALIPAY */
-			padding-right: 150upx;
+			padding-right: 150rpx;
 
 			/* #endif */
 			.back {
-				padding-left: 36upx;
-				padding-top: 20upx;
+				padding-left: 36rpx;
+				padding-top: 20rpx;
 
 				text.cuIcon-pullleft {
-					font-size: 64upx;
+					font-size: 64rpx;
 				}
 			}
 
 			.content {
-				padding-top: 24upx;
+				padding-top: 24rpx;
 				display: flex;
 				align-items: center;
 
 				.title {
-					padding-left: 36upx;
+					padding-left: 36rpx;
 					flex: 2;
 				}
 
 				.scroll-tabs {
 					flex: 2;
-					height: 60upx;
+					height: 60rpx;
 
 					.scroll-tabs-list {
 						display: flex;
@@ -158,22 +168,22 @@
 							flex: 1;
 							position: relative;
 							text-align: center;
-							font-size: 28upx;
+							font-size: 28rpx;
 						}
 
 						.cur {
 							position: relative;
-							font-size: 34upx;
+							font-size: 34rpx;
 
 							&::before {
 								content: '';
 								position: absolute;
 								left: 50%;
-								bottom: -14upx;
+								bottom: -14rpx;
 								transform: translate(-50%, -50%);
 								width: 50%;
-								height: 4upx;
-								border-radius: 10upx;
+								height: 4rpx;
+								border-radius: 10rpx;
 								background-color: #FFFFFF;
 							}
 						}
@@ -184,7 +194,7 @@
 				.right {
 					flex: 1;
 					/* #ifdef APP-PLUS*/
-					padding-right: 30upx;
+					padding-right: 30rpx;
 					/* #endif */
 				}
 			}

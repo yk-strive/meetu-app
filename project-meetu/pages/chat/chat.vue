@@ -1,6 +1,6 @@
 <template>
 	<view id="chatPage" class="bg_page_3">
-		<custom-nav :isBack="true" :textTitle="'与 ' + chatUserInfo.nickname + ' 的对话'"></custom-nav>
+		<custom-nav :isBack="true" :textTitle="'与 ' + chatUserName + ' 的对话'"></custom-nav>
 		<mix-pulldown-refresh ref="mixPulldownRefresh" class="panel-content" :top="CustomBar" @refresh="onPulldownReresh"
 		 @setEnableScroll="setEnableScroll">
 			<scroll-view class="panel-scroll-chat-box" scroll-y v-bind:scroll-with-animation="true" v-bind:style="{height: style.contentViewHeight+'px', marginTop: style.scrollViewMarginTop + 'px',} "
@@ -84,7 +84,9 @@
 		},
 		data() {
 			return {
-				chatUserInfo: null,
+				pages: null,
+				chatUserId: 0,
+				chatUserName: '',
 				style: {
 					contentViewHeight: 0,
 					mitemHeight: 0,
@@ -122,8 +124,8 @@
 			chatMsg(newValue, oldValue) { // 监听chatMsg, 收到消息就这条消息push到chatInfoList
 				let self = this;
 				self.lastInfoTime = self.lastInfoTime ? self.lastInfoTime : self.chatInfoList[self.chatInfoList.length - 1].created_at;
-				if ((newValue.from_id == self.chatUserInfo.user_id && newValue.user_id == self.userInfo.id) || (newValue.from_id ==
-						self.userInfo.id && newValue.user_id == self.chatUserInfo.user_id)) {
+				if ((newValue.from_id == self.chatUserId && newValue.user_id == self.userInfo.id) || (newValue.from_id ==
+						self.userInfo.id && newValue.user_id == self.chatUserId)) {
 					this.chatInfoList.push({
 						id: newValue.id,
 						user_id: newValue.user_id,
@@ -135,7 +137,7 @@
 						created_at_format: DateUtils.timeFormat(newValue.created_at),
 						is_show_time: DateUtils.dateDiff(self.lastInfoTime, newValue.created_at),
 					});
-					this.ws_read(this.chatUserInfo.user_id)
+					this.ws_read(this.chatUserId)
 					setTimeout(() => {
 						this.scrollToBottom();
 						this.lastInfoTime = newValue.created_at;
@@ -182,7 +184,8 @@
 				this.audioPlay = false;
 				this.audioPlayCur = -1;
 			})
-			this.chatUserInfo = JSON.parse(options.chatItem);
+			this.chatUserId = getApp().globalData.chatUserInfo.user_id;
+			this.chatUserName = getApp().globalData.chatUserInfo.nickname;
 			this.ws_GetChatLogInfo();
 		},
 		onShow() {
@@ -208,7 +211,7 @@
 					msgType: "getChatLogInfo",
 					data: {
 						page: self.page,
-						user_id: self.chatUserInfo.user_id,
+						user_id: self.chatUserId,
 					}
 				}, okRes => {})
 			},
@@ -245,7 +248,7 @@
 				this.WS.sendSocketMessage({
 					msgType: 'chatMsg',
 					data: {
-						to_id: self.chatUserInfo.user_id,
+						to_id: self.chatUserId,
 						content_type: contentType,
 						content: content
 					}
@@ -470,7 +473,11 @@
 		onUnload() {
 			this.$store.commit('emptyInfo', 'chatInfo');
 			this.stopVoiceHandle();
-			console.log('-----onUnload--------');
+			getApp().globalData.chatUserInfo = null;
+			// 页面卸载, 返回聊天列表时, 请求聊天列表信息.
+			// let pages = getCurrentPages();
+			// let prevPage = pages[pages.length - 2];
+			// prevPage.$vm.ws_GetChatList();
 		}
 	}
 </script>

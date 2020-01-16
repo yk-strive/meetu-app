@@ -190,8 +190,8 @@
 }
 }
 #homePage .signal-animation {
-  -webkit-animation: signal-animation 2s 2s linear both;
-          animation: signal-animation 2s 2s linear both;
+  -webkit-animation: signal-animation 2s 0.5s linear both;
+          animation: signal-animation 2s 0.5s linear both;
 }
 @-webkit-keyframes signal-animation {
 0% {

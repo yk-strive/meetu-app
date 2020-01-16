@@ -66,7 +66,7 @@
 				console.log('播放结束')
 				self.audioPlay = false;
 			})
-			
+
 			recorderManager.onStop(function(res) {
 				console.log("录音停止" + JSON.stringify(res))
 				self.voiceTempPath = res.tempFilePath;
@@ -237,13 +237,11 @@
 							seconds: self.intIntervalTime,
 						}).then(res => {
 							console.log('语音信号', res);
-							this.modalShow('toastModal', '信号已发往星球')
+
 							getApp().globalData.sendSignal = true;
-							setTimeout(function() {
-								uni.navigateBack({
-									detail: 1
-								})
-							}, 1500);
+							uni.navigateBack({
+								detail: 1
+							})
 						})
 					},
 					fail: (err) => {
@@ -277,7 +275,8 @@
 					0% {
 						background-color: #666666;
 					}
-					100%{
+
+					100% {
 						background-color: #FFFFFF;
 					}
 				}
@@ -287,16 +286,21 @@
 					border-radius: 6upx;
 					margin: 10rpx 0;
 				}
-				.rect1, .rect2, .rect3, .rect4,{
+
+				.rect1,
+				.rect2,
+				.rect3,
+				.rect4,
+					{
 					background-color: #666666;
 					animation: stretchdelay 1.2s infinite ease-in-out;
 				}
-				
+
 				.rect1 {
 					width: 50rpx;
 					animation-delay: -0.8s;
 				}
-				
+
 				.rect2 {
 					width: 46rpx;
 					animation-delay: -0.9s;
@@ -310,7 +314,7 @@
 				.rect4 {
 					width: 38rpx;
 					animation-delay: -1.1s;
-					
+
 				}
 
 				.rect5 {

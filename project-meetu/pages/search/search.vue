@@ -5,10 +5,9 @@
 		<image class="img_change" @tap.stop="searchChange" src="../../static/meetu-img/huan.png"></image>
 		<view class="search_view">
 			<view v-if="isSearch" class="text-center text-white padding-top-lg">信号搜寻中, 请期待~~</view>
-			<view class="search_item" v-show="item.isDisplay" v-for="item,index in searchValue" :key="index"
+			<view class="search_item" v-show="!isSearch && item.isDisplay" v-for="item,index in searchValue" :key="index"
 			 :class="starsAni ? 'star-boxs' : 'animation-slide-bottom'"
-			 :style="[{left: item.left + 'px'}, {top:item.top + 'px'}, {animationDelay: (index + 1)*0.1 + 's'}]" @click="openStarHandle(item, index)">
-				<image class="img_star" src="../../static/meetu-img/star.png"></image>
+			 :style="[{left: item.left + 'px'}, {top:item.top + 'px'}, {animationDelay: (index + 1)*0.2 + 's'}]" @click="openStarHandle(item, index)">
 				<image class="img_avatar round abs-center" :src="item.headimgurl" mode="aspectFill"></image>
 			</view>
 		</view>
@@ -66,6 +65,7 @@
 <script>
 	import cuModal from "@/meetu-ui/components/cu-modal.vue";
 	import mixinInit from '../../mixins/init.js';
+	import { selectRandom } from '../../common/Utils/common.js';
 	const innerAudioContext = uni.createInnerAudioContext();
 	innerAudioContext.autoplay = true;
 	export default {
@@ -111,7 +111,7 @@
 			let self = this;
 			setTimeout(function() {
 				self.starsAni = true;
-			}, 1500);
+			}, 3000);
 		},
 		
 		// 存储-- searchInfo: {searchValue: [], page: }
@@ -135,36 +135,41 @@
 		methods: {
 			api_SignalReceive() {
 				let self = this;
-				this.$http1.post('signal/receive',{
-					page: self.page
-				}).then(res=>{
-					this.isSearch = false;
-					self.clog('搜寻结果'+self.page, res);
-					this.randomLocationLeft();
-					this.randomLocationTop();
-					if (res.data && res.data.length > 0) {
-						for (var i = 0; i < res.data.length; i++) {
-							res.data[i].isDisplay = true; // 每一项添加isDisplay--true展示, false隐藏
-							
-							// 每一项的位置的补充, 方便页面卸载/隐藏时 直接存储.
-							res.data[i].top = this.tempTopNum[i];
-							res.data[i].left = this.tempLeftNum[i];
+				setTimeout(()=>{
+					this.$http1.post('signal/receive',{
+						page: self.page
+					}).then(res=>{
+						this.isSearch = false;
+						self.clog('搜寻结果'+self.page, res);
+						this.randomLocationLeft();
+						this.randomLocationTop();
+						if (res.data && res.data.length > 0) {
+							for (var i = 0; i < res.data.length; i++) {
+								res.data[i].isDisplay = true; // 每一项添加isDisplay--true展示, false隐藏
+								
+								// 每一项的位置的补充, 方便页面卸载/隐藏时 直接存储.
+								res.data[i].top = this.tempTopNum[i];
+								res.data[i].left = this.tempLeftNum[i];
+							}
+							self.searchValue = res.data;
+							this.page += 1;
+							setTimeout(()=>{
+								this.starsAni = true;
+							}, 1000)
+						} else {
+							// self.clog('没有搜寻结果++'+self.page);
+							// if(self.page == 1) {
+							// 	this.modalShow('toastModal', '没有更多信号了');
+							// } else {
+								self.page = 1;
+								self.api_SignalReceive();
+							// }
 						}
-						self.searchValue = res.data;
-						this.page += 1;
-					} else {
-						// self.clog('没有搜寻结果++'+self.page);
-						// if(self.page == 1) {
-						// 	this.modalShow('toastModal', '没有更多信号了');
-						// } else {
-							self.page = 1;
-							self.api_SignalReceive();
-						// }
-					}
-				}).catch(err=>{
-					console.log(err)
-					this.modalShow('toastModal', err.msg);
-				})
+					}).catch(err=>{
+						console.log(err)
+						this.modalShow('toastModal', err.msg);
+					})
+				}, 2000)
 			},
 			
 			api_SignalRefresh() {
@@ -232,9 +237,11 @@
 				if (uni.getStorageSync('searchInfo')) {
 					let searchInfo = JSON.parse(uni.getStorageSync('searchInfo'));
 					this.clog('存储的搜索信息', searchInfo);
-					this.isSearch = false;
-					this.searchValue = searchInfo.searchValue;
-					this.page = searchInfo.page
+					setTimeout(()=>{
+						this.isSearch = false;
+						this.searchValue = searchInfo.searchValue;
+						this.page = searchInfo.page
+					}, 2000)
 				} else {
 					this.api_SignalReceive();
 				}
@@ -253,51 +260,23 @@
 			},
 			
 			randomLocationLeft() { // 获取随机left的位置
-				this.tempLeftNum = this.selectRandom(5, 1, this.maxWNum - 1).map(num=>{
+				this.tempLeftNum = selectRandom(5, 1, this.maxWNum - 1).map(num=>{
 					return num*this.searchItemW
 				});
 				console.log(this.tempLeftNum)
 			},
 			
 			randomLocationTop() { // 获取随机top的位置
-				this.tempTopNum = this.selectRandom(5, 1, this.maxWNum - 1).map(num=>{
+				this.tempTopNum = selectRandom(5, 1, this.maxWNum - 1).map(num=>{
 					return num*this.searchItemH
 				});
 			},
 			
-			selectRandom (num, from, to) {
-			    let arr = [];
-			    let json = {};
-			    let needNum;
-			
-			    if (from - to >= 0) {
-			        console.log(111)
-			        return '起始值要小于末尾值'
-			    }
-			
-			    if (to - from == to) {
-			        needNum = parseInt(to) + 1;
-				} else {
-			        needNum = to - from;
-			    }
-			    if (num > needNum) {
-			        return
-			    } else {
-			        while (arr.length < num) {
-			          let ranNum = Math.ceil(Math.random() * needNum);
-			          if (!json[ranNum]) {
-			            json[ranNum] = 1;
-			            arr.push(ranNum)
-			          }
-			        }
-			        return arr;
-			    }
-			},
-
 			searchChange() { // 点击--换一换(请求接口)
 				this.tempLeftNum = [];
 				this.tempTopNum = [];
 				this.searchValue = [];
+				this.starsAni = false;
 				this.isSearch = true;
 				this.openNum = 0;
 				this.api_SignalRefresh();
@@ -307,7 +286,6 @@
 				this.modalName = 'Modal';
 				this.openItem = item;
 				this.openNum += 1;
-				// this.searchValue.splice(index, 1, null);
 				this.searchValue[index].isDisplay = false;
 				
 				if (this.openNum >= this.searchValue.length) {
@@ -364,10 +342,6 @@
 			submitSendHandle(e) { // 提交回应消息
 				// console.log(e);
 				this.api_SignalReply(this.openItem.id, this.textareaValue);
-				// 提交消息完成,textarea值置空, 隐藏弹窗, 回应消息UI状态重置
-				// this.textareaValue = '';
-				// this.hideModal('hide');
-				// this.showActionTwo = false;
 			}
 		},
 		onHide() {
@@ -419,18 +393,10 @@
 				height: 50rpx;
 				border-radius: 50%;
 				box-shadow: 0 0 10rpx 8rpx rgba(144,74,219,1);
-				.img_star {
-					width: 74upx;
-					height: 72upx;
-					position:absolute;
-					top:44%;
-					left:49%;
-					transform:translate(-50%, -50%);
-				}
 
 				.img_avatar {
-					width: 40upx;
-					height: 40upx;
+					width: 50upx;
+					height: 50upx;
 				}
 				@keyframes star-boxs {
 					0% {
@@ -508,7 +474,12 @@
 						image {
 							width: 70rpx;
 							height: 26rpx;
-							margin-top: 26rpx;
+							margin-top: 10rpx;
+							margin-right: 16rpx;
+							// vertical-align: top;
+						}
+						text {
+							// vertical-align: top;
 						}
 					}
 				}

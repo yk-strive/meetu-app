@@ -56,7 +56,10 @@
     border-radius: 6rpx;
     margin: 10rpx 0;
 }
-#sendVoicePage .voiceRecordTosat .voiceAni .rect1, #sendVoicePage .voiceRecordTosat .voiceAni .rect2, #sendVoicePage .voiceRecordTosat .voiceAni .rect3, #sendVoicePage .voiceRecordTosat .voiceAni .rect4 {
+#sendVoicePage .voiceRecordTosat .voiceAni .rect1,
+  #sendVoicePage .voiceRecordTosat .voiceAni .rect2,
+  #sendVoicePage .voiceRecordTosat .voiceAni .rect3,
+  #sendVoicePage .voiceRecordTosat .voiceAni .rect4 {
     background-color: #666666;
     -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
             animation: stretchdelay 1.2s infinite ease-in-out;

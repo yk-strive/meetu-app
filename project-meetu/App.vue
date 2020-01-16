@@ -1,73 +1,19 @@
 <script>
 	import Vue from 'vue';
 	import {
-		mapGetters, mapMutations
+		mapGetters,
+		mapMutations
 	} from "vuex";
 	// import mSocket from '@/common/socket/index.js';
 	export default {
 		onLaunch: function() {
 			console.log('App Launch');
-			
-			uni.getSystemInfo({
-				success: function(e) {
-					// console.log(e)
-					// #ifndef MP
-					Vue.prototype.StatusBar = e.statusBarHeight;
-					if (e.platform == 'android') {
-						Vue.prototype.CustomBar = e.statusBarHeight + 50;
-					} else {
-						Vue.prototype.CustomBar = e.statusBarHeight + 45;
-					};
-					// #endif
-
-					// #ifdef MP-WEIXIN
-					Vue.prototype.StatusBar = e.statusBarHeight;
-					let custom = wx.getMenuButtonBoundingClientRect();
-					Vue.prototype.Custom = custom;
-					Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
-					// #endif		
-
-					// #ifdef MP-ALIPAY
-					Vue.prototype.StatusBar = e.statusBarHeight;
-					Vue.prototype.CustomBar = e.statusBarHeight + e.titleBarHeight;
-					// #endif
-					Vue.prototype.SystemInfo = {
-						platform: e.platform,
-						windowWidth: e.windowWidth,
-						windowHeight: e.windowHeight,
-						screenWidth: e.screenWidth,
-						screenHeight: e.screenHeight
-					}
-				}
-			})
-			// 判断app接下来的入口
-			let storageInfo = uni.getStorageInfoSync();
-			if (storageInfo.keys.indexOf('token') != -1 && uni.getStorageSync('token')) {
-				uni.getStorage({
-					key: 'token',
-					success: (res) => {
-						this.changeVal({stateKey: 'token',newValue: res.data});
-						this.changeVal({stateKey: 'dailyLogin', newValue: uni.getStorageSync('dailyLogin')})
-						if (storageInfo.keys.indexOf('oldUser') != -1 && uni.getStorageSync('oldUser')) {
-							// 一般直接进入首页-home/index;
-							uni.redirectTo({
-								url: 'pages/home/index',
-							})
-						} else {
-							uni.redirectTo({
-								url: 'pages/initial/personaldata',
-							})
-						}
-					}
-				})
-			} else {
-				uni.redirectTo({
-					url: 'pages/initial/wxoauth',
-				})
-			}
+			this.initSystem();
+			this.appEnter();
+			this.getShareProvider();
 		},
 		onShow: function() {
-			
+
 		},
 		onHide: function() {
 
@@ -77,9 +23,135 @@
 		},
 		methods: {
 			...mapMutations(['changeVal']),
+			initSystem() {
+				uni.getSystemInfo({
+					success: function(e) {
+						// console.log(e)
+						// #ifndef MP
+						Vue.prototype.StatusBar = e.statusBarHeight;
+						if (e.platform == 'android') {
+							Vue.prototype.CustomBar = e.statusBarHeight + 50;
+						} else {
+							Vue.prototype.CustomBar = e.statusBarHeight + 45;
+						};
+						// #endif
+
+						// #ifdef MP-WEIXIN
+						Vue.prototype.StatusBar = e.statusBarHeight;
+						let custom = wx.getMenuButtonBoundingClientRect();
+						Vue.prototype.Custom = custom;
+						Vue.prototype.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
+						// #endif		
+
+						// #ifdef MP-ALIPAY
+						Vue.prototype.StatusBar = e.statusBarHeight;
+						Vue.prototype.CustomBar = e.statusBarHeight + e.titleBarHeight;
+						// #endif
+						Vue.prototype.SystemInfo = {
+							platform: e.platform,
+							windowWidth: e.windowWidth,
+							windowHeight: e.windowHeight,
+							screenWidth: e.screenWidth,
+							screenHeight: e.screenHeight
+						}
+					}
+				})
+			}, 
+			appEnter() {
+				// 判断app接下来的入口
+				let storageInfo = uni.getStorageInfoSync();
+				if (storageInfo.keys.indexOf('token') != -1 && uni.getStorageSync('token')) {
+					uni.getStorage({
+						key: 'token',
+						success: (res) => {
+							this.changeVal({
+								stateKey: 'token',
+								newValue: res.data
+							});
+							this.changeVal({
+								stateKey: 'dailyLogin',
+								newValue: uni.getStorageSync('dailyLogin')
+							})
+							if (storageInfo.keys.indexOf('oldUser') != -1 && uni.getStorageSync('oldUser')) {
+								// 一般直接进入首页-home/index;
+								uni.redirectTo({
+									url: 'pages/home/index',
+								})
+							} else {
+								uni.redirectTo({
+									url: 'pages/initial/personaldata',
+								})
+							}
+						}
+					})
+				} else {
+					uni.redirectTo({
+						url: 'pages/initial/wxoauth',
+					})
+				}
+			},
+			getShareProvider() {
+				uni.getProvider({
+					service: 'share',
+					success: (e) => {
+						console.log('success', e);
+						let data = [];
+						for (let i = 0; i < e.provider.length; i++) {
+							switch (e.provider[i]) {
+								case 'weixin':
+									data.push({
+										name: '微信',
+										desc: '分享至好友',
+										id: 'weixin',
+										sort: 0
+									})
+									data.push({
+										name: '微信',
+										desc: '分享至朋友圈',
+										id: 'weixin',
+										type: 'WXSenceTimeline',
+										sort: 1
+									})
+									break;
+								case 'sinaweibo':
+									data.push({
+										name: '微博',
+										desc: '分享到新浪微博',
+										id: 'sinaweibo',
+										sort: 2
+									})
+									break;
+								case 'qq':
+									data.push({
+										name: 'QQ',
+										desc: '分享到QQ',
+										id: 'qq',
+										sort: 3
+									})
+									break;
+								default:
+									break;
+							}
+						}
+						this.$options.globalData.shareProviderList = data.sort((x, y) => {
+							return x.sort - y.sort
+						}); 
+					},
+					fail: (e) => {
+						console.log('获取分享通道失败', e);
+						uni.showModal({
+							content: '获取分享通道失败',
+							showCancel: false
+						})
+					},
+				});
+			}
 		},
 		globalData: {
 			sendSignal: false,
+			chatUserInfo: null, // 聊天对话人信息--在 chat/list->chat/chat时赋值, chat/chat页面卸载时置空
+			chatListPageOpenMode: null, //消息推送-click点击进入(redirectTo)chat/list--带参数-赋值该变量,当页面回退时, 根据该变量决定如何回退
+			shareProviderList: [], // 分享渠道获取.
 		}
 	}
 </script>
@@ -93,7 +165,11 @@
 		width: 100%;
 		height: 100%;
 	}
-
+	
+	canvas.meteorShower {
+		width: 100%;
+		height: 100%;
+	}
 	/* 页面背景图 */
 	view[class*='bg_page'] {
 		width: 100%;

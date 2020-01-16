@@ -1,11 +1,13 @@
 <template>
 	<view id="homePage" class="bg_page_1">
+		<canvas class="meteorShower" canvas-id="meteorShower"></canvas>
 		<view class="AppName text-white text-lg">{{appName}}</view>
 		<view class="avatar round avatar-animation" @tap.stop="linkUser">
 			<image class="wh-100" v-bind:src="userInfo.headimgurl" mode="aspectFill"></image>
 		</view>
-
+		
 		<view class="abs-center text-white" style="opacity: 0;" @click="copyHandle">{{token}}</view>
+		
 		<view class="home_bottom_act">
 			<view v-if="showSendToast" class="toast abs-center text-white text-xxs">
 				<text>给茫茫宇宙发射一个信号寻找远方的回应</text>
@@ -46,10 +48,10 @@
 							<image class="abs-center" src="../../static/meetu-img/home_modal_text.png" mode="aspectFill"></image>
 						</view>
 						<view class="send_type text-letter-df text-df text-center">
-							<text>发布文字信号</text>
+							<text>文字黑洞</text>
 						</view>
 						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center padding-bottom-xs">
-							<text>文字黑洞</text>
+							<text>发布文字信号</text>
 						</view>
 						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center">
 							<text>有什么话想对ta说</text>
@@ -60,10 +62,10 @@
 							<image class="abs-center" src="../../static/meetu-img/home_modal_voice.png" mode="aspectFill"></image>
 						</view>
 						<view class="send_type text-letter-df text-df text-center">
-							<text>发布语音信号</text>
+							<text>星球传呼机</text>
 						</view>
 						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center padding-bottom-xs">
-							<text>星球传呼机</text>
+							<text>发布语音信号</text>
 						</view>
 						<view class="send_type_tip text-letter-df text-xxs text-black-m text-center">
 							<text>听见你的声音</text>
@@ -84,6 +86,7 @@
 	import mSocket from '@/common/socket/index.js';
 	import {throttle} from '@/common/Utils/common.js';
 	import permision from "@/common/wa-permission/permission.js"
+	import {MeteorShower} from '@/common/Utils/meteorShower.js'
 	export default {
 		name: 'homeIndex',
 		components: {},
@@ -97,6 +100,8 @@
 				appName: 'Meet U',
 				showSendToast: false,
 				userNumber: null,
+				
+				tempUpImgs: []
 			}
 		},
 		computed: {
@@ -107,8 +112,10 @@
 		},
 
 		onLoad(options) {
+			// this.meteorShower();
 			this.api_UserNumber();
-			uni.removeStorageSync('searchInfo')
+			// console.log('-------home------',options);
+			this.handlePush();
 		},
 
 		onReady() {
@@ -121,15 +128,19 @@
 		},
 		onShow() {
 			this.api_UserInfo();
+			
+			// 发送信号-返回首页-动画提示
 			if (getApp().globalData.sendSignal) {
 				this.isSendSignal = true;
 				this.api_UserNumber();
 				setTimeout(() => {
+					this.modalShow('toastModal', '信号已发往星球')
 					getApp().globalData.sendSignal = false;
 					this.isSendSignal = false;
-				}, 4000);
+				}, 2500);
 			}
-
+			
+			// 每日登录弹窗是否展示
 			if (this.dailyLogin == 1) {
 				return false;
 			} else {
@@ -148,6 +159,47 @@
 			}
 		},
 		methods: {
+			handlePush() {
+				// #ifdef APP-PLUS
+				const _self = this
+				const receive_pushHandle = function(msg) {
+					console.log("----receive---", JSON.stringify(msg));
+					
+					if (msg.payload == 'im') {
+						console.log('----click+进入if---- IM');
+						uni.reLaunch({
+							url: '../chat/list',
+						})
+					} else if (msg.payload == 'inviter') {
+						console.log('----click+进入if---- Inviter');
+						uni.navigateTo({
+							url: '../user/coinrecord',
+							animationDuration: 300,
+							animationType: 'fade-in'
+						})
+					}
+				}
+				const click_pushHandle = function(msg) {
+					console.log("----click---", JSON.stringify(msg));
+					if (msg.payload == 'im') {
+						console.log('----click+进入if---- IM');
+						uni.redirectTo({
+							url: '../chat/list?enterMode=im',
+						})
+					} else if (msg.payload == 'inviter') {
+						console.log('----click+进入if---- Inviter');
+						uni.navigateTo({
+							url: '../user/coinrecord',
+							animationDuration: 300,
+							animationType: 'fade-in'
+						})
+					}
+				}
+				// 事件处理
+				plus.push.addEventListener('click', click_pushHandle)
+				plus.push.addEventListener('receive', receive_pushHandle)
+				// #endif
+			},
 			ws_init() {
 				let self = this;
 				let socket = new mSocket({
@@ -281,14 +333,35 @@
 				        // uni.hideToast()
 				    }
 				});
-			}, 5000)
+			}, 5000),
+			meteorShower() {
+				// let cvs = document.querySelector("canvas");
+				// let ctx = cvs.getContext("2d");
+				// let meteorShower = new MeteorShower(cvs, ctx);
+				// meteorShower.start();
+				setTimeout(()=>{
+					let query = uni.createSelectorQuery();
+					query.select('.meteorShower').boundingClientRect();
+					query.exec((res) => {
+						console.log(JSON.stringify(res));
+						let cvs = res[0];
+						let ctx = uni.createCanvasContext('meteorShower');
+						console.log('-----ctx----', ctx)
+						let meteorShower = new MeteorShower(cvs, ctx);
+						meteorShower.start();
+					})
+				}, 500)
+			}
 		}
 	}
 </script>
 
 <style lang="scss">
 	#homePage {
-
+		canvas.meteorShower {
+			width: 100%;
+			height: 100%;
+		}
 		.AppName,
 		.avatar {
 			position: fixed;
@@ -466,7 +539,7 @@
 
 		.signal-animation {
 			// 发送信号回首页--动画展示
-			animation: signal-animation 2s 2s linear both;
+			animation: signal-animation 2s 0.5s linear both;
 		}
 
 		@keyframes signal-animation {

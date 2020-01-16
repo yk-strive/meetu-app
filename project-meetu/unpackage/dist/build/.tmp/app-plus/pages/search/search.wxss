@@ -359,18 +359,9 @@
     border-radius: 50%;
     box-shadow: 0 0 10rpx 8rpx #904adb;
 }
-#searchPage .search_view .search_item .img_star {
-      width: 74rpx;
-      height: 72rpx;
-      position: absolute;
-      top: 44%;
-      left: 49%;
-      -webkit-transform: translate(-50%, -50%);
-              transform: translate(-50%, -50%);
-}
 #searchPage .search_view .search_item .img_avatar {
-      width: 40rpx;
-      height: 40rpx;
+      width: 50rpx;
+      height: 50rpx;
 }
 @-webkit-keyframes star-boxs {
 0% {
@@ -458,7 +449,8 @@
 #searchPage .open_star .action_one .star_info .voice image {
           width: 70rpx;
           height: 26rpx;
-          margin-top: 26rpx;
+          margin-top: 10rpx;
+          margin-right: 16rpx;
 }
 #searchPage .open_star .action_one .btn button {
       width: 190rpx;

@@ -27,6 +27,9 @@
 #signalPage {
   overflow-y: scroll;
 }
+.border-b {
+  border: 2rpx solid blue;
+}
 .signal-wrap {
   height: calc(100% - 180rpx);
 }

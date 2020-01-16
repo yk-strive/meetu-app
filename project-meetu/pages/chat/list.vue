@@ -2,7 +2,7 @@
 	<view id="chatListPage" class="bg_page_3">
 		<custom-nav :isBack="true" textTitle="消息列表"></custom-nav>
 		<view class="chatlist-wrap wrap_heihgt">
-			<mix-pulldown-refresh ref="mixPulldownRefresh" class="panel-content" :top="CustomBar" @refresh="onPulldownReresh"
+			<mix-pulldown-refresh ref="mixPulldownRefresh" class="panel-content" @refresh="onPulldownReresh"
 			 @setEnableScroll="setEnableScroll">
 				<scroll-view class="panel-scroll-box" :scroll-y="enableScroll" @scrolltolower="loadMore">
 					<view class="cu-list menu-avatar">
@@ -40,8 +40,8 @@
 	import mixinInit from '../../mixins/init.js';
 	import * as DateUtils from "../../common/Utils/Date.js";
 	import {throttle} from '@/common/Utils/common.js';
-	import { mapState } from 'vuex';
-
+	import mSocket from '@/common/socket/index.js';
+	import { mapState,mapGetters } from 'vuex';
 	export default {
 		name: 'chatlist',
 		components: {
@@ -51,7 +51,6 @@
 		mixins: [mixinInit],
 		data() {
 			return {
-				CustomBar: this.CustomBar,
 				enableScroll: true,
 				loadType: '',
 				refreshing: 0,
@@ -61,6 +60,7 @@
 		},
 		
 		computed: {
+			...mapGetters(['token']),
 			...mapState({
 				WS: state=> state.socketInfo.WS,
 				list: state=>state.socketInfo.list,
@@ -89,6 +89,7 @@
 						item.created_at_format = DateUtils.timeFormat(newV.created_at);
 					}
 				})
+				this.list.sort(DateUtils.compare('created_at'))
 			},
 			deleteErr(newV) {
 				if (newV.error == 0) {
@@ -97,13 +98,46 @@
 				}
 			}
 		},
-		
+		onLoad(options) {
+			if (options.enterMode) {
+				getApp().globalData.chatListPageOpenMode = options.enterMode;
+			}
+		},
 		onShow() {
 			this.pageUnload = false;
 			this.ws_GetChatList();
 		},
 		
 		methods: {
+			ws_init() { 
+				let self = this;
+				let socket = new mSocket({
+					url: 'wss://api.meetu.letwx.com/im?token=' + self.token,
+					timeout: 30000,
+					isSendHeart: true,
+					heartData: {
+						"msgType": "ping",
+						"data": {}
+					},
+					isReconnection: true,
+					reConnectTime: 3000,
+					debug: process.env.NODE_ENV === "development",
+					params: { // 发送消息时如果时json则自动加上组合里面参数
+						// token: token
+					},
+					onSocketOpen: header => {},
+					onSocketMessage: data => {
+						self.$store.dispatch('setSocketState', data);
+					},
+					onSocketError: res => {
+						self.$store.dispatch('setSocketStateErr', res);
+					},
+					onSocketClose: res => {}
+				});
+				console.log('--socket--', socket)
+				self.$store.dispatch('WS', socket);
+				socket.initSocket();
+			},
 			ws_GetChatList(loadType) {
 				let self = this;
 				if (loadType) {
@@ -132,7 +166,7 @@
 						pageSzie: self.pageSize,
 					}
 				}, okRes=>{
-					self.clog('----消息发送OK----', okRes); // 这里的res(成功)->只代表uni-socket发送消息是否成功
+					// self.clog('----消息发送OK----', okRes); // 这里的res(成功)->只代表uni-socket发送消息是否成功
 					setTimeout(function() {
 						self.$refs.mixPulldownRefresh && self.$refs.mixPulldownRefresh.endPulldownRefresh();
 					}, 200)
@@ -175,8 +209,9 @@
 			
 			linkChat(item) {
 				this.ws_read(item.user_id);
+				getApp().globalData.chatUserInfo = item;
 				uni.navigateTo({
-					url: './chat?chatItem=' + JSON.stringify(item),
+					url: './chat?chatUserId=' + item.user_id,
 					animationDuration: 300,
 					animationType: 'fade-in'
 				})
@@ -206,25 +241,6 @@
 					this.removeItemInfo = null;
 				}
 			},
-			// ListTouch触摸开始
-			ListTouchStart(e) {
-				this.listTouchStart = e.touches[0].pageX
-			},
-
-			// ListTouch计算方向
-			ListTouchMove(e) {
-				this.listTouchDirection = e.touches[0].pageX - this.listTouchStart > 0 ? 'right' : 'left'
-			},
-
-			// ListTouch计算滚动
-			ListTouchEnd(e) {
-				if (this.listTouchDirection == 'left') {
-					this.modalName = e.currentTarget.dataset.target
-				} else {
-					this.modalName = null
-				}
-				this.listTouchDirection = null
-			}
 		},
 		
 		onHide() {
@@ -234,6 +250,9 @@
 		onUnload() {
 			this.pageUnload = true;
 			this.$store.commit('emptyInfo', 'list');
+			if (getApp().globalData.chatListPageOpenMode) {
+				getApp().globalData.chatListPageOpenMode = null;
+			}
 		}
 	}
 </script>

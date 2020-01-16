@@ -29,7 +29,7 @@
     "autoclose": false
   },
   "appname": "MeetU",
-  "compilerVersion": "2.4.6",
+  "compilerVersion": "2.5.1",
   "usingComponents": {
     "custom-nav": "/components/custom-nav",
     "cu-modal": "/meetu-ui/components/cu-modal"

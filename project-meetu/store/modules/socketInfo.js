@@ -27,9 +27,11 @@ let socketInfo = {
 					})
 					if (state.list) {
 						state.list = [...state.list, ...info.list];
+						state.list = state.list.filterRepeat('user_id');
 					} else {
 						state.list = info.list;
 					}
+					state.list.sort(DateUtils.compare('created_at'))
 					break;
 				case 'getChatLogInfo':
 					for (let i = info.list.length - 1; i >= 0 ; i--) {
