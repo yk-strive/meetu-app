@@ -101,4 +101,37 @@
         .signal-wrap view.signal_item > .cu-item .action .action_share {
           color: #DAB96B;
 }
+.shareProvider {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-flow: row wrap;
+          flex-flow: row wrap;
+}
+.shareProvider .shareProviderItem {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+            flex: 1;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+            align-items: center;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+            flex-direction: column;
+}
+.shareProvider .shareProviderItem .icon {
+      background-color: #00bb31;
+      color: #FFFFFF;
+      width: 100rpx;
+      height: 100rpx;
+      line-height: 100rpx;
+      font-size: 70rpx;
+      border-radius: 500rpx;
+}
 

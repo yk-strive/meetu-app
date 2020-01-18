@@ -105,13 +105,13 @@
 										id: 'weixin',
 										sort: 0
 									})
-									data.push({
-										name: '微信',
-										desc: '分享至朋友圈',
-										id: 'weixin',
-										type: 'WXSenceTimeline',
-										sort: 1
-									})
+									// data.push({
+									// 	name: '微信',
+									// 	desc: '分享至朋友圈',
+									// 	id: 'weixin',
+									// 	type: 'WXSenceTimeline',
+									// 	sort: 1
+									// })
 									break;
 								case 'sinaweibo':
 									data.push({

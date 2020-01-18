@@ -24,6 +24,10 @@
 /* 垂直间距 */
 /* 透明度 */
 /* 文章场景相关 */
+#homePage canvas.meteorShower {
+  width: 100%;
+  height: 100%;
+}
 #homePage .AppName,
 #homePage .avatar {
   position: fixed;

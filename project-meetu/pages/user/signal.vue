@@ -272,7 +272,8 @@
 			},
 			async share(e) {
 				let self = this;
-				let shareType = self.tabsInfo.tabCur == '1' ? 0 : 3;
+				// let shareType = self.tabsInfo.tabCur == '1' ? 0 : 3;
+				let shareType = 0;
 				let shareOptions = {
 					provider: e.id,
 					scene: e.type && e.type === 'WXSenceTimeline' ? 'WXSenceTimeline' : 'WXSceneSession',
@@ -290,19 +291,20 @@
 						console.log('分享操作结束!')
 					}
 				}
+				let summary = self.shareInfo.type == 1 ? self.shareInfo.content : '语音';
 				switch (shareType) {
 					case 0:
-						shareOptions.summary = '分享内容摘要:' + self.shareInfo.content;
+						shareOptions.summary = '分享内容摘要:' + summary;
 						shareOptions.imageUrl = require('../../static/meetu-img/logo.png');
-						shareOptions.title = '分享测试标题: Meet U';
-						shareOptions.href = 'http://q.letwx.com/app/ggSpringFestival2020-build/index.html';
+						shareOptions.title = 'Meet U孤独星球';
+						shareOptions.href = 'http://q.letwx.com/site/index';
 						break;
 					case 3:
 						shareOptions.title = '分享测试标题: Meet U';
 						// shareOptions.imageUrl = require('../../static/meetu-img/logo.png');
 						shareOptions.mediaUrl = self.shareInfo.content;
 						// shareOptions.href = 'http://q.letwx.com/app/ggSpringFestival2020-build/index.html';
-						break;
+						break; 
 				}
 				uni.share(shareOptions);
 			}

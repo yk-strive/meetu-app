@@ -86,7 +86,6 @@
 	import mSocket from '@/common/socket/index.js';
 	import {throttle} from '@/common/Utils/common.js';
 	import permision from "@/common/wa-permission/permission.js"
-	import {MeteorShower} from '@/common/Utils/meteorShower.js'
 	export default {
 		name: 'homeIndex',
 		components: {},
@@ -112,7 +111,6 @@
 		},
 
 		onLoad(options) {
-			// this.meteorShower();
 			this.api_UserNumber();
 			// console.log('-------home------',options);
 			this.handlePush();
@@ -163,15 +161,15 @@
 				// #ifdef APP-PLUS
 				const _self = this
 				const receive_pushHandle = function(msg) {
-					console.log("----receive---", JSON.stringify(msg));
+					// console.log("----receive---", JSON.stringify(msg));
 					
 					if (msg.payload == 'im') {
-						console.log('----click+进入if---- IM');
+						// console.log('----click+进入if---- IM');
 						uni.reLaunch({
 							url: '../chat/list',
 						})
 					} else if (msg.payload == 'inviter') {
-						console.log('----click+进入if---- Inviter');
+						// console.log('----click+进入if---- Inviter');
 						uni.navigateTo({
 							url: '../user/coinrecord',
 							animationDuration: 300,
@@ -180,14 +178,14 @@
 					}
 				}
 				const click_pushHandle = function(msg) {
-					console.log("----click---", JSON.stringify(msg));
+					// console.log("----click---", JSON.stringify(msg));
 					if (msg.payload == 'im') {
 						console.log('----click+进入if---- IM');
 						uni.redirectTo({
 							url: '../chat/list?enterMode=im',
 						})
 					} else if (msg.payload == 'inviter') {
-						console.log('----click+进入if---- Inviter');
+						// console.log('----click+进入if---- Inviter');
 						uni.navigateTo({
 							url: '../user/coinrecord',
 							animationDuration: 300,
@@ -334,24 +332,6 @@
 				    }
 				});
 			}, 5000),
-			meteorShower() {
-				// let cvs = document.querySelector("canvas");
-				// let ctx = cvs.getContext("2d");
-				// let meteorShower = new MeteorShower(cvs, ctx);
-				// meteorShower.start();
-				setTimeout(()=>{
-					let query = uni.createSelectorQuery();
-					query.select('.meteorShower').boundingClientRect();
-					query.exec((res) => {
-						console.log(JSON.stringify(res));
-						let cvs = res[0];
-						let ctx = uni.createCanvasContext('meteorShower');
-						console.log('-----ctx----', ctx)
-						let meteorShower = new MeteorShower(cvs, ctx);
-						meteorShower.start();
-					})
-				}, 500)
-			}
 		}
 	}
 </script>
